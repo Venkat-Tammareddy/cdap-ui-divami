@@ -201,18 +201,7 @@ export default class Home extends Component {
             path="/ns/:namespace/logs/program/:appId/:programType/:programId/:runId"
             component={LogViewerPage}
           />
-          <Route
-            path="/ns/:namespace/ingestion"
-            render={(props) => {
-              return (
-                <ToggleExperiment
-                  experimentId="data-ingestion"
-                  defaultComponent={<Page404 {...props} />}
-                  experimentalComponent={<Ingestion />}
-                />
-              );
-            }}
-          />
+          <Route path="/ns/:namespace/ingestion" component={Ingestion} />
           <Route path="/ns/:namespace/plugincreation" component={PluginJSONCreator} />
           <Route component={Page404} />
         </Switch>

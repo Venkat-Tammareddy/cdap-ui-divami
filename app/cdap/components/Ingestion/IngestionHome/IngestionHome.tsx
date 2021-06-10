@@ -19,11 +19,11 @@ import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/wit
 import { EntityTopPanel } from 'components/EntityTopPanel';
 import { Button } from '@material-ui/core';
 import history from 'services/history';
+import Heading, { HeadingTypes } from 'components/Heading';
 
 const styles = (theme): StyleRules => {
   return {
     root: {
-      border: '1px solid red',
       height: '100%',
     },
     content: {
@@ -39,7 +39,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     <div className={classes.root}>
       <EntityTopPanel title="Ingestion Tasks" />
       <div className={classes.content}>
-        <h1>Ingestion Home Page</h1>
+        <Heading type={HeadingTypes.h1} label={'Ingestion Home Page'} />
         <Button
           variant="contained"
           color="primary"

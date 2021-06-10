@@ -46,7 +46,7 @@ const IngestionView: React.FC<IIngestionProps> = ({ classes }) => {
         <Route path={basepath} component={IngestionHome} />
         <Route
           render={() => {
-            return <Redirect to={`/ns/${getCurrentNamespace()}/replication`} />;
+            return <Redirect to={`/ns/${getCurrentNamespace()}/ingestion`} />;
           }}
         />
       </Switch>

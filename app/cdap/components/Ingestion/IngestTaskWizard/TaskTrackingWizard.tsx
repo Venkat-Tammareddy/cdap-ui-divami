@@ -21,7 +21,7 @@ import { Step, StepContent, StepLabel, Stepper, Typography } from '@material-ui/
 const styles = (theme): StyleRules => {
   return {
     root: {
-      height: '100vh',
+      height: '100%',
     },
     button: {
       marginTop: theme.spacing(1),
@@ -71,7 +71,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({ classes, steps, active
           <Step key={label} expanded={index < activeStep}>
             <StepLabel>{label}</StepLabel>
             <StepContent>
-              <Typography>{getStepContent(index)}</Typography>
+              <Typography component={'span'}>{getStepContent(index)}</Typography>
             </StepContent>
           </Step>
         ))}

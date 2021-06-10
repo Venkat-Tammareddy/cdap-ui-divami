@@ -18,6 +18,9 @@ const styles = (): StyleRules => {
     },
     taskName: {
       width: 550,
+      '& .MuiFormHelperText-root': {
+        color: 'red',
+      },
     },
     taskDescription: {
       width: 550,
@@ -39,7 +42,7 @@ const styles = (): StyleRules => {
       backgroundColor: '#2196f3',
     },
     inputInfo: {
-      color: 'grey',
+      color: 'green',
     },
     errorInputInfo: {
       color: 'red',
@@ -54,7 +57,7 @@ interface IIngestionProps extends WithStyles<typeof styles> {
 const TaskDetailsView: React.FC<IIngestionProps> = ({ classes, submitValues }) => {
   const [taskName, setTaskName] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
-  const [Error, setError] = useState(false);
+  const [taskNameError, setTaskNameError] = useState({ error: false, errorMsg: '' });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,14 +71,23 @@ const TaskDetailsView: React.FC<IIngestionProps> = ({ classes, submitValues }) =
     submitValues(formDataObject);
   };
 
-  const handleChange = (e: React.FormEvent) => {
-    console.log('something changed');
+  const handleTaskNameChange = (e: React.FormEvent) => {
     const inputValue = e.target as HTMLInputElement;
-    if (inputValue.value.includes(' ')) {
-      setError(true);
+    if (inputValue.value.length > 5) {
+      taskNameError.error = true;
+      taskNameError.errorMsg = 'Task name must be less than 64';
     } else {
-      setError(false);
+      if (inputValue.value.includes(' ')) {
+        taskNameError.error = true;
+        taskNameError.errorMsg =
+          'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)';
+      } else {
+        taskNameError.error = false;
+        taskNameError.errorMsg = '';
+      }
     }
+
+    setTaskNameError(taskNameError);
     setTaskName(inputValue.value);
   };
 
@@ -90,15 +102,12 @@ const TaskDetailsView: React.FC<IIngestionProps> = ({ classes, submitValues }) =
             label="Task Name"
             value={taskName}
             className={classes.taskName}
-            color={Error ? 'secondary' : 'primary'}
+            color={taskNameError.error ? 'secondary' : 'primary'}
             variant="outlined"
-            onChange={handleChange}
+            onChange={handleTaskNameChange}
+            error={taskNameError.error}
+            helperText={taskNameError.errorMsg}
           />
-          <p className={Error ? classes.errorInputInfo : classes.inputInfo}>
-            <small>
-              Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data, and etc...)
-            </small>
-          </p>
           <TextField
             required
             name="taskDescription"

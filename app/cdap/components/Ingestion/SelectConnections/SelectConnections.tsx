@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { TextField } from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import TableHeader from 'components/Table/TableHeader';
 import TableRow from 'components/Table/TableRow';
@@ -50,6 +50,27 @@ const styles = (theme): StyleRules => {
       padding: '10px 20px',
       cursor: 'pointer',
     },
+    tableRowSelected: {
+      padding: '10px 20px',
+      cursor: 'pointer',
+      border: '1px solid gray',
+      background: '#F0F0F0',
+    },
+    buttonContainer: {
+      marginTop: '50px',
+      display: 'flex',
+      flexDirection: 'row-reverse',
+      gap: '50px',
+      alignItems: 'center',
+      justifyItems: 'center',
+    },
+    cancelButton: {
+      textDecoration: 'none',
+      color: '#2196f3',
+    },
+    submitButton: {
+      backgroundColor: '#2196f3',
+    },
   };
 };
 
@@ -65,6 +86,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   submitConnection,
 }) => {
   const [search, setSearch] = React.useState('');
+  const [selectedConnection, setSelectedConnection] = React.useState({});
   const filteredList = connectionsList.filter(
     (item) =>
       item.database.toLowerCase().includes(search.toLowerCase()) ||
@@ -101,13 +123,15 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
           </TableRow>
         </TableHeader>
 
-        <TableBody classes={{ root: classes.tableWrapper }}>
+        <TableBody>
           {filteredList.map((conn) => {
             return (
               <TableRow
                 key={conn.database}
-                className={classes.tableRow}
-                onClick={() => submitConnection(conn)}
+                className={
+                  selectedConnection === conn ? classes.tableRowSelected : classes.tableRow
+                }
+                onClick={() => setSelectedConnection(conn)}
               >
                 <TableCell>{conn.database}</TableCell>
                 <TableCell>{conn.connection}</TableCell>
@@ -117,6 +141,21 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
           })}
         </TableBody>
       </Table>
+      <div className={classes.buttonContainer}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            Object.keys(selectedConnection).length !== 0 &&
+              (submitConnection(selectedConnection), setSelectedConnection({}));
+          }}
+          className={classes.submitButton}
+          type="submit"
+        >
+          CONTINUE
+        </Button>
+        <Button className={classes.cancelButton}>CANCEL</Button>
+      </div>
     </div>
   );
 };

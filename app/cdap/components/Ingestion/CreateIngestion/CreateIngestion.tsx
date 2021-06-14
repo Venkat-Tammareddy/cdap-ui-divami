@@ -22,6 +22,7 @@ import { EntityTopPanel } from 'components/EntityTopPanel';
 import TaskDetails from '../TaskDetails/TaskDetails';
 import SelectConnections from '../SelectConnections/SelectConnections';
 import TaskConfiguration from '../TaskConfiguration/TaskConfiguration';
+import MappingLayout from '../MappingLayout/MappingLayout';
 
 const styles = (theme): StyleRules => {
   return {
@@ -152,6 +153,8 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
             }}
           />
         );
+      case 3:
+        return <MappingLayout />;
       case 4:
         return <TaskConfiguration />;
       default:

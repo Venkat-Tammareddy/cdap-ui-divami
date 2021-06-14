@@ -154,7 +154,14 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           />
         );
       case 3:
-        return <MappingLayout />;
+        return (
+          <MappingLayout
+            submitMappingType={(mappingType) => {
+              console.log(mappingType);
+              handleNext();
+            }}
+          />
+        );
       case 4:
         return <TaskConfiguration />;
       default:

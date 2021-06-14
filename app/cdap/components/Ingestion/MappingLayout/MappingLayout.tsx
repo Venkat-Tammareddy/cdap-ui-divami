@@ -34,6 +34,7 @@ const styles = (): StyleRules => {
       fontFamily: 'Roboto',
       justifyContent: 'center',
       alignItems: 'center',
+      textAlign: 'center',
       backgroundColor: '#EFF9F0',
       color: '#346246',
       width: '920px',
@@ -89,8 +90,10 @@ const styles = (): StyleRules => {
   };
 };
 
-interface IIngestionProps extends WithStyles<typeof styles> {}
-const MappingView: React.FC<IIngestionProps> = ({ classes }) => {
+interface IIngestionProps extends WithStyles<typeof styles> {
+  submitMappingType: (values: object) => void;
+}
+const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType }) => {
   const [cardSelected, setSelected] = React.useState({ cardType: '' });
   const handleClick = (e: any) => {
     if (e.target.textContent[0] === 'S') {
@@ -101,7 +104,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes }) => {
   };
 
   const submitMapping = () => {
-    console.log(cardSelected);
+    submitMappingType(cardSelected);
   };
   const imageUrl = 'https://img.icons8.com/pastel-glyph/2x/blood-sample.png';
   return (

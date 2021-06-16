@@ -21,10 +21,8 @@ import { Card, CardContent, Typography, CardActions, Button } from '@material-ui
 const styles = (): StyleRules => {
   return {
     root: {
-      boxSizing: 'border-box',
-      width: '940px',
-      marginLeft: '20%',
-      marginTop: '10%',
+      height: '100%',
+      border: '2px solid blue',
     },
     container: {
       padding: '10px',
@@ -37,29 +35,22 @@ const styles = (): StyleRules => {
       textAlign: 'center',
       backgroundColor: '#EFF9F0',
       color: '#346246',
-      width: '920px',
     },
-    mappingCard: {
-      width: '600px',
-    },
+    mappingCard: {},
     selectedCard: {
-      width: '600px',
       border: '1px solid green',
     },
     mappingTypes: {
       display: 'flex',
       flexDirection: 'row',
-      gap: '15px',
+      gap: '50px',
     },
     mappingInfo: {
-      boxSizing: 'border-box',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      width: '400px',
       marginTop: '60px',
-      padding: '0',
       marginLeft: '25px',
     },
     mappingIcons: {

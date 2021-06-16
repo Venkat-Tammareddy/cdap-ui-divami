@@ -42,6 +42,7 @@ const styles = (theme): StyleRules => {
     tableWrapper: {
       marginTop: '20px',
       border: '2px solid red',
+      flex: '1 1 0%',
     },
     header: {
       padding: '10px 20px',
@@ -61,8 +62,6 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       flexDirection: 'row-reverse',
       gap: '50px',
-      alignItems: 'center',
-      justifyItems: 'center',
     },
     cancelButton: {
       textDecoration: 'none',

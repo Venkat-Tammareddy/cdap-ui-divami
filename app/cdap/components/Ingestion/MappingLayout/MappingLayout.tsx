@@ -21,13 +21,13 @@ import { Card, CardContent, Typography, CardActions, Button } from '@material-ui
 const styles = (): StyleRules => {
   return {
     root: {
-      boxSizing: 'border-box',
-      width: '940px',
-      marginLeft: '20%',
-      marginTop: '10%',
+      margin: '50px',
+      display: 'flex',
+      flexDirection: 'column',
     },
     container: {
       padding: '10px',
+      flex: '1 1 0%',
     },
     successMsg: {
       display: 'flex',
@@ -40,10 +40,10 @@ const styles = (): StyleRules => {
       width: '920px',
     },
     mappingCard: {
-      width: '600px',
+      flex: '1 1 0%',
     },
     selectedCard: {
-      width: '600px',
+      flex: '1 1 0%',
       border: '1px solid green',
     },
     mappingTypes: {
@@ -176,7 +176,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType }) 
           type="submit"
           onClick={submitMapping}
         >
-          DEPLOY TASK
+          Continue
         </Button>
       </div>
     </div>

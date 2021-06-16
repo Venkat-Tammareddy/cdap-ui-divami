@@ -36,6 +36,7 @@ const styles = (theme): StyleRules => {
       gridTemplateColumns: '250px 1fr',
       gridTemplateRows: '100%',
       height: 'calc(100% - 50px)', // 100% - height of EntityTopPanel
+      overflowY: 'hidden',
       border: '2px solid green',
     },
     wizard: {

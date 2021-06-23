@@ -31,11 +31,6 @@ const styles = (theme): StyleRules => {
   return {
     root: {
       height: '100%',
-      // overflow: 'hidden',
-<<<<<<< HEAD
-      // border: '2px solid red',
-=======
->>>>>>> 2e540c57f629e80737cea7582fb757f34b53b63a
     },
     wizardAndContentWrapper: {
       display: 'grid',
@@ -43,10 +38,6 @@ const styles = (theme): StyleRules => {
       gridTemplateRows: '100%',
       height: 'calc(100% - 50px)', // 100% - height of EntityTopPanel
       overflowY: 'hidden',
-<<<<<<< HEAD
-      // border: '2px solid green',
-=======
->>>>>>> 2e540c57f629e80737cea7582fb757f34b53b63a
     },
     wizard: {
       boxShadow: ' 0px -1px 10px 0.5px gray',

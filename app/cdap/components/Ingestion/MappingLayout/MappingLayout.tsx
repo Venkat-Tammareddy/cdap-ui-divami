@@ -31,58 +31,88 @@ const styles = (): StyleRules => {
     },
     successMsg: {
       display: 'flex',
-      fontFamily: 'Roboto',
+      height: '70px',
+      fontFamily: 'Lato',
+      fontSize: '20px',
+      letterSpacing: '0',
+      color: '#137333',
       justifyContent: 'center',
       alignItems: 'center',
-      textAlign: 'center',
-      backgroundColor: '#EFF9F0',
-      color: '#346246',
-      width: '920px',
+      backgroundColor: '#eff8f2',
+      borderRadius: '4px',
     },
     mappingCard: {
       flex: '1 1 0%',
     },
     selectedCard: {
       flex: '1 1 0%',
-      border: '1px solid green',
+      border: '1px solid #0F9D58',
+      borderRadius: '4px',
     },
     mappingTypes: {
       display: 'flex',
       flexDirection: 'row',
       gap: '50px',
+      marginTop: '10px',
     },
     mappingInfo: {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: '60px',
-      marginLeft: '25px',
+      // marginTop: '60px',
+      // marginLeft: '25px',
+      padding: '20px',
     },
     mappingIcons: {
-      height: '30px',
-      width: '30px',
+      '& .MappingView - mappingIcons - 650': {},
     },
     title: {
+      fontFamily: 'Lato',
+      color: '#202124',
+      letterSpacing: '0',
+      fontSize: '20px',
       marginTop: '40px',
     },
     label: {
       padding: '0',
+      fontFamily: 'Lato',
+      color: '#202124',
+      letterSpacing: '0',
     },
     buttonContainer: {
       display: 'flex',
       flexDirection: 'row',
-      marginTop: '10px',
-      marginLeft: '72%',
       gap: '50px',
       alignItems: 'center',
+      justifyContent: 'flex-end',
+      marginTop: '40%',
     },
     cancelButton: {
-      textDecoration: 'none',
-      color: '#2196f3',
+      color: '#4285F4;',
+      outline: 'none',
+      fontSize: '14px',
+      letterSpacing: '1.25px',
+      lineHeight: '24px',
+      fontFamily: 'Lato',
     },
     submitButton: {
-      minWidth: '131px',
+      backgroundColor: '#4285F4',
+      letterSpacing: '1.25px',
+      lineHeight: '24px',
+      fontSize: '14px',
+      fontFamily: 'Lato',
+    },
+    mappingDescription: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+    },
+    labelText: {
+      color: 'red',
+      padding: '0',
+    },
+    descriptionContainer: {
+      padding: '0px',
     },
   };
 };
@@ -103,16 +133,17 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType }) 
   const submitMapping = () => {
     submitMappingType(cardSelected);
   };
-  const imageUrl = 'https://img.icons8.com/pastel-glyph/2x/blood-sample.png';
+
+  const allTables = '/cdap_assets/img/select-all-tables-infographic.svg';
+  const customTable = '/cdap_assets/img/custom-selection-table-infographic.svg';
+
   return (
     <div className={classes.root}>
       <div className={classes.container}>
         <div className={classes.successMsg}>
-          <p>Successfully connected to the Studies database</p>
+          <p className={classes.successMsgText}>Successfully connected to the Studies database</p>
         </div>
-        <Typography gutterBottom variant="h6" component="h6" className={classes.title}>
-          How Would You Like to Proceed?
-        </Typography>
+        <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
         <div className={classes.mappingTypes}>
           <Card
             className={cardSelected.cardType === 'All' ? classes.selectedCard : classes.mappingCard}
@@ -120,19 +151,27 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType }) 
             onClick={handleClick}
           >
             <div className={classes.mappingInfo}>
+              <img className={classes.mappingIcons} src={allTables} alt="some text" />
               <CardContent className={classes.label}>
-                <Typography gutterBottom variant="h6" component="h6">
+                <Typography gutterBottom variant="h6" component="h6" className={classes.labelText}>
                   Select all tables & columns
                 </Typography>
               </CardContent>
               <CardContent>
-                <img className={classes.mappingIcons} src={imageUrl} alt="some text" />
-              </CardContent>
-              <CardContent>
-                <Typography variant="body2" color="textSecondary" component="p">
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  className={classes.mappingDescription}
+                >
                   I would like to extract all columns from all tables
                 </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  className={classes.mappingDescription}
+                >
                   without any custom selection.
                 </Typography>
               </CardContent>
@@ -146,17 +185,27 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType }) 
             onClick={handleClick}
           >
             <div className={classes.mappingInfo}>
+              <img src={customTable} className={classes.mappingIcons} alt="some icon" />
               <CardContent className={classes.label}>
-                <Typography gutterBottom variant="h6" component="h6">
+                <Typography gutterBottom variant="h6" component="h6" className={classes.labelText}>
                   Custom selection of table & columns
                 </Typography>
               </CardContent>
-              <img src={imageUrl} className={classes.mappingIcons} alt="some icon" />
-              <CardContent>
-                <Typography variant="body2" color="textSecondary" component="p">
+              <CardContent className={classes.descriptionContainer}>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  className={classes.mappingDescription}
+                >
                   I would like to extract the tables and columns
                 </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  className={classes.mappingDescription}
+                >
                   I am interested in.
                 </Typography>
               </CardContent>

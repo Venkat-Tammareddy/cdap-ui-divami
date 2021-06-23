@@ -31,31 +31,50 @@ const styles = (theme): StyleRules => {
       height: 'calc(100% - 100px)', // margin
       display: 'flex',
       flexDirection: 'column',
+      color: '#202124',
     },
     search: {
       width: '100%',
-      marginBottom: '15px',
+      marginTop: '10px',
+      marginBottom: '20px',
     },
     resize: {
       fontSize: '15px',
     },
     tableWrapper: {
       marginTop: '20px',
-      border: '2px solid red',
+      // border: '2px solid red',
       flex: '1 1 0%',
     },
     header: {
       padding: '10px 20px',
+      color: '#202124',
+      fontSize: '16px',
+      fontFamily: 'Lato',
+      fontWeight: 'normal',
+      letterSpacing: '0',
+      lineHeight: '24px',
+      backgroundColor: '#e2e9f4',
+      borderRadius: '4px',
+      border: 'none',
     },
     tableRow: {
       padding: '10px 20px',
       cursor: 'pointer',
+      fontSize: '14px',
+      fontFamily: 'Lato',
+      letterSpacing: '0',
+      lineHeight: '24px',
+      border: 'none',
+      borderBottom: '1px solid #A5A5A5',
     },
     tableRowSelected: {
       padding: '10px 20px',
       cursor: 'pointer',
       border: '1px solid gray',
       background: '#F0F0F0',
+      fontSize: '14px',
+      fontFamily: 'Lato',
     },
     buttonContainer: {
       marginTop: '50px',
@@ -66,9 +85,19 @@ const styles = (theme): StyleRules => {
     cancelButton: {
       textDecoration: 'none',
       color: '#2196f3',
+      fontSize: '14px',
+      fontFamily: 'Lato',
     },
     submitButton: {
       backgroundColor: '#2196f3',
+      fontSize: '14px',
+      fontFamily: 'Lato',
+    },
+    headerText: {
+      color: '#202124',
+      fontSize: '16px',
+      letterSpacing: '0',
+      fontFamily: 'Lato',
     },
   };
 };
@@ -94,9 +123,9 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   return (
     <div className={classes.root}>
       {selectionType === 'target' ? (
-        <h3>Select Target Database Connection</h3>
+        <h3 className={classes.headerText}>Select Target Database Connection</h3>
       ) : (
-        <h3>Select Source Database Connection</h3>
+        <h3 className={classes.headerText}>Select Source Database Connection</h3>
       )}
       <TextField
         variant="outlined"

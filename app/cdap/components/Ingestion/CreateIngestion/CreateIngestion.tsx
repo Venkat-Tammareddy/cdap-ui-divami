@@ -29,7 +29,7 @@ const styles = (theme): StyleRules => {
     root: {
       height: '100%',
       // overflow: 'hidden',
-      border: '2px solid red',
+      // border: '2px solid red',
     },
     wizardAndContentWrapper: {
       display: 'grid',
@@ -37,7 +37,7 @@ const styles = (theme): StyleRules => {
       gridTemplateRows: '100%',
       height: 'calc(100% - 50px)', // 100% - height of EntityTopPanel
       overflowY: 'hidden',
-      border: '2px solid green',
+      // border: '2px solid green',
     },
     wizard: {
       boxShadow: ' 0px -1px 10px 0.5px gray',

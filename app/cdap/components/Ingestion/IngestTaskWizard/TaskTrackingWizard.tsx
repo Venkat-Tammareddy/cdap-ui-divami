@@ -39,12 +39,18 @@ const styles = (theme): StyleRules => {
 interface ITrackingWizardProps extends WithStyles<typeof styles> {
   steps: any[];
   activeStep;
+  draftConfig;
 }
-const TrackingWizard: React.FC<ITrackingWizardProps> = ({ classes, steps, activeStep }) => {
+const TrackingWizard: React.FC<ITrackingWizardProps> = ({
+  classes,
+  steps,
+  activeStep,
+  draftConfig,
+}) => {
   function getStepContent(step: number) {
     switch (step) {
       case 0:
-        return `oracle-studies-to-bigQuery`;
+        return draftConfig.name;
       case 1:
         return (
           <div>

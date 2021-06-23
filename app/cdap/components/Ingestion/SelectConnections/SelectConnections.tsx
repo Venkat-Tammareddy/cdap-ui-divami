@@ -23,6 +23,7 @@ import TableRow from 'components/Table/TableRow';
 import Table from 'components/Table';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
+import { humanReadableDate } from 'services/helpers';
 
 const styles = (theme): StyleRules => {
   return {
@@ -81,16 +82,17 @@ interface ISelectConnectionsProps extends WithStyles<typeof styles> {
 const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   classes,
   selectionType,
-  connectionsList,
+  connectionsList = [],
   submitConnection,
 }) => {
   const [search, setSearch] = React.useState('');
   const [selectedConnection, setSelectedConnection] = React.useState({});
-  const filteredList = connectionsList.filter(
-    (item) =>
-      item.database.toLowerCase().includes(search.toLowerCase()) ||
-      item.connection.toLowerCase().includes(search.toLowerCase())
-  );
+
+  // const filteredList = connectionsList.filter(
+  //   (item) =>
+  //     item.plugin.properties.referenceName.toLowerCase().includes(search.toLowerCase()) ||
+  //     item.name.toLowerCase().includes(search.toLowerCase())
+  // );
   return (
     <div className={classes.root}>
       {selectionType === 'target' ? (
@@ -123,18 +125,22 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
         </TableHeader>
 
         <TableBody>
-          {filteredList.map((conn) => {
+          {connectionsList.map((conn) => {
             return (
               <TableRow
-                key={conn.database}
+                key={conn.plugin.properties.referenceName}
                 className={
                   selectedConnection === conn ? classes.tableRowSelected : classes.tableRow
                 }
                 onClick={() => setSelectedConnection(conn)}
               >
-                <TableCell>{conn.database}</TableCell>
-                <TableCell>{conn.connection}</TableCell>
-                <TableCell>{conn.dateAndTime}</TableCell>
+                <TableCell>
+                  {conn.connectionType === 'Database'
+                    ? conn.plugin.properties.referenceName
+                    : conn.plugin.properties.project}
+                </TableCell>
+                <TableCell>{conn.name}</TableCell>
+                <TableCell>{humanReadableDate(conn.updatedTimeMillis)}</TableCell>
               </TableRow>
             );
           })}

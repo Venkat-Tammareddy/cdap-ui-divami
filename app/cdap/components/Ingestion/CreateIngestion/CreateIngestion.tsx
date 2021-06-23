@@ -25,6 +25,7 @@ import TaskConfiguration from '../TaskConfiguration/TaskConfiguration';
 import MappingLayout from '../MappingLayout/MappingLayout';
 import uuidV4 from 'uuid/v4';
 import { MyPipelineApi } from 'api/pipeline';
+import { ConnectionsApi } from 'api/connections';
 import NamespaceStore from 'services/NamespaceStore';
 
 const styles = (theme): StyleRules => {
@@ -52,7 +53,8 @@ interface ICreateIngestionProps extends WithStyles<typeof styles> {
 }
 const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
-  const [draftId, setDraftId] = React.useState(uuidV4());
+  const [connections, setConnections] = React.useState([]);
+  const [draftId] = React.useState(uuidV4());
   const [draftConfig, setDraftConfig] = React.useState({
     artifact: {
       name: 'cdap-data-pipeline',
@@ -91,6 +93,19 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   });
   const isFirstRun = React.useRef(true);
   React.useEffect(() => {
+    ConnectionsApi.listConnections({
+      context: currentNamespace,
+    }).subscribe(
+      (message) => {
+        console.log('connections', message);
+        setConnections(message);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }, []);
+  React.useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       return;
@@ -121,58 +136,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     'Task Configuration',
   ];
   const [activeStep, setActiveStep] = React.useState(0);
-  const connections = [
-    {
-      database: 'mydataset',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'alpha',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'bravo',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'charlie',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'delta',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'tony_stark',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'thor',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'iron_man',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'captain_america',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'spider_man',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-  ];
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -269,7 +232,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       <EntityTopPanel title="Create Ingestion Task" />
       <div className={classes.wizardAndContentWrapper}>
         <div className={classes.wizard}>
-          <TaskTrackingWizard steps={steps} activeStep={activeStep} />
+          <TaskTrackingWizard steps={steps} activeStep={activeStep} draftConfig={draftConfig} />
         </div>
         <div className={classes.content}>{Content()}</div>
       </div>

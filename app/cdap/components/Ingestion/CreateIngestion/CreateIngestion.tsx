@@ -23,13 +23,19 @@ import TaskDetails from '../TaskDetails/TaskDetails';
 import SelectConnections from '../SelectConnections/SelectConnections';
 import TaskConfiguration from '../TaskConfiguration/TaskConfiguration';
 import MappingLayout from '../MappingLayout/MappingLayout';
+import uuidV4 from 'uuid/v4';
+import { MyPipelineApi } from 'api/pipeline';
+import NamespaceStore from 'services/NamespaceStore';
 
 const styles = (theme): StyleRules => {
   return {
     root: {
       height: '100%',
       // overflow: 'hidden',
+<<<<<<< HEAD
       // border: '2px solid red',
+=======
+>>>>>>> 2e540c57f629e80737cea7582fb757f34b53b63a
     },
     wizardAndContentWrapper: {
       display: 'grid',
@@ -37,7 +43,10 @@ const styles = (theme): StyleRules => {
       gridTemplateRows: '100%',
       height: 'calc(100% - 50px)', // 100% - height of EntityTopPanel
       overflowY: 'hidden',
+<<<<<<< HEAD
       // border: '2px solid green',
+=======
+>>>>>>> 2e540c57f629e80737cea7582fb757f34b53b63a
     },
     wizard: {
       boxShadow: ' 0px -1px 10px 0.5px gray',
@@ -50,6 +59,68 @@ interface ICreateIngestionProps extends WithStyles<typeof styles> {
   test: string;
 }
 const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
+  const currentNamespace = NamespaceStore.getState().selectedNamespace;
+  const [draftId, setDraftId] = React.useState(uuidV4());
+  const [draftConfig, setDraftConfig] = React.useState({
+    artifact: {
+      name: 'cdap-data-pipeline',
+      version: '6.5.0-SNAPSHOT',
+      scope: 'SYSTEM',
+      label: 'Data Pipeline - Batch',
+    },
+    __ui__: {
+      nodes: [],
+    },
+    name: '',
+    description: '',
+    config: {
+      resources: {
+        memoryMB: 2048,
+        virtualCores: 1,
+      },
+      driverResources: {
+        memoryMB: 2048,
+        virtualCores: 1,
+      },
+      connections: [],
+      comments: [],
+      postActions: [],
+      properties: {},
+      processTimingEnabled: true,
+      stageLoggingEnabled: false,
+      pushdownEnabled: false,
+      transformationPushdown: null,
+      stages: [],
+      schedule: '0 * * * *',
+      engine: 'spark',
+      numOfRecordsPreview: 100,
+      maxConcurrentRuns: 1,
+    },
+  });
+  const isFirstRun = React.useRef(true);
+  React.useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+    submitDraft();
+  }, [draftConfig]);
+  const submitDraft = () => {
+    MyPipelineApi.saveDraft(
+      {
+        context: currentNamespace,
+        draftId,
+      },
+      draftConfig
+    ).subscribe(
+      (message) => {
+        console.log('draft', message);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
   const steps = [
     'Task Details',
     'Source Connection',
@@ -126,7 +197,14 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       case 0:
         return (
           <TaskDetails
-            submitValues={(details) => {
+            submitValues={(details: any) => {
+              setDraftConfig((prevDraftConfig) => {
+                return {
+                  ...prevDraftConfig,
+                  name: details.taskName,
+                  description: details.taskDescription,
+                };
+              });
               console.log(details);
               handleNext();
             }}

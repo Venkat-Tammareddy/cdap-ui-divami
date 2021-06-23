@@ -33,6 +33,38 @@ const styles = (theme): StyleRules => {
     resetContainer: {
       padding: theme.spacing(3),
     },
+    icon: {
+      '& .MuiStepIcon-text': {
+        fontSize: '14px',
+        fontFamily: 'Lato',
+        fill: '#78909C',
+      },
+      color: '#FFFFFF',
+      height: '30px',
+      width: '30px',
+      border: '1px solid #78909c',
+      borderRadius: '50%',
+      '&$activeIcon': {
+        '& .MuiStepIcon-text': {
+          fontSize: '16px',
+          fontFamily: 'Lato',
+          fill: '#FFFFFF',
+        },
+        color: '#4285F4',
+        border: '1px solid #4285F4',
+        borderRadius: '50%',
+        height: '38px',
+        width: '38px',
+        padding: '4px',
+        fontSize: '14px',
+        letterSpacing: '0',
+      },
+      '&$completedIcon': {
+        color: 'green',
+      },
+    },
+    activeIcon: {},
+    completedIcon: {},
   };
 };
 
@@ -69,13 +101,31 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
         return;
     }
   }
-
+  const myimg = '/cdap_assets/img/stepperIcon.svg';
+  const iconn = () => {
+    return (
+      <div>
+        <img src={myimg} alt="hehe" height="30px" width="30px" />
+      </div>
+    );
+  };
   return (
     <div className={classes.root}>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map((label, index) => (
           <Step key={label} expanded={index < activeStep}>
-            <StepLabel>{label}</StepLabel>
+            <StepLabel
+              StepIconProps={{
+                classes: {
+                  root: classes.icon,
+                  active: classes.activeIcon,
+                  completed: classes.completedIcon,
+                },
+              }}
+              StepIconComponent={index < activeStep && iconn}
+            >
+              {label}
+            </StepLabel>
             <StepContent>
               <Typography component={'span'}>{getStepContent(index)}</Typography>
             </StepContent>

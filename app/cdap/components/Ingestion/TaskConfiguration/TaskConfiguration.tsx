@@ -16,17 +16,28 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Button, Radio } from '@material-ui/core';
+import { Button, Radio, Typography } from '@material-ui/core';
 import { RadioGroup } from '@material-ui/core';
 import { FormControlLabel } from '@material-ui/core';
 import { FormLabel } from '@material-ui/core';
 
 const styles = (): StyleRules => {
   return {
-    root: {},
+    root: {
+      borderRadius: 3,
+      height: 'calc(100% - 100px)', // margin
+      margin: '50px',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    radio: {
+      '&$checked': {
+        color: '#018786',
+      },
+    },
+    checked: {},
     radioContainer: {
-      marginTop: '10%',
-      marginLeft: '20%',
+      flex: '1 1 0%',
     },
     logSection: {
       marginTop: '3%',
@@ -35,13 +46,52 @@ const styles = (): StyleRules => {
       marginTop: '4%',
     },
     buttonContainer: {
-      marginTop: '5%',
-      marginLeft: '30%',
+      // marginTop: '5%',
+      // marginLeft: '30%',
+      // display: 'flex',
+      // gap: '50px',
       display: 'flex',
       gap: '50px',
+      alignItems: 'end',
+      justifyContent: 'flex-end',
     },
     submitButton: {
-      backgroundColor: '#2196f3',
+      textDecoration: 'none',
+      backgroundColor: '#4285F4',
+      outline: 'none',
+      fontSize: '14px',
+      letterSpacing: '1.25px',
+      lineHeight: '24px',
+      fontFamily: 'Lato',
+    },
+    headerText: {
+      fontFamily: 'Lato',
+      fontSize: '20px',
+      color: '#202124',
+      letterSpacing: '0px',
+    },
+    labelText: {
+      fontFamily: 'Lato',
+      fontSize: '16px',
+      color: '#202124',
+      letterSpacing: '0.15px',
+      lineHeight: '24px',
+    },
+    choices: {
+      fontFamily: 'Lato',
+      fontSize: '16px',
+      color: '#202124',
+      letterSpacing: '0.15px',
+      lineHeight: '24px',
+    },
+    cancelButton: {
+      textDecoration: 'none',
+      color: '#4285F4;',
+      outline: 'none',
+      fontSize: '14px',
+      letterSpacing: '1.25px',
+      lineHeight: '24px',
+      fontFamily: 'Lato',
     },
   };
 };
@@ -59,32 +109,60 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
   return (
     <div className={classes.root}>
       <form className={classes.radioContainer} onSubmit={handleSubmit}>
-        <p>Enter Configuration details</p>
+        <p className={classes.headerText}>Enter Configuration details</p>
         <div className={classes.logSection}>
-          <FormLabel>Do you like to log data errors during data ingestion?</FormLabel>
+          <FormLabel className={classes.labelText}>
+            Do you like to log data errors during data ingestion?
+          </FormLabel>
           <RadioGroup row value={logErrors} onChange={(e) => setLogErrors(e.target.value)}>
-            <FormControlLabel control={<Radio />} value="Yes" label="Yes" />
-            <FormControlLabel control={<Radio />} value="No" label="No" />
+            <FormControlLabel
+              control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
+              value="Yes"
+              label={<Typography className={classes.choices}>Yes</Typography>}
+              className={classes.choices}
+            />
+            <FormControlLabel
+              control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
+              value="No"
+              label={<Typography className={classes.choices}>No</Typography>}
+              className={classes.choices}
+            />
           </RadioGroup>
         </div>
 
         <div className={classes.preferencesSection}>
-          <FormLabel>Do you have a preference for data ingesting?</FormLabel>
-          <RadioGroup value={logPreferences} onChange={(e) => setLogPreferences(e.target.value)}>
+          <FormLabel className={classes.labelText}>
+            Do you have a preference for data ingesting?
+          </FormLabel>
+          <RadioGroup
+            row
+            value={logPreferences}
+            onChange={(e) => setLogPreferences(e.target.value)}
+          >
             <FormControlLabel
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
               value="Replace"
-              label="Replace all old records with the new ones"
+              label={
+                <Typography className={classes.choices}>
+                  Replace all old records with the new ones
+                </Typography>
+              }
+              className={classes.choices}
             />
             <FormControlLabel
-              control={<Radio />}
+              control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
               value="insertNew"
-              label="Only insert new and updated records"
+              label={
+                <Typography className={classes.choices}>
+                  Only insert new and updated records
+                </Typography>
+              }
+              className={classes.choices}
             />
           </RadioGroup>
         </div>
         <div className={classes.buttonContainer}>
-          <Button>Cancel</Button>
+          <Button className={classes.cancelButton}>Cancel</Button>
           <Button
             variant="contained"
             color="primary"

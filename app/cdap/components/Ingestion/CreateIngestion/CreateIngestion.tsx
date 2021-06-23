@@ -32,7 +32,6 @@ const styles = (theme): StyleRules => {
   return {
     root: {
       height: '100%',
-      // overflow: 'hidden',
     },
     wizardAndContentWrapper: {
       display: 'grid',

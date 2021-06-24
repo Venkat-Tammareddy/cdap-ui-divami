@@ -94,10 +94,12 @@ const styles = (): StyleRules => {
       color: '#666666',
       fontSize: '12px',
       letterSpacing: '0.19px',
+      marginTop: '5px',
     },
     errorInputInfo: {
       color: 'red',
       fontFamily: 'Lato',
+      marginTop: '5px',
     },
   };
 };

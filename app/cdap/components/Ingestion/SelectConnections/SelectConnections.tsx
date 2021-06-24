@@ -41,6 +41,9 @@ const styles = (theme): StyleRules => {
     },
     resize: {
       fontSize: '15px',
+      '&::placeholder': {
+        fontFamily: 'Lato',
+      },
     },
     tableWrapper: {
       marginTop: '20px',
@@ -58,6 +61,7 @@ const styles = (theme): StyleRules => {
       backgroundColor: '#e2e9f4',
       borderRadius: '4px',
       border: 'none',
+      height: '40px',
     },
     tableRow: {
       padding: '10px 20px',
@@ -99,6 +103,7 @@ const styles = (theme): StyleRules => {
       fontSize: '16px',
       letterSpacing: '0',
       fontFamily: 'Lato',
+      lineHeight: '24px',
     },
   };
 };
@@ -148,9 +153,9 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
       <Table columnTemplate="2fr 1fr 1fr">
         <TableHeader>
           <TableRow className={classes.header}>
-            <TableCell>Database</TableCell>
-            <TableCell>Connection</TableCell>
-            <TableCell>Last used on</TableCell>
+            <TableCell>Database Name</TableCell>
+            <TableCell>Connection Name</TableCell>
+            <TableCell>Last Used On</TableCell>
           </TableRow>
         </TableHeader>
 

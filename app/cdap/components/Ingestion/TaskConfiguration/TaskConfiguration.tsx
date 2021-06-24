@@ -20,6 +20,7 @@ import { Button, Radio, Typography } from '@material-ui/core';
 import { RadioGroup } from '@material-ui/core';
 import { FormControlLabel } from '@material-ui/core';
 import { FormLabel } from '@material-ui/core';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 const styles = (): StyleRules => {
   return {
@@ -36,14 +37,17 @@ const styles = (): StyleRules => {
       },
     },
     checked: {},
-    radioContainer: {
-      flex: '1 1 0%',
-    },
+    radioContainer: { flex: '1 1 0%' },
     logSection: {
-      marginTop: '3%',
+      marginTop: '28px',
+    },
+    configOptions: {
+      flex: '1 1 0%',
+      display: 'flex',
+      flexDirection: 'column',
     },
     preferencesSection: {
-      marginTop: '4%',
+      marginTop: '38px',
     },
     buttonContainer: {
       // marginTop: '5%',
@@ -69,6 +73,7 @@ const styles = (): StyleRules => {
       fontSize: '20px',
       color: '#202124',
       letterSpacing: '0px',
+      margin: '0',
     },
     labelText: {
       fontFamily: 'Lato',
@@ -107,13 +112,14 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
     console.log('log preferences value: ' + logPreferences);
   };
   return (
-    <div className={classes.root}>
-      <form className={classes.radioContainer} onSubmit={handleSubmit}>
+    <form className={classes.root} onSubmit={handleSubmit}>
+      <div className={classes.configOptions}>
         <p className={classes.headerText}>Enter Configuration details</p>
         <div className={classes.logSection}>
           <FormLabel className={classes.labelText}>
             Do you like to log data errors during data ingestion?
           </FormLabel>
+          <InfoOutlinedIcon />
           <RadioGroup row value={logErrors} onChange={(e) => setLogErrors(e.target.value)}>
             <FormControlLabel
               control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
@@ -134,6 +140,7 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
           <FormLabel className={classes.labelText}>
             Do you have a preference for data ingesting?
           </FormLabel>
+          <InfoOutlinedIcon />
           <RadioGroup
             row
             value={logPreferences}
@@ -161,19 +168,15 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
             />
           </RadioGroup>
         </div>
-        <div className={classes.buttonContainer}>
-          <Button className={classes.cancelButton}>Cancel</Button>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            className={classes.submitButton}
-          >
-            Deploy
-          </Button>
-        </div>
-      </form>
-    </div>
+      </div>
+
+      <div className={classes.buttonContainer}>
+        <Button className={classes.cancelButton}>Cancel</Button>
+        <Button variant="contained" color="primary" type="submit" className={classes.submitButton}>
+          Deploy
+        </Button>
+      </div>
+    </form>
   );
 };
 

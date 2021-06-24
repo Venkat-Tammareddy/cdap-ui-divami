@@ -22,11 +22,12 @@ const styles = (): StyleRules => {
   return {
     root: {
       margin: '50px',
+      height: 'calc(100% - 100px)',
       display: 'flex',
       flexDirection: 'column',
     },
     container: {
-      padding: '10px',
+      // padding: '10px',
       flex: '1 1 0%',
     },
     successMsg: {
@@ -62,7 +63,7 @@ const styles = (): StyleRules => {
       alignItems: 'center',
       // marginTop: '60px',
       // marginLeft: '25px',
-      padding: '20px',
+      padding: '10px',
     },
     mappingIcons: {
       '& .MappingView - mappingIcons - 650': {},
@@ -86,7 +87,6 @@ const styles = (): StyleRules => {
       gap: '50px',
       alignItems: 'center',
       justifyContent: 'flex-end',
-      marginTop: '40%',
     },
     cancelButton: {
       color: '#4285F4;',
@@ -108,27 +108,30 @@ const styles = (): StyleRules => {
       fontSize: '14px',
     },
     labelText: {
-      color: 'red',
-      padding: '0',
+      fontSize: '20px',
+      fontFamily: 'Lato',
+      letterSpacing: '0',
+      color: '#202124;',
+      marginBottom: '0',
     },
     descriptionContainer: {
       padding: '0px',
+      display: 'flex',
+      fontSize: '14px',
+      color: '#666666',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: '10px',
     },
   };
 };
 
 interface IIngestionProps extends WithStyles<typeof styles> {
-  submitMappingType: (values: object) => void;
+  submitMappingType: (values: string) => void;
 }
 const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType }) => {
-  const [cardSelected, setSelected] = React.useState({ cardType: '' });
-  const handleClick = (e: any) => {
-    if (e.target.textContent[0] === 'S') {
-      setSelected({ cardType: 'All' });
-    } else {
-      setSelected({ cardType: 'Custom' });
-    }
-  };
+  const [cardSelected, setSelected] = React.useState('none');
 
   const submitMapping = () => {
     submitMappingType(cardSelected);
@@ -146,18 +149,18 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType }) 
         <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
         <div className={classes.mappingTypes}>
           <Card
-            className={cardSelected.cardType === 'All' ? classes.selectedCard : classes.mappingCard}
+            className={cardSelected === 'All' ? classes.selectedCard : classes.mappingCard}
             variant="outlined"
-            onClick={handleClick}
+            onClick={() => {
+              setSelected('All');
+            }}
           >
             <div className={classes.mappingInfo}>
               <img className={classes.mappingIcons} src={allTables} alt="some text" />
               <CardContent className={classes.label}>
-                <Typography gutterBottom variant="h6" component="h6" className={classes.labelText}>
-                  Select all tables & columns
-                </Typography>
+                <p className={classes.labelText}>Select all tables & columns</p>
               </CardContent>
-              <CardContent>
+              <CardContent className={classes.descriptionContainer}>
                 <Typography
                   variant="body2"
                   color="textSecondary"
@@ -178,18 +181,16 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType }) 
             </div>
           </Card>
           <Card
-            className={
-              cardSelected.cardType === 'Custom' ? classes.selectedCard : classes.mappingCard
-            }
+            className={cardSelected === 'Custom' ? classes.selectedCard : classes.mappingCard}
             variant="outlined"
-            onClick={handleClick}
+            onClick={() => {
+              setSelected('Custom');
+            }}
           >
             <div className={classes.mappingInfo}>
               <img src={customTable} className={classes.mappingIcons} alt="some icon" />
               <CardContent className={classes.label}>
-                <Typography gutterBottom variant="h6" component="h6" className={classes.labelText}>
-                  Custom selection of table & columns
-                </Typography>
+                <p className={classes.labelText}>Custom selection of table & columns</p>
               </CardContent>
               <CardContent className={classes.descriptionContainer}>
                 <Typography

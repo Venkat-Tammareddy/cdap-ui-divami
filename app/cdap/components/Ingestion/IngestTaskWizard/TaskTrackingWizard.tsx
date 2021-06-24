@@ -17,11 +17,15 @@
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import { Step, StepContent, StepLabel, Stepper, Typography } from '@material-ui/core';
+import { StepConnector } from '@material-ui/core';
 
 const styles = (theme): StyleRules => {
   return {
     root: {
       height: '100%',
+      '& .MuiStepContent-root': {
+        borderLeft: '1px solid green',
+      },
     },
     button: {
       marginTop: theme.spacing(1),
@@ -105,13 +109,36 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
   const iconn = () => {
     return (
       <div>
-        <img src={myimg} alt="hehe" height="30px" width="30px" />
+        <img src={myimg} alt="img" height="30px" width="30px" />
       </div>
     );
   };
+
+  const QontoConnector = withStyles({
+    alternativeLabel: {
+      top: 10,
+      left: 'calc(-50% + 16px)',
+      right: 'calc(50% + 16px)',
+    },
+    active: {
+      '& $line': {
+        borderColor: '#4285F4',
+      },
+    },
+    completed: {
+      '& $line': {
+        borderColor: 'green',
+      },
+    },
+    line: {
+      borderColor: 'green',
+      borderTopWidth: 3,
+      borderRadius: 1,
+    },
+  })(StepConnector);
   return (
     <div className={classes.root}>
-      <Stepper activeStep={activeStep} orientation="vertical">
+      <Stepper activeStep={activeStep} orientation="vertical" connector={<QontoConnector />}>
         {steps.map((label, index) => (
           <Step key={label} expanded={index < activeStep}>
             <StepLabel

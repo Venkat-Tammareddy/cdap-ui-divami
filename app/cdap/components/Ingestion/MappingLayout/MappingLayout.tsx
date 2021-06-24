@@ -109,7 +109,6 @@ const styles = (): StyleRules => {
       fontSize: '14px',
     },
     labelText: {
-      color: 'red',
       padding: '0',
     },
     descriptionContainer: {

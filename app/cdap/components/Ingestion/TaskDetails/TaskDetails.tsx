@@ -132,7 +132,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues })
     const tagString = `${taskTags}`;
     let tagName = '';
     for (let i = 0; i < tagString.length; i++) {
-      if (tagString[i] == ',') {
+      if (tagString[i] === ',') {
         arr.push(tagName);
         tagName = '';
       }
@@ -160,12 +160,10 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues })
           'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)';
       }
     }
-
     setTaskNameError(taskNameError);
     setTaskName(inputValue.value);
   };
 
-  const tempTags = '';
   const handleTagsChange = (e: React.FormEvent) => {
     const tags = e.target as HTMLInputElement;
     setTaskTags(tags.value);
@@ -213,7 +211,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues })
           onChange={handleTagsChange}
           error={taskTagError.error}
         />
-        {/* <TextField name="tags" value={taskTags} variant="outlined" onChange={handleTagsChange} /> */}
+        <p className={classes.inputInfo}>{taskTagError.errorMsg}</p>
       </div>
       <div className={classes.buttonContainer}>
         <Button className={classes.cancelButton}>CANCEL</Button>

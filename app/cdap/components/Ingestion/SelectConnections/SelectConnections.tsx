@@ -117,11 +117,12 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const [search, setSearch] = React.useState('');
   const [selectedConnection, setSelectedConnection] = React.useState({});
 
-  // const filteredList = connectionsList.filter(
-  //   (item) =>
-  //     item.plugin.properties.referenceName.toLowerCase().includes(search.toLowerCase()) ||
-  //     item.name.toLowerCase().includes(search.toLowerCase())
-  // );
+  const filteredList = connectionsList.filter(
+    (item) =>
+      item.plugin.properties.referenceName?.toLowerCase().includes(search.toLowerCase()) ||
+      item.name.toLowerCase().includes(search.toLowerCase()) ||
+      item.plugin.properties.project?.toLowerCase().includes(search.toLowerCase())
+  );
   return (
     <div className={classes.root}>
       {selectionType === 'target' ? (
@@ -154,10 +155,10 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
         </TableHeader>
 
         <TableBody>
-          {connectionsList.map((conn) => {
+          {filteredList.map((conn, index) => {
             return (
               <TableRow
-                key={conn.plugin.properties.referenceName}
+                key={index}
                 className={
                   selectedConnection === conn ? classes.tableRowSelected : classes.tableRow
                 }
@@ -169,7 +170,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
                     : conn.plugin.properties.project}
                 </TableCell>
                 <TableCell>{conn.name}</TableCell>
-                <TableCell>{humanReadableDate(conn.updatedTimeMillis)}</TableCell>
+                <TableCell>{humanReadableDate(conn.updatedTimeMillis, true)}</TableCell>
               </TableRow>
             );
           })}

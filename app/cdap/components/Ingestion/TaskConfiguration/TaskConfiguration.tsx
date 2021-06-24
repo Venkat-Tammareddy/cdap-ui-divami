@@ -20,6 +20,7 @@ import { Button, Radio, Typography } from '@material-ui/core';
 import { RadioGroup } from '@material-ui/core';
 import { FormControlLabel } from '@material-ui/core';
 import { FormLabel } from '@material-ui/core';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 const styles = (): StyleRules => {
   return {
@@ -36,9 +37,7 @@ const styles = (): StyleRules => {
       },
     },
     checked: {},
-    radioContainer: {
-      flex: '1 1 0%',
-    },
+    radioContainer: {},
     logSection: {
       marginTop: '3%',
     },
@@ -54,6 +53,7 @@ const styles = (): StyleRules => {
       gap: '50px',
       alignItems: 'end',
       justifyContent: 'flex-end',
+      marginTop: '23%',
     },
     submitButton: {
       textDecoration: 'none',
@@ -114,6 +114,7 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
           <FormLabel className={classes.labelText}>
             Do you like to log data errors during data ingestion?
           </FormLabel>
+          <InfoOutlinedIcon />
           <RadioGroup row value={logErrors} onChange={(e) => setLogErrors(e.target.value)}>
             <FormControlLabel
               control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
@@ -134,6 +135,7 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
           <FormLabel className={classes.labelText}>
             Do you have a preference for data ingesting?
           </FormLabel>
+          <InfoOutlinedIcon />
           <RadioGroup
             row
             value={logPreferences}

@@ -86,7 +86,8 @@ const styles = (): StyleRules => {
       gap: '50px',
       alignItems: 'center',
       justifyContent: 'flex-end',
-      marginTop: '40%',
+      marginTop: '23%',
+      marginLeft: '10%',
     },
     cancelButton: {
       color: '#4285F4;',

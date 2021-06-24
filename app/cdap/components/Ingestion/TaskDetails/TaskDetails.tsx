@@ -11,17 +11,22 @@ const styles = (): StyleRules => {
       margin: '50px',
       display: 'flex',
       flexDirection: 'column',
-      '& .MuiFormLabel-root': {
-        color: '#202124',
-        fontSize: '16px', // or black
-      },
+      // '& .MuiFormLabel-root': {
+      //   color: '#202124',
+      //   fontSize: '16px', // or black
+      // },
+    },
+    label: {
+      fontSize: '16px',
+      color: '#202124 ',
+      letterSpacing: '0.25px',
     },
     headerText: {
       fontFamily: 'Lato',
       fontSize: '20px',
       letterSpacing: '0',
       color: '#202124',
-      height: '24px',
+      lineHeight: '24px',
     },
     textFields: {
       display: 'flex',
@@ -30,7 +35,8 @@ const styles = (): StyleRules => {
     },
     taskName: {
       marginTop: '20px',
-      width: 500,
+      width: '500px',
+      height: '56px',
       '& .MuiFormHelperText-root': {
         color: 'red',
       },
@@ -42,8 +48,8 @@ const styles = (): StyleRules => {
       },
     },
     taskDescription: {
-      width: 500,
-      marginTop: '20px',
+      width: '500px',
+      marginTop: '28px',
       borderRadius: '4px',
       '& label.Mui-focused': {
         color: '#4285F4',
@@ -53,8 +59,9 @@ const styles = (): StyleRules => {
       },
     },
     taskTags: {
-      marginTop: '20px',
-      width: 500,
+      marginTop: '28px',
+      width: '500px',
+      height: '56px',
       '& label.Mui-focused': {
         color: '#4285F4',
         fontSize: '12px',
@@ -63,7 +70,7 @@ const styles = (): StyleRules => {
       },
     },
     resize: {
-      fontSize: '15px',
+      height: '113px',
     },
     buttonContainer: {
       display: 'flex',
@@ -93,13 +100,21 @@ const styles = (): StyleRules => {
     inputInfo: {
       color: '#666666',
       fontSize: '12px',
+      height: '15px',
       letterSpacing: '0.19px',
       marginTop: '5px',
     },
     errorInputInfo: {
       color: 'red',
       fontFamily: 'Lato',
-      marginTop: '5px',
+      marginTop: '10px',
+    },
+    tagInfo: {
+      marginTop: '10px',
+      height: '15px',
+      letterSpacing: '0.19px',
+      fontSize: '12px',
+      color: '#666666',
     },
   };
 };
@@ -175,7 +190,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues })
 
   return (
     <form onSubmit={handleSubmit} className={classes.root}>
-      <h3 className={classes.headerText}>Enter Task Details</h3>
+      <p className={classes.headerText}>Enter Task Details</p>
       <div className={classes.textFields}>
         <TextField
           required
@@ -187,9 +202,9 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues })
           variant="outlined"
           onChange={handleTaskNameChange}
           error={taskNameError.error}
-          InputProps={{
+          InputLabelProps={{
             classes: {
-              input: classes.resize,
+              root: classes.label,
             },
           }}
         />
@@ -201,6 +216,16 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues })
           onChange={(e) => setTaskDescription(e.target.value)}
           value={taskDescription}
           label="Description"
+          InputProps={{
+            classes: {
+              input: classes.resize,
+            },
+          }}
+          InputLabelProps={{
+            classes: {
+              root: classes.label,
+            },
+          }}
           className={classes.taskDescription}
           multiline={true}
           rows={5}
@@ -214,8 +239,13 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues })
           className={classes.taskTags}
           onChange={handleTagsChange}
           error={taskTagError.error}
+          InputLabelProps={{
+            classes: {
+              root: classes.label,
+            },
+          }}
         />
-        <p className={taskTagError.error ? classes.errorInputInfo : classes.inputInfo}>
+        <p className={taskTagError.error ? classes.tagErrorInfo : classes.tagInfo}>
           {taskTagError.errorMsg}
         </p>
       </div>

@@ -37,12 +37,17 @@ const styles = (): StyleRules => {
       },
     },
     checked: {},
-    radioContainer: {},
+    radioContainer: { flex: '1 1 0%' },
     logSection: {
-      marginTop: '3%',
+      marginTop: '28px',
+    },
+    configOptions: {
+      flex: '1 1 0%',
+      display: 'flex',
+      flexDirection: 'column',
     },
     preferencesSection: {
-      marginTop: '4%',
+      marginTop: '38px',
     },
     buttonContainer: {
       // marginTop: '5%',
@@ -53,7 +58,6 @@ const styles = (): StyleRules => {
       gap: '50px',
       alignItems: 'end',
       justifyContent: 'flex-end',
-      marginTop: '23%',
     },
     submitButton: {
       textDecoration: 'none',
@@ -69,6 +73,7 @@ const styles = (): StyleRules => {
       fontSize: '20px',
       color: '#202124',
       letterSpacing: '0px',
+      margin: '0',
     },
     labelText: {
       fontFamily: 'Lato',
@@ -107,8 +112,8 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
     console.log('log preferences value: ' + logPreferences);
   };
   return (
-    <div className={classes.root}>
-      <form className={classes.radioContainer} onSubmit={handleSubmit}>
+    <form className={classes.root} onSubmit={handleSubmit}>
+      <div className={classes.configOptions}>
         <p className={classes.headerText}>Enter Configuration details</p>
         <div className={classes.logSection}>
           <FormLabel className={classes.labelText}>
@@ -163,19 +168,15 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
             />
           </RadioGroup>
         </div>
-        <div className={classes.buttonContainer}>
-          <Button className={classes.cancelButton}>Cancel</Button>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            className={classes.submitButton}
-          >
-            Deploy
-          </Button>
-        </div>
-      </form>
-    </div>
+      </div>
+
+      <div className={classes.buttonContainer}>
+        <Button className={classes.cancelButton}>Cancel</Button>
+        <Button variant="contained" color="primary" type="submit" className={classes.submitButton}>
+          Deploy
+        </Button>
+      </div>
+    </form>
   );
 };
 

@@ -213,7 +213,9 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues })
           onChange={handleTagsChange}
           error={taskTagError.error}
         />
-        {/* <TextField name="tags" value={taskTags} variant="outlined" onChange={handleTagsChange} /> */}
+        <p className={taskTagError.error ? classes.errorInputInfo : classes.inputInfo}>
+          {taskTagError.errorMsg}
+        </p>
       </div>
       <div className={classes.buttonContainer}>
         <Button className={classes.cancelButton}>CANCEL</Button>

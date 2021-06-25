@@ -19,13 +19,10 @@ import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/wit
 import { EntityTopPanel } from 'components/EntityTopPanel';
 import { Button } from '@material-ui/core';
 import history from 'services/history';
-import Heading, { HeadingTypes } from 'components/Heading';
 import { Route, Switch, NavLink } from 'react-router-dom';
 import ErrorBoundary from 'components/ErrorBoundary';
 import DeployedPipelineView from 'components/PipelineList/DeployedPipelineView';
 import DraftPipelineView from 'components/PipelineList/DraftPipelineView';
-import { Theme } from 'services/ThemeHelper';
-import { getCurrentNamespace } from 'services/NamespaceStore';
 import T from 'i18n-react';
 
 const styles = (theme): StyleRules => {

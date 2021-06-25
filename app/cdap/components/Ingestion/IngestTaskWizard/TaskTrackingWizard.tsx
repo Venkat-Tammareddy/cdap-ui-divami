@@ -26,6 +26,13 @@ const styles = (theme): StyleRules => {
       '& .MuiStepContent-root': {
         borderLeft: '1px solid green',
       },
+      '& .MuiStepLabel-label': {
+        fontSize: '16px',
+        fontFamily: 'Lato',
+        color: '#202124',
+        letterSpacing: '0',
+        lineHeight: '24px',
+      },
     },
     button: {
       marginTop: theme.spacing(1),
@@ -51,7 +58,7 @@ const styles = (theme): StyleRules => {
       '&$activeIcon': {
         '& .MuiStepIcon-text': {
           fontSize: '16px',
-          fontFamily: 'Lato',
+          fontFamily: 'Lato ',
           fill: '#FFFFFF',
         },
         color: '#4285F4',
@@ -142,6 +149,8 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
         {steps.map((label, index) => (
           <Step key={label} expanded={index < activeStep}>
             <StepLabel
+              onClick={() => console.log(index)}
+              className={classes.label}
               StepIconProps={{
                 classes: {
                   root: classes.icon,

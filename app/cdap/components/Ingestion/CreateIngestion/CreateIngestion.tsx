@@ -165,7 +165,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     'Source Connection',
     'Target Connection',
     'Target Mapping',
-    'Task Configuration',
+    'Configuration',
   ];
   const [activeStep, setActiveStep] = React.useState(0);
   const handleNext = () => {
@@ -193,6 +193,9 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                 };
               });
               handleNext();
+            }}
+            handleCancel={(cancelEvent: any) => {
+              console.log(cancelEvent);
             }}
           />
         );
@@ -243,6 +246,9 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               console.log(draftConfig);
               handleNext();
             }}
+            handleCancel={(cancelEvent: any) => {
+              console.log(cancelEvent);
+            }}
           />
         );
       case 2:
@@ -291,6 +297,9 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               });
               handleNext();
             }}
+            handleCancel={(cancelEvent: any) => {
+              console.log(cancelEvent);
+            }}
           />
         );
       case 3:
@@ -299,6 +308,9 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
             submitMappingType={(mappingType) => {
               console.log(mappingType);
               handleNext();
+            }}
+            handleCancel={(cancelEvent: any) => {
+              console.log(cancelEvent);
             }}
           />
         );

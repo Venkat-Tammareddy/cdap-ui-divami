@@ -28,7 +28,7 @@ import { humanReadableDate } from 'services/helpers';
 const styles = (theme): StyleRules => {
   return {
     root: {
-      margin: '50px 50px',
+      margin: '40px 40px',
       height: 'calc(100% - 100px)', // margin
       display: 'flex',
       flexDirection: 'column',
@@ -36,7 +36,7 @@ const styles = (theme): StyleRules => {
     },
     search: {
       width: '100%',
-      marginTop: '10px',
+      marginTop: '20px',
       marginBottom: '20px',
     },
     resize: {
@@ -71,7 +71,7 @@ const styles = (theme): StyleRules => {
       letterSpacing: '0',
       lineHeight: '24px',
       border: 'none',
-      borderBottom: '1px solid #A5A5A5',
+      borderBottom: '1px solid #DFDFDF',
     },
     tableRowSelected: {
       padding: '10px 20px',
@@ -89,12 +89,17 @@ const styles = (theme): StyleRules => {
     },
     cancelButton: {
       textDecoration: 'none',
-      color: '#2196f3',
+      color: '#4285F4;',
+      outline: 'none',
       fontSize: '14px',
+      letterSpacing: '1.25px',
+      lineHeight: '24px',
       fontFamily: 'Lato',
     },
     submitButton: {
-      backgroundColor: '#2196f3',
+      backgroundColor: '#4285F4',
+      letterSpacing: '1.25px',
+      lineHeight: '24px',
       fontSize: '14px',
       fontFamily: 'Lato',
     },
@@ -104,6 +109,7 @@ const styles = (theme): StyleRules => {
       letterSpacing: '0',
       fontFamily: 'Lato',
       lineHeight: '24px',
+      marginBottom: '0px',
     },
   };
 };
@@ -112,12 +118,15 @@ interface ISelectConnectionsProps extends WithStyles<typeof styles> {
   selectionType: string;
   connectionsList: any[];
   submitConnection: (value: object) => void;
+  handleCancel: (value: object) => void;
 }
+
 const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   classes,
   selectionType,
   connectionsList = [],
   submitConnection,
+  handleCancel,
 }) => {
   const [search, setSearch] = React.useState('');
   const [selectedConnection, setSelectedConnection] = React.useState({});
@@ -128,6 +137,10 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
       item.name.toLowerCase().includes(search.toLowerCase()) ||
       item.plugin.properties.project?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const onCancel = (e: React.FormEvent) => {
+    handleCancel({ name: 'cancel' });
+  };
   return (
     <div className={classes.root}>
       {selectionType === 'target' ? (
@@ -194,7 +207,9 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
         >
           CONTINUE
         </Button>
-        <Button className={classes.cancelButton}>CANCEL</Button>
+        <Button className={classes.cancelButton} onClick={onCancel}>
+          CANCEL
+        </Button>
       </div>
     </div>
   );

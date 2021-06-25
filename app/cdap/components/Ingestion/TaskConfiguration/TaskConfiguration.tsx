@@ -27,7 +27,7 @@ const styles = (): StyleRules => {
     root: {
       borderRadius: 3,
       height: 'calc(100% - 100px)', // margin
-      margin: '50px',
+      margin: '40px 40px',
       display: 'flex',
       flexDirection: 'column',
     },

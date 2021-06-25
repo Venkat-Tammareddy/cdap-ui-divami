@@ -21,7 +21,7 @@ import { Card, CardContent, Typography, CardActions, Button } from '@material-ui
 const styles = (): StyleRules => {
   return {
     root: {
-      margin: '50px',
+      margin: '40px 40px',
       height: 'calc(100% - 100px)',
       display: 'flex',
       flexDirection: 'column',
@@ -85,6 +85,7 @@ const styles = (): StyleRules => {
       display: 'flex',
       flexDirection: 'row',
       gap: '50px',
+      marginTop: '50px',
       alignItems: 'center',
       justifyContent: 'flex-end',
     },
@@ -124,26 +125,39 @@ const styles = (): StyleRules => {
       alignItems: 'center',
       marginTop: '10px',
     },
+    successIcon: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    successMsgText: {
+      marginLeft: '10px',
+    },
   };
 };
 
 interface IIngestionProps extends WithStyles<typeof styles> {
   submitMappingType: (values: string) => void;
+  handleCancel: (value: object) => void;
 }
-const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType }) => {
+const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, handleCancel }) => {
   const [cardSelected, setSelected] = React.useState('none');
 
   const submitMapping = () => {
     submitMappingType(cardSelected);
   };
 
+  const onCancel = (e: React.FormEvent) => {
+    handleCancel({ name: 'cancel' });
+  };
+
   const allTables = '/cdap_assets/img/select-all-tables-infographic.svg';
   const customTable = '/cdap_assets/img/custom-selection-table-infographic.svg';
-
+  const successMsgIcon = '/cdap_assets/img/success-state-tick.svg';
   return (
     <div className={classes.root}>
       <div className={classes.container}>
         <div className={classes.successMsg}>
+          <img src={successMsgIcon} className={classes.successIcon} alt="success icon" />
           <p className={classes.successMsgText}>Successfully connected to the Studies database</p>
         </div>
         <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
@@ -215,7 +229,9 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType }) 
         </div>
       </div>
       <div className={classes.buttonContainer}>
-        <Button className={classes.cancelButton}>CANCEL</Button>
+        <Button className={classes.cancelButton} onClick={onCancel}>
+          CANCEL
+        </Button>
         <Button
           variant="contained"
           color="primary"

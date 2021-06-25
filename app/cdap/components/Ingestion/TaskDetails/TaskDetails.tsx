@@ -8,7 +8,7 @@ const styles = (): StyleRules => {
     root: {
       borderRadius: 3,
       height: 'calc(100% - 100px)', // margin
-      margin: '50px',
+      margin: '40px 40px',
       display: 'flex',
       flexDirection: 'column',
       // '& .MuiFormLabel-root': {
@@ -77,9 +77,6 @@ const styles = (): StyleRules => {
       gap: '50px',
       alignItems: 'end',
       justifyContent: 'flex-end',
-      position: 'absolute',
-      right: '50px',
-      bottom: '100px',
     },
     cancelButton: {
       textDecoration: 'none',
@@ -102,7 +99,8 @@ const styles = (): StyleRules => {
       fontSize: '12px',
       height: '15px',
       letterSpacing: '0.19px',
-      marginTop: '5px',
+      marginTop: '10px',
+      marginBottom: '0',
     },
     errorInputInfo: {
       color: 'red',
@@ -121,9 +119,10 @@ const styles = (): StyleRules => {
 
 interface ITaskDetailsProps extends WithStyles<typeof styles> {
   submitValues: (values: object) => void;
+  handleCancel: (values: object) => void;
 }
 
-const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues }) => {
+const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues, handleCancel }) => {
   const [taskName, setTaskName] = React.useState('');
   const [taskDescription, setTaskDescription] = React.useState('');
   const [taskTags, setTaskTags] = React.useState('');
@@ -145,20 +144,18 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues })
       tags: [],
     };
 
-    const arr = [];
+    let arr = [];
     const tagString = `${taskTags}`;
-    let tagName = '';
-    for (let i = 0; i < tagString.length; i++) {
-      if (tagString[i] === ',') {
-        arr.push(tagName);
-        tagName = '';
-      }
-      tagName += tagString[i];
-    }
+    const tagName = '';
+    arr = tagString.split(',');
     formDataObject.taskName = `${taskName}`;
     formDataObject.taskDescription = `${taskDescription}`;
     formDataObject.tags = arr;
     submitValues(formDataObject);
+  };
+
+  const onCancel = (e: React.FormEvent) => {
+    handleCancel({ name: 'cancel' });
   };
 
   const handleTaskNameChange = (e: React.FormEvent) => {
@@ -248,7 +245,9 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues })
         </p>
       </div>
       <div className={classes.buttonContainer}>
-        <Button className={classes.cancelButton}>CANCEL</Button>
+        <Button className={classes.cancelButton} onClick={onCancel}>
+          CANCEL
+        </Button>
         <Button variant="contained" color="primary" className={classes.submitButton} type="submit">
           CONTINUE
         </Button>

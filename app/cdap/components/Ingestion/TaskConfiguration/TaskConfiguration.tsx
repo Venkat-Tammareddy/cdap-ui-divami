@@ -27,7 +27,7 @@ const styles = (): StyleRules => {
     root: {
       borderRadius: 3,
       height: 'calc(100% - 100px)', // margin
-      margin: '50px',
+      margin: '40px 40px',
       display: 'flex',
       flexDirection: 'column',
     },
@@ -108,8 +108,6 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('log error value: ' + logErrors);
-    console.log('log preferences value: ' + logPreferences);
   };
   return (
     <form className={classes.root} onSubmit={handleSubmit}>

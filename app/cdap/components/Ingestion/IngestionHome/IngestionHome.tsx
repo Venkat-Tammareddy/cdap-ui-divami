@@ -20,6 +20,13 @@ import { EntityTopPanel } from 'components/EntityTopPanel';
 import { Button } from '@material-ui/core';
 import history from 'services/history';
 import Heading, { HeadingTypes } from 'components/Heading';
+import { Route, Switch, NavLink } from 'react-router-dom';
+import ErrorBoundary from 'components/ErrorBoundary';
+import DeployedPipelineView from 'components/PipelineList/DeployedPipelineView';
+import DraftPipelineView from 'components/PipelineList/DraftPipelineView';
+import { Theme } from 'services/ThemeHelper';
+import { getCurrentNamespace } from 'services/NamespaceStore';
+import T from 'i18n-react';
 
 const styles = (theme): StyleRules => {
   return {
@@ -30,23 +37,54 @@ const styles = (theme): StyleRules => {
       height: 'calc(100% - 50px)', // 100% - height of EntityTopPanel
       padding: '15px 50px',
     },
+    btn: {
+      margin: '15px',
+    },
   };
 };
 
 interface IIngestionHomeProps extends WithStyles<typeof styles> {}
+const PREFIX = 'features.PipelineList';
 const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
+  const basepath = `/ns/:namespace/ingestion`;
+
   return (
     <div className={classes.root}>
       <EntityTopPanel title="Ingestion Tasks" />
       <div className={classes.content}>
-        <Heading type={HeadingTypes.h1} label={'Ingestion Home Page'} />
         <Button
+          className={classes.btn}
           variant="contained"
           color="primary"
           onClick={() => history.push('ingestion/create')}
         >
           Create Ingest
         </Button>
+        <h4 className="view-header" data-cy="pipeline-list-view-header">
+          <NavLink exact to={basepath} className="option" activeClassName="active">
+            {T.translate(`${PREFIX}.deployed`)}
+          </NavLink>
+
+          <span className="separator">|</span>
+
+          <NavLink exact to={`${basepath}/drafts`} className="option" activeClassName="active">
+            {T.translate(`${PREFIX}.draft`)}
+          </NavLink>
+        </h4>
+        <Switch>
+          <Route
+            exact
+            path="/ns/:namespace/ingestion"
+            component={() => {
+              return (
+                <ErrorBoundary>
+                  <DeployedPipelineView />
+                </ErrorBoundary>
+              );
+            }}
+          />
+          <Route exact path="/ns/:namespace/ingestion/drafts" component={DraftPipelineView} />
+        </Switch>
       </div>
     </div>
   );

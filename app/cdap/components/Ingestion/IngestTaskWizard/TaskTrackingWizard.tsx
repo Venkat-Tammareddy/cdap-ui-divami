@@ -149,7 +149,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
                   completed: classes.completedIcon,
                 },
               }}
-              StepIconComponent={index < activeStep && iconn}
+              StepIconComponent={index < activeStep ? iconn : null}
             >
               {label}
             </StepLabel>

@@ -101,8 +101,10 @@ const styles = (): StyleRules => {
   };
 };
 
-interface IIngestionProps extends WithStyles<typeof styles> {}
-const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
+interface IIngestionProps extends WithStyles<typeof styles> {
+  deploy: () => void;
+}
+const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy }) => {
   const [logErrors, setLogErrors] = React.useState('Yes');
   const [logPreferences, setLogPreferences] = React.useState('Replace');
 
@@ -110,6 +112,7 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
     e.preventDefault();
     console.log('log error value: ' + logErrors);
     console.log('log preferences value: ' + logPreferences);
+    deploy();
   };
   return (
     <form className={classes.root} onSubmit={handleSubmit}>

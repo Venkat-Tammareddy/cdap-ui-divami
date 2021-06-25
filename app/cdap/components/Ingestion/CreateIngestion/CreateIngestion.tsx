@@ -55,17 +55,14 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const [connections, setConnections] = React.useState([]);
   const [draftId] = React.useState(uuidV4());
   const [draftConfig, setDraftConfig] = React.useState({
+    name: '',
+    description: '',
     artifact: {
       name: 'cdap-data-pipeline',
       version: '6.5.0-SNAPSHOT',
       scope: 'SYSTEM',
       label: 'Data Pipeline - Batch',
     },
-    __ui__: {
-      nodes: [],
-    },
-    name: '',
-    description: '',
     config: {
       resources: {
         memoryMB: 2048,
@@ -75,15 +72,20 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         memoryMB: 2048,
         virtualCores: 1,
       },
-      connections: [],
+      connections: [
+        {
+          from: '',
+          to: '',
+        },
+      ],
       comments: [],
       postActions: [],
       properties: {},
       processTimingEnabled: true,
       stageLoggingEnabled: false,
       pushdownEnabled: false,
-      transformationPushdown: null,
       stages: [],
+      transformationPushdown: null,
       schedule: '0 * * * *',
       engine: 'spark',
       numOfRecordsPreview: 100,
@@ -110,6 +112,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       return;
     }
     submitDraft();
+    console.log(draftConfig);
   }, [draftConfig]);
   const submitDraft = () => {
     MyPipelineApi.saveDraft(
@@ -121,6 +124,36 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     ).subscribe(
       (message) => {
         console.log('draft', message);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+  const deleteDraft = () => {
+    MyPipelineApi.deleteDraft({
+      context: currentNamespace,
+      draftId,
+    }).subscribe(
+      (message) => {
+        console.log('draft-deleted', message);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+  const deployPipeline = () => {
+    MyPipelineApi.publish(
+      {
+        namespace: currentNamespace,
+        appId: draftConfig.name,
+      },
+      draftConfig
+    ).subscribe(
+      (message) => {
+        console.log('deploy', message);
+        deleteDraft();
       },
       (err) => {
         console.log(err);
@@ -159,7 +192,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                   description: details.taskDescription,
                 };
               });
-              console.log(details);
               handleNext();
             }}
           />
@@ -169,8 +201,46 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           <SelectConnections
             selectionType="source"
             connectionsList={connections}
-            submitConnection={(a) => {
+            submitConnection={(a: any) => {
               console.log(a);
+              setDraftConfig((prevDraftConfig) => {
+                return {
+                  ...prevDraftConfig,
+                  config: {
+                    ...prevDraftConfig.config,
+                    connections: [
+                      {
+                        from: a.name,
+                        to: '',
+                      },
+                    ],
+                    stages: [
+                      {
+                        name: a.name,
+                        plugin: {
+                          ...a.plugin,
+                          name: 'MultiTableDatabase',
+                          type: 'batchsource',
+                          label: 'Multiple Database Tables',
+                          artifact: {
+                            name: 'multi-table-plugins',
+                            version: '1.1.0',
+                            scope: 'USER',
+                          },
+                        },
+                        outputSchema: [
+                          {
+                            name: 'etlSchemaBody',
+                            schema: '',
+                          },
+                        ],
+                        id: a.name,
+                      },
+                    ],
+                  },
+                };
+              });
+              console.log(draftConfig);
               handleNext();
             }}
           />
@@ -180,8 +250,45 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           <SelectConnections
             selectionType="target"
             connectionsList={connections}
-            submitConnection={(a) => {
+            submitConnection={(a: any) => {
               console.log(a);
+              setDraftConfig((prevDraftConfig) => {
+                return {
+                  ...prevDraftConfig,
+                  config: {
+                    ...prevDraftConfig.config,
+                    connections: [{ ...prevDraftConfig.config.connections[0], to: a.name }],
+                    stages: [
+                      ...prevDraftConfig.config.stages,
+                      {
+                        name: a.name,
+                        plugin: {
+                          name: 'BigQueryMultiTable',
+                          type: 'batchsink',
+                          label: 'BigQuery Multi Table',
+                          artifact: {
+                            name: 'google-cloud',
+                            version: '0.18.0-SNAPSHOT',
+                            scope: 'SYSTEM',
+                          },
+                          properties: {
+                            ...a.plugin.properties,
+                            dataset: 'ForHari',
+                            referenceName: a.name,
+                          },
+                        },
+                        outputSchema: [
+                          {
+                            name: 'etlSchemaBody',
+                            schema: '',
+                          },
+                        ],
+                        id: a.name,
+                      },
+                    ],
+                  },
+                };
+              });
               handleNext();
             }}
           />
@@ -196,7 +303,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           />
         );
       case 4:
-        return <TaskConfiguration />;
+        return <TaskConfiguration deploy={() => deployPipeline()} />;
       default:
         return (
           <>

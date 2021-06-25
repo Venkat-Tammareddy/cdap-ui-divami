@@ -132,7 +132,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues })
     errorMsg:
       'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)',
   });
-  const [taskTagError, setTaskTagError] = React.useState({
+  const [taskTagError] = React.useState({
     error: false,
     errorMsg: 'Add tags with a comma (,) separation (ex: Studies, Courses, and etc...)',
   });

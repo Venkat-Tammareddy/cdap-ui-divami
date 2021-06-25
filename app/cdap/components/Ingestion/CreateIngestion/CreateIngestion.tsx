@@ -27,6 +27,7 @@ import uuidV4 from 'uuid/v4';
 import { MyPipelineApi } from 'api/pipeline';
 import { ConnectionsApi } from 'api/connections';
 import NamespaceStore from 'services/NamespaceStore';
+import history from 'services/history';
 
 const styles = (theme): StyleRules => {
   return {
@@ -84,7 +85,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       processTimingEnabled: true,
       stageLoggingEnabled: false,
       pushdownEnabled: false,
-      stages: [],
+      stages: [{ name: 'source' }, { name: 'target' }],
       transformationPushdown: null,
       schedule: '0 * * * *',
       engine: 'spark',
@@ -154,11 +155,15 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       (message) => {
         console.log('deploy', message);
         deleteDraft();
+        goToIngestionHome();
       },
       (err) => {
         console.log(err);
       }
     );
+  };
+  const goToIngestionHome = () => {
+    history.replace('/ns/:namespace/ingestion');
   };
   const steps = [
     'Task Details',
@@ -195,7 +200,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               handleNext();
             }}
             handleCancel={(cancelEvent: any) => {
-              console.log(cancelEvent);
+              goToIngestionHome();
             }}
           />
         );
@@ -213,13 +218,14 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                     ...prevDraftConfig.config,
                     connections: [
                       {
+                        ...prevDraftConfig.config.connections[0],
                         from: a.name,
-                        to: '',
                       },
                     ],
                     stages: [
                       {
                         name: a.name,
+                        connectionType: a.connectionType,
                         plugin: {
                           ...a.plugin,
                           name: 'MultiTableDatabase',
@@ -247,7 +253,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               handleNext();
             }}
             handleCancel={(cancelEvent: any) => {
-              console.log(cancelEvent);
+              goToIngestionHome();
             }}
           />
         );
@@ -268,6 +274,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                       ...prevDraftConfig.config.stages,
                       {
                         name: a.name,
+                        connectionType: a.connectionType,
                         plugin: {
                           name: 'BigQueryMultiTable',
                           type: 'batchsink',
@@ -279,8 +286,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                           },
                           properties: {
                             ...a.plugin.properties,
-                            dataset: 'ForHari',
-                            referenceName: a.name,
                           },
                         },
                         outputSchema: [
@@ -298,7 +303,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               handleNext();
             }}
             handleCancel={(cancelEvent: any) => {
-              console.log(cancelEvent);
+              goToIngestionHome();
             }}
           />
         );
@@ -310,39 +315,16 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               handleNext();
             }}
             handleCancel={(cancelEvent: any) => {
-              console.log(cancelEvent);
+              goToIngestionHome();
             }}
           />
         );
       case 4:
-        return <TaskConfiguration deploy={() => deployPipeline()} />;
-      default:
         return (
-          <>
-            {activeStep < steps.length ? (
-              <div className={classes.actionsContainer}>
-                <Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
-                  Back
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleNext}
-                  className={classes.button}
-                >
-                  {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                </Button>
-              </div>
-            ) : (
-              <Paper square elevation={0} className={classes.resetContainer}>
-                <Typography>All steps completed - you&apos;re finished</Typography>
-                <Button onClick={handleReset} className={classes.button}>
-                  Reset
-                </Button>
-              </Paper>
-            )}
-          </>
+          <TaskConfiguration deploy={() => deployPipeline()} onCancel={() => goToIngestionHome()} />
         );
+      default:
+        return;
     }
   };
   return (

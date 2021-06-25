@@ -133,9 +133,8 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
 
   const filteredList = connectionsList.filter(
     (item) =>
-      item.plugin.properties.referenceName?.toLowerCase().includes(search.toLowerCase()) ||
       item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.plugin.properties.project?.toLowerCase().includes(search.toLowerCase())
+      item.connectionType.toLowerCase().includes(search.toLowerCase())
   );
 
   const onCancel = (e: React.FormEvent) => {
@@ -182,12 +181,8 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
                 }
                 onClick={() => setSelectedConnection(conn)}
               >
-                <TableCell>
-                  {conn.connectionType === 'Database'
-                    ? conn.plugin.properties.referenceName
-                    : conn.plugin.properties.project}
-                </TableCell>
                 <TableCell>{conn.name}</TableCell>
+                <TableCell>{conn.connectionType}</TableCell>
                 <TableCell>{humanReadableDate(conn.updatedTimeMillis, true)}</TableCell>
               </TableRow>
             );

@@ -96,17 +96,17 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
         return draftConfig.name;
       case 1:
         return (
-          <div>
-            studies
-            <div>oracle-global-server</div>
-          </div>
+          <>
+            <p>{draftConfig.config.stages[0]?.name}</p>
+            <p>{draftConfig.config.stages[0]?.connectionType}</p>
+          </>
         );
       case 2:
         return (
-          <div>
-            StudyPerformance
-            <div>bigquery-global-server</div>
-          </div>
+          <>
+            <p>{draftConfig.config.stages[1]?.name}</p>
+            <p>{draftConfig.config.stages[1]?.connectionType}</p>
+          </>
         );
       default:
         return;

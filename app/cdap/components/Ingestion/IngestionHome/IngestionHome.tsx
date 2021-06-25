@@ -19,7 +19,6 @@ import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/wit
 import { EntityTopPanel } from 'components/EntityTopPanel';
 import { Button } from '@material-ui/core';
 import history from 'services/history';
-import { Route, Switch, NavLink } from 'react-router-dom';
 import ErrorBoundary from 'components/ErrorBoundary';
 import DeployedPipelineView from 'components/PipelineList/DeployedPipelineView';
 import DraftPipelineView from 'components/PipelineList/DraftPipelineView';
@@ -37,51 +36,55 @@ const styles = (theme): StyleRules => {
     btn: {
       margin: '15px',
     },
+    btnWrapper: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+    },
+    tabs: {
+      cursor: 'pointer',
+      margin: '0px 10px',
+      '&:hover': {
+        textDecoration: 'underline',
+      },
+    },
   };
 };
 
 interface IIngestionHomeProps extends WithStyles<typeof styles> {}
 const PREFIX = 'features.PipelineList';
 const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
-  const basepath = `/ns/:namespace/ingestion`;
-
+  const [displayDrafts, setDisplayDrafts] = React.useState(false);
   return (
     <div className={classes.root}>
       <EntityTopPanel title="Ingestion Tasks" />
       <div className={classes.content}>
-        <Button
-          className={classes.btn}
-          variant="contained"
-          color="primary"
-          onClick={() => history.push('ingestion/create')}
-        >
-          Create Ingest
-        </Button>
-        <h4 className="view-header" data-cy="pipeline-list-view-header">
-          <NavLink exact to={basepath} className="option" activeClassName="active">
+        <div className={classes.btnWrapper}>
+          <Button
+            className={classes.btn}
+            variant="contained"
+            color="primary"
+            onClick={() => history.push('ingestion/create')}
+          >
+            Create Ingest
+          </Button>
+        </div>
+
+        <h4>
+          <span className={classes.tabs} onClick={() => setDisplayDrafts(false)}>
             {T.translate(`${PREFIX}.deployed`)}
-          </NavLink>
-
+          </span>
           <span className="separator">|</span>
-
-          <NavLink exact to={`${basepath}/drafts`} className="option" activeClassName="active">
+          <span className={classes.tabs} onClick={() => setDisplayDrafts(true)}>
             {T.translate(`${PREFIX}.draft`)}
-          </NavLink>
+          </span>
         </h4>
-        <Switch>
-          <Route
-            exact
-            path="/ns/:namespace/ingestion"
-            component={() => {
-              return (
-                <ErrorBoundary>
-                  <DeployedPipelineView />
-                </ErrorBoundary>
-              );
-            }}
-          />
-          <Route exact path="/ns/:namespace/ingestion/drafts" component={DraftPipelineView} />
-        </Switch>
+        {displayDrafts ? (
+          <DraftPipelineView />
+        ) : (
+          <ErrorBoundary>
+            <DeployedPipelineView />
+          </ErrorBoundary>
+        )}
       </div>
     </div>
   );

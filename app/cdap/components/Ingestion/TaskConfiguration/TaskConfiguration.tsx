@@ -103,8 +103,9 @@ const styles = (): StyleRules => {
 
 interface IIngestionProps extends WithStyles<typeof styles> {
   deploy: () => void;
+  onCancel: () => void;
 }
-const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy }) => {
+const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onCancel }) => {
   const [logErrors, setLogErrors] = React.useState('Yes');
   const [logPreferences, setLogPreferences] = React.useState('Replace');
 
@@ -174,7 +175,9 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy }) =
       </div>
 
       <div className={classes.buttonContainer}>
-        <Button className={classes.cancelButton}>Cancel</Button>
+        <Button className={classes.cancelButton} onClick={() => onCancel()}>
+          Cancel
+        </Button>
         <Button variant="contained" color="primary" type="submit" className={classes.submitButton}>
           Deploy
         </Button>

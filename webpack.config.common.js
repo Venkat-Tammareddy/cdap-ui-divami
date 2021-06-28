@@ -36,7 +36,7 @@ var plugins = [
     caching: true,
     flattening: true,
   }),
-  new CleanWebpackPlugin(cleanOptions),
+ // new CleanWebpackPlugin(cleanOptions),
   new CaseSensitivePathsPlugin(),
   // by default minify it.
   new webpack.DefinePlugin({

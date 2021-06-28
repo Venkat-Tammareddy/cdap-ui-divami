@@ -21,6 +21,8 @@ import { RadioGroup } from '@material-ui/core';
 import { FormControlLabel } from '@material-ui/core';
 import { FormLabel } from '@material-ui/core';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import ConfigurationOverlay from '../ConfigurationOverlay/ConfigurationOverlay';
 
 const styles = (): StyleRules => {
   return {
@@ -98,6 +100,9 @@ const styles = (): StyleRules => {
       lineHeight: '24px',
       fontFamily: 'Lato',
     },
+    overlayActive: {
+      display: 'none',
+    },
   };
 };
 
@@ -108,6 +113,7 @@ interface IIngestionProps extends WithStyles<typeof styles> {
 const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onCancel }) => {
   const [logErrors, setLogErrors] = React.useState('Yes');
   const [logPreferences, setLogPreferences] = React.useState('Replace');
+  const [OpenModal, setOpenModal] = React.useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,7 +123,7 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onC
   };
   return (
     <form className={classes.root} onSubmit={handleSubmit}>
-      <div className={classes.configOptions}>
+      <div className={OpenModal ? classes.overlayActive : classes.configOptions}>
         <p className={classes.headerText}>Enter Configuration details</p>
         <div className={classes.logSection}>
           <FormLabel className={classes.labelText}>
@@ -174,14 +180,27 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onC
         </div>
       </div>
 
-      <div className={classes.buttonContainer}>
+      <div className={OpenModal ? classes.overlayActive : classes.buttonContainer}>
         <Button className={classes.cancelButton} onClick={() => onCancel()}>
           Cancel
         </Button>
-        <Button variant="contained" color="primary" type="submit" className={classes.submitButton}>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          className={classes.submitButton}
+          onClick={() => {
+            setOpenModal(true);
+          }}
+        >
           Deploy
         </Button>
       </div>
+      <div>Hi</div>
+      {/* {OpenModal && <ConfigurationOverlay closeModal={setOpenModal} />} */}
+      <Modal isOpen={OpenModal}>
+        {OpenModal && <ConfigurationOverlay closeModal={setOpenModal} />}
+      </Modal>
     </form>
   );
 };

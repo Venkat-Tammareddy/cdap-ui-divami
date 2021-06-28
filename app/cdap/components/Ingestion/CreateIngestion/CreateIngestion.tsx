@@ -17,7 +17,7 @@
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import TaskTrackingWizard from '../IngestTaskWizard/TaskTrackingWizard';
-import { Button, Paper, Typography } from '@material-ui/core';
+import If from 'components/If';
 import { EntityTopPanel } from 'components/EntityTopPanel';
 import TaskDetails from '../TaskDetails/TaskDetails';
 import SelectConnections from '../SelectConnections/SelectConnections';
@@ -28,6 +28,7 @@ import { MyPipelineApi } from 'api/pipeline';
 import { ConnectionsApi } from 'api/connections';
 import NamespaceStore from 'services/NamespaceStore';
 import history from 'services/history';
+import LoadingSVGCentered from 'components/LoadingSVGCentered';
 
 const styles = (theme): StyleRules => {
   return {
@@ -44,7 +45,9 @@ const styles = (theme): StyleRules => {
     wizard: {
       boxShadow: ' 0px -1px 10px 0.5px gray',
     },
-    content: {},
+    content: {
+      overflowY: 'auto',
+    },
   };
 };
 
@@ -53,6 +56,7 @@ interface ICreateIngestionProps extends WithStyles<typeof styles> {
 }
 const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
+  const [deployLoader, setDeployLoader] = React.useState(false);
   const [connections, setConnections] = React.useState([]);
   const [draftId] = React.useState(uuidV4());
   const [draftConfig, setDraftConfig] = React.useState({
@@ -85,7 +89,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       processTimingEnabled: true,
       stageLoggingEnabled: false,
       pushdownEnabled: false,
-      stages: [{ name: 'source' }, { name: 'target' }],
+      stages: [],
       transformationPushdown: null,
       schedule: '0 * * * *',
       engine: 'spark',
@@ -145,6 +149,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     );
   };
   const deployPipeline = () => {
+    setDeployLoader(true);
     MyPipelineApi.publish(
       {
         namespace: currentNamespace,
@@ -156,9 +161,11 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         console.log('deploy', message);
         deleteDraft();
         goToIngestionHome();
+        setDeployLoader(false);
       },
       (err) => {
         console.log(err);
+        setDeployLoader(false);
       }
     );
   };
@@ -330,6 +337,9 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   return (
     <div className={classes.root}>
       <EntityTopPanel title="Create Ingestion Task" />
+      <If condition={deployLoader}>
+        <LoadingSVGCentered />
+      </If>
       <div className={classes.wizardAndContentWrapper}>
         <div className={classes.wizard}>
           <TaskTrackingWizard steps={steps} activeStep={activeStep} draftConfig={draftConfig} />

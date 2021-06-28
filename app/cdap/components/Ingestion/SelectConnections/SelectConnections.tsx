@@ -123,7 +123,7 @@ interface ISelectConnectionsProps extends WithStyles<typeof styles> {
 
 const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   classes,
-  selectionType,
+  selectionType = 'source',
   connectionsList = [],
   submitConnection,
   handleCancel,
@@ -133,8 +133,10 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
 
   const filteredList = connectionsList.filter(
     (item) =>
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.connectionType.toLowerCase().includes(search.toLowerCase())
+      (item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.connectionType.toLowerCase().includes(search.toLowerCase())) &&
+      ((selectionType === 'source' && item.plugin.type.includes('batchsource')) ||
+        (selectionType === 'target' && item.plugin.type.includes('batchsink')))
   );
 
   const onCancel = (e: React.FormEvent) => {

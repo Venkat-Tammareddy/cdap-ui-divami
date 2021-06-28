@@ -131,7 +131,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues, h
     errorMsg:
       'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)',
   });
-  const [taskTagError, setTaskTagError] = React.useState({
+  const [taskTagError] = React.useState({
     error: false,
     errorMsg: 'Add tags with a comma (,) separation (ex: Studies, Courses, and etc...)',
   });
@@ -174,12 +174,10 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues, h
           'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)';
       }
     }
-
     setTaskNameError(taskNameError);
     setTaskName(inputValue.value);
   };
 
-  const tempTags = '';
   const handleTagsChange = (e: React.FormEvent) => {
     const tags = e.target as HTMLInputElement;
     setTaskTags(tags.value);

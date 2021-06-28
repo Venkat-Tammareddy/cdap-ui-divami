@@ -101,13 +101,19 @@ const styles = (): StyleRules => {
   };
 };
 
-interface IIngestionProps extends WithStyles<typeof styles> {}
-const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
+interface IIngestionProps extends WithStyles<typeof styles> {
+  deploy: () => void;
+  onCancel: () => void;
+}
+const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onCancel }) => {
   const [logErrors, setLogErrors] = React.useState('Yes');
   const [logPreferences, setLogPreferences] = React.useState('Replace');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('log error value: ' + logErrors);
+    console.log('log preferences value: ' + logPreferences);
+    deploy();
   };
   return (
     <form className={classes.root} onSubmit={handleSubmit}>
@@ -169,7 +175,9 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes }) => {
       </div>
 
       <div className={classes.buttonContainer}>
-        <Button className={classes.cancelButton}>Cancel</Button>
+        <Button className={classes.cancelButton} onClick={() => onCancel()}>
+          Cancel
+        </Button>
         <Button variant="contained" color="primary" type="submit" className={classes.submitButton}>
           Deploy
         </Button>

@@ -23,6 +23,7 @@ import TableRow from 'components/Table/TableRow';
 import Table from 'components/Table';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
+import { humanReadableDate } from 'services/helpers';
 
 const styles = (theme): StyleRules => {
   return {
@@ -123,16 +124,17 @@ interface ISelectConnectionsProps extends WithStyles<typeof styles> {
 const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   classes,
   selectionType,
-  connectionsList,
+  connectionsList = [],
   submitConnection,
   handleCancel,
 }) => {
   const [search, setSearch] = React.useState('');
   const [selectedConnection, setSelectedConnection] = React.useState({});
+
   const filteredList = connectionsList.filter(
     (item) =>
-      item.database.toLowerCase().includes(search.toLowerCase()) ||
-      item.connection.toLowerCase().includes(search.toLowerCase())
+      item.name.toLowerCase().includes(search.toLowerCase()) ||
+      item.connectionType.toLowerCase().includes(search.toLowerCase())
   );
 
   const onCancel = (e: React.FormEvent) => {
@@ -170,18 +172,18 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
         </TableHeader>
 
         <TableBody>
-          {filteredList.map((conn) => {
+          {filteredList.map((conn, index) => {
             return (
               <TableRow
-                key={conn.database}
+                key={index}
                 className={
                   selectedConnection === conn ? classes.tableRowSelected : classes.tableRow
                 }
                 onClick={() => setSelectedConnection(conn)}
               >
-                <TableCell>{conn.database}</TableCell>
-                <TableCell>{conn.connection}</TableCell>
-                <TableCell>{conn.dateAndTime}</TableCell>
+                <TableCell>{conn.name}</TableCell>
+                <TableCell>{conn.connectionType}</TableCell>
+                <TableCell>{humanReadableDate(conn.updatedTimeMillis, true)}</TableCell>
               </TableRow>
             );
           })}

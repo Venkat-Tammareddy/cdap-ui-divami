@@ -25,7 +25,9 @@ import TaskConfiguration from '../TaskConfiguration/TaskConfiguration';
 import MappingLayout from '../MappingLayout/MappingLayout';
 import uuidV4 from 'uuid/v4';
 import { MyPipelineApi } from 'api/pipeline';
+import { ConnectionsApi } from 'api/connections';
 import NamespaceStore from 'services/NamespaceStore';
+import history from 'services/history';
 
 const styles = (theme): StyleRules => {
   return {
@@ -51,19 +53,17 @@ interface ICreateIngestionProps extends WithStyles<typeof styles> {
 }
 const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
-  const [draftId, setDraftId] = React.useState(uuidV4());
+  const [connections, setConnections] = React.useState([]);
+  const [draftId] = React.useState(uuidV4());
   const [draftConfig, setDraftConfig] = React.useState({
+    name: '',
+    description: '',
     artifact: {
       name: 'cdap-data-pipeline',
       version: '6.5.0-SNAPSHOT',
       scope: 'SYSTEM',
       label: 'Data Pipeline - Batch',
     },
-    __ui__: {
-      nodes: [],
-    },
-    name: '',
-    description: '',
     config: {
       resources: {
         memoryMB: 2048,
@@ -73,15 +73,20 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         memoryMB: 2048,
         virtualCores: 1,
       },
-      connections: [],
+      connections: [
+        {
+          from: '',
+          to: '',
+        },
+      ],
       comments: [],
       postActions: [],
       properties: {},
       processTimingEnabled: true,
       stageLoggingEnabled: false,
       pushdownEnabled: false,
+      stages: [{ name: 'source' }, { name: 'target' }],
       transformationPushdown: null,
-      stages: [],
       schedule: '0 * * * *',
       engine: 'spark',
       numOfRecordsPreview: 100,
@@ -90,11 +95,25 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   });
   const isFirstRun = React.useRef(true);
   React.useEffect(() => {
+    ConnectionsApi.listConnections({
+      context: currentNamespace,
+    }).subscribe(
+      (message) => {
+        console.log('connections', message);
+        setConnections(message);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }, []);
+  React.useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       return;
     }
     submitDraft();
+    console.log(draftConfig);
   }, [draftConfig]);
   const submitDraft = () => {
     MyPipelineApi.saveDraft(
@@ -112,6 +131,40 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       }
     );
   };
+  const deleteDraft = () => {
+    MyPipelineApi.deleteDraft({
+      context: currentNamespace,
+      draftId,
+    }).subscribe(
+      (message) => {
+        console.log('draft-deleted', message);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+  const deployPipeline = () => {
+    MyPipelineApi.publish(
+      {
+        namespace: currentNamespace,
+        appId: draftConfig.name,
+      },
+      draftConfig
+    ).subscribe(
+      (message) => {
+        console.log('deploy', message);
+        deleteDraft();
+        goToIngestionHome();
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+  const goToIngestionHome = () => {
+    history.replace('/ns/:namespace/ingestion');
+  };
   const steps = [
     'Task Details',
     'Source Connection',
@@ -120,58 +173,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     'Configuration',
   ];
   const [activeStep, setActiveStep] = React.useState(0);
-  const connections = [
-    {
-      database: 'mydataset',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'alpha',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'bravo',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'charlie',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'delta',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'tony_stark',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'thor',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'iron_man',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'captain_america',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-    {
-      database: 'spider_man',
-      connection: 'oracle-connection',
-      dateAndTime: '07 apr 21 2:30pm',
-    },
-  ];
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -196,11 +197,10 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                   description: details.taskDescription,
                 };
               });
-              console.log(details);
               handleNext();
             }}
             handleCancel={(cancelEvent: any) => {
-              console.log(cancelEvent);
+              goToIngestionHome();
             }}
           />
         );
@@ -209,12 +209,51 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           <SelectConnections
             selectionType="source"
             connectionsList={connections}
-            submitConnection={(a) => {
+            submitConnection={(a: any) => {
               console.log(a);
+              setDraftConfig((prevDraftConfig) => {
+                return {
+                  ...prevDraftConfig,
+                  config: {
+                    ...prevDraftConfig.config,
+                    connections: [
+                      {
+                        ...prevDraftConfig.config.connections[0],
+                        from: a.name,
+                      },
+                    ],
+                    stages: [
+                      {
+                        name: a.name,
+                        connectionType: a.connectionType,
+                        plugin: {
+                          ...a.plugin,
+                          name: 'MultiTableDatabase',
+                          type: 'batchsource',
+                          label: 'Multiple Database Tables',
+                          artifact: {
+                            name: 'multi-table-plugins',
+                            version: '1.1.0',
+                            scope: 'USER',
+                          },
+                        },
+                        outputSchema: [
+                          {
+                            name: 'etlSchemaBody',
+                            schema: '',
+                          },
+                        ],
+                        id: a.name,
+                      },
+                    ],
+                  },
+                };
+              });
+              console.log(draftConfig);
               handleNext();
             }}
             handleCancel={(cancelEvent: any) => {
-              console.log(cancelEvent);
+              goToIngestionHome();
             }}
           />
         );
@@ -223,12 +262,48 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           <SelectConnections
             selectionType="target"
             connectionsList={connections}
-            submitConnection={(a) => {
+            submitConnection={(a: any) => {
               console.log(a);
+              setDraftConfig((prevDraftConfig) => {
+                return {
+                  ...prevDraftConfig,
+                  config: {
+                    ...prevDraftConfig.config,
+                    connections: [{ ...prevDraftConfig.config.connections[0], to: a.name }],
+                    stages: [
+                      ...prevDraftConfig.config.stages,
+                      {
+                        name: a.name,
+                        connectionType: a.connectionType,
+                        plugin: {
+                          name: 'BigQueryMultiTable',
+                          type: 'batchsink',
+                          label: 'BigQuery Multi Table',
+                          artifact: {
+                            name: 'google-cloud',
+                            version: '0.18.0-SNAPSHOT',
+                            scope: 'SYSTEM',
+                          },
+                          properties: {
+                            ...a.plugin.properties,
+                          },
+                        },
+                        outputSchema: [
+                          {
+                            name: 'etlSchemaBody',
+                            schema: '',
+                          },
+                        ],
+                        id: a.name,
+                      },
+                    ],
+                  },
+                };
+              });
               handleNext();
             }}
             handleCancel={(cancelEvent: any) => {
-              console.log(cancelEvent);
+              goToIngestionHome();
             }}
           />
         );
@@ -240,39 +315,16 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               handleNext();
             }}
             handleCancel={(cancelEvent: any) => {
-              console.log(cancelEvent);
+              goToIngestionHome();
             }}
           />
         );
       case 4:
-        return <TaskConfiguration />;
-      default:
         return (
-          <>
-            {activeStep < steps.length ? (
-              <div className={classes.actionsContainer}>
-                <Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
-                  Back
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleNext}
-                  className={classes.button}
-                >
-                  {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                </Button>
-              </div>
-            ) : (
-              <Paper square elevation={0} className={classes.resetContainer}>
-                <Typography>All steps completed - you&apos;re finished</Typography>
-                <Button onClick={handleReset} className={classes.button}>
-                  Reset
-                </Button>
-              </Paper>
-            )}
-          </>
+          <TaskConfiguration deploy={() => deployPipeline()} onCancel={() => goToIngestionHome()} />
         );
+      default:
+        return;
     }
   };
   return (
@@ -280,7 +332,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       <EntityTopPanel title="Create Ingestion Task" />
       <div className={classes.wizardAndContentWrapper}>
         <div className={classes.wizard}>
-          <TaskTrackingWizard steps={steps} activeStep={activeStep} />
+          <TaskTrackingWizard steps={steps} activeStep={activeStep} draftConfig={draftConfig} />
         </div>
         <div className={classes.content}>{Content()}</div>
       </div>

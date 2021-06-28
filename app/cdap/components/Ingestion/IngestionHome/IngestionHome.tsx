@@ -19,7 +19,10 @@ import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/wit
 import { EntityTopPanel } from 'components/EntityTopPanel';
 import { Button } from '@material-ui/core';
 import history from 'services/history';
-import Heading, { HeadingTypes } from 'components/Heading';
+import ErrorBoundary from 'components/ErrorBoundary';
+import DeployedPipelineView from 'components/PipelineList/DeployedPipelineView';
+import DraftPipelineView from 'components/PipelineList/DraftPipelineView';
+import T from 'i18n-react';
 
 const styles = (theme): StyleRules => {
   return {
@@ -30,23 +33,58 @@ const styles = (theme): StyleRules => {
       height: 'calc(100% - 50px)', // 100% - height of EntityTopPanel
       padding: '15px 50px',
     },
+    btn: {
+      margin: '15px',
+    },
+    btnWrapper: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+    },
+    tabs: {
+      cursor: 'pointer',
+      margin: '0px 10px',
+      '&:hover': {
+        textDecoration: 'underline',
+      },
+    },
   };
 };
 
 interface IIngestionHomeProps extends WithStyles<typeof styles> {}
+const PREFIX = 'features.PipelineList';
 const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
+  const [displayDrafts, setDisplayDrafts] = React.useState(false);
   return (
     <div className={classes.root}>
       <EntityTopPanel title="Ingestion Tasks" />
       <div className={classes.content}>
-        <Heading type={HeadingTypes.h1} label={'Ingestion Home Page'} />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => history.push('ingestion/create')}
-        >
-          Create Ingest
-        </Button>
+        <div className={classes.btnWrapper}>
+          <Button
+            className={classes.btn}
+            variant="contained"
+            color="primary"
+            onClick={() => history.push('ingestion/create')}
+          >
+            Create Ingest
+          </Button>
+        </div>
+
+        <h4>
+          <span className={classes.tabs} onClick={() => setDisplayDrafts(false)}>
+            {T.translate(`${PREFIX}.deployed`)}
+          </span>
+          <span className="separator">|</span>
+          <span className={classes.tabs} onClick={() => setDisplayDrafts(true)}>
+            {T.translate(`${PREFIX}.draft`)}
+          </span>
+        </h4>
+        {displayDrafts ? (
+          <DraftPipelineView />
+        ) : (
+          <ErrorBoundary>
+            <DeployedPipelineView />
+          </ErrorBoundary>
+        )}
       </div>
     </div>
   );

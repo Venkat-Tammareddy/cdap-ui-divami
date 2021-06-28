@@ -82,25 +82,31 @@ const styles = (theme): StyleRules => {
 interface ITrackingWizardProps extends WithStyles<typeof styles> {
   steps: any[];
   activeStep;
+  draftConfig;
 }
-const TrackingWizard: React.FC<ITrackingWizardProps> = ({ classes, steps, activeStep }) => {
+const TrackingWizard: React.FC<ITrackingWizardProps> = ({
+  classes,
+  steps,
+  activeStep,
+  draftConfig,
+}) => {
   function getStepContent(step: number) {
     switch (step) {
       case 0:
-        return `oracle-studies-to-bigQuery`;
+        return draftConfig.name;
       case 1:
         return (
-          <div>
-            studies
-            <div>oracle-global-server</div>
-          </div>
+          <>
+            <p>{draftConfig.config.stages[0]?.name}</p>
+            <p>{draftConfig.config.stages[0]?.connectionType}</p>
+          </>
         );
       case 2:
         return (
-          <div>
-            StudyPerformance
-            <div>bigquery-global-server</div>
-          </div>
+          <>
+            <p>{draftConfig.config.stages[1]?.name}</p>
+            <p>{draftConfig.config.stages[1]?.connectionType}</p>
+          </>
         );
       default:
         return;
@@ -151,7 +157,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({ classes, steps, active
                   completed: classes.completedIcon,
                 },
               }}
-              StepIconComponent={index < activeStep && iconn}
+              StepIconComponent={index < activeStep ? iconn : null}
             >
               {label}
             </StepLabel>

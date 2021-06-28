@@ -89,7 +89,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       processTimingEnabled: true,
       stageLoggingEnabled: false,
       pushdownEnabled: false,
-      stages: [],
+      stages: [{}, {}],
       transformationPushdown: null,
       schedule: '0 * * * *',
       engine: 'spark',
@@ -180,22 +180,19 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     'Configuration',
   ];
   const [activeStep, setActiveStep] = React.useState(0);
+  const [stepProgress, setStepProgress] = React.useState(0);
+
   const handleNext = () => {
+    activeStep === stepProgress && setStepProgress((prev) => prev + 1);
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-  };
   const Content = () => {
     switch (activeStep) {
       case 0:
         return (
           <TaskDetails
+            draftConfig={draftConfig}
             submitValues={(details: any) => {
               setDraftConfig((prevDraftConfig) => {
                 return {
@@ -206,7 +203,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               });
               handleNext();
             }}
-            handleCancel={(cancelEvent: any) => {
+            handleCancel={() => {
               goToIngestionHome();
             }}
           />
@@ -216,6 +213,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           <SelectConnections
             selectionType="source"
             connectionsList={connections}
+            draftConfig={draftConfig}
             submitConnection={(a: any) => {
               console.log(a);
               setDraftConfig((prevDraftConfig) => {
@@ -233,17 +231,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                       {
                         name: a.name,
                         connectionType: a.connectionType,
-                        plugin: {
-                          ...a.plugin,
-                          name: 'MultiTableDatabase',
-                          type: 'batchsource',
-                          label: 'Multiple Database Tables',
-                          artifact: {
-                            name: 'multi-table-plugins',
-                            version: '1.1.0',
-                            scope: 'USER',
-                          },
-                        },
+                        plugin: a.plugin,
                         outputSchema: [
                           {
                             name: 'etlSchemaBody',
@@ -252,6 +240,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                         ],
                         id: a.name,
                       },
+                      prevDraftConfig.config.stages[1],
                     ],
                   },
                 };
@@ -259,7 +248,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               console.log(draftConfig);
               handleNext();
             }}
-            handleCancel={(cancelEvent: any) => {
+            handleCancel={() => {
               goToIngestionHome();
             }}
           />
@@ -269,6 +258,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           <SelectConnections
             selectionType="target"
             connectionsList={connections}
+            draftConfig={draftConfig}
             submitConnection={(a: any) => {
               console.log(a);
               setDraftConfig((prevDraftConfig) => {
@@ -278,23 +268,11 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                     ...prevDraftConfig.config,
                     connections: [{ ...prevDraftConfig.config.connections[0], to: a.name }],
                     stages: [
-                      ...prevDraftConfig.config.stages,
+                      prevDraftConfig.config.stages[0],
                       {
                         name: a.name,
                         connectionType: a.connectionType,
-                        plugin: {
-                          name: 'BigQueryMultiTable',
-                          type: 'batchsink',
-                          label: 'BigQuery Multi Table',
-                          artifact: {
-                            name: 'google-cloud',
-                            version: '0.18.0-SNAPSHOT',
-                            scope: 'SYSTEM',
-                          },
-                          properties: {
-                            ...a.plugin.properties,
-                          },
-                        },
+                        plugin: a.plugin,
                         outputSchema: [
                           {
                             name: 'etlSchemaBody',
@@ -309,7 +287,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               });
               handleNext();
             }}
-            handleCancel={(cancelEvent: any) => {
+            handleCancel={() => {
               goToIngestionHome();
             }}
           />
@@ -342,7 +320,13 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       </If>
       <div className={classes.wizardAndContentWrapper}>
         <div className={classes.wizard}>
-          <TaskTrackingWizard steps={steps} activeStep={activeStep} draftConfig={draftConfig} />
+          <TaskTrackingWizard
+            steps={steps}
+            activeStep={activeStep}
+            draftConfig={draftConfig}
+            stepProgress={stepProgress}
+            stepperNav={(step) => step <= stepProgress && setActiveStep(step)}
+          />
         </div>
         <div className={classes.content}>{Content()}</div>
       </div>

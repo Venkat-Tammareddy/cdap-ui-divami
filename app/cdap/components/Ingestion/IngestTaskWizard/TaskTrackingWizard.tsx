@@ -82,13 +82,17 @@ const styles = (theme): StyleRules => {
 interface ITrackingWizardProps extends WithStyles<typeof styles> {
   steps: any[];
   activeStep;
+  stepProgress;
   draftConfig;
+  stepperNav: (step: number) => void;
 }
 const TrackingWizard: React.FC<ITrackingWizardProps> = ({
   classes,
   steps,
   activeStep,
+  stepProgress,
   draftConfig,
+  stepperNav,
 }) => {
   function getStepContent(step: number) {
     switch (step) {
@@ -147,7 +151,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
     <div className={classes.root}>
       <Stepper activeStep={activeStep} orientation="vertical" connector={<QontoConnector />}>
         {steps.map((label, index) => (
-          <Step key={label} expanded={index < activeStep}>
+          <Step key={label} expanded={index < stepProgress}>
             <StepLabel
               className={classes.label}
               StepIconProps={{
@@ -157,7 +161,10 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
                   completed: classes.completedIcon,
                 },
               }}
-              StepIconComponent={index < activeStep ? iconn : null}
+              StepIconComponent={
+                index <= stepProgress ? (index === activeStep ? null : iconn) : null
+              }
+              onClick={() => stepperNav(index)}
             >
               {label}
             </StepLabel>

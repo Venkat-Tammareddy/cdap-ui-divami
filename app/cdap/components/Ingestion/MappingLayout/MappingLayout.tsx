@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Card, CardContent, Typography, CardActions, Button } from '@material-ui/core';
+import { Card, CardContent, Typography, Button } from '@material-ui/core';
 
 const styles = (): StyleRules => {
   return {
@@ -140,7 +140,7 @@ interface IIngestionProps extends WithStyles<typeof styles> {
   handleCancel: (value: object) => void;
 }
 const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, handleCancel }) => {
-  const [cardSelected, setSelected] = React.useState('none');
+  const [cardSelected] = React.useState('All');
 
   const submitMapping = () => {
     submitMappingType(cardSelected);
@@ -156,17 +156,17 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-        <div className={classes.successMsg}>
+        {/* <div className={classes.successMsg}>
           <img src={successMsgIcon} className={classes.successIcon} alt="success icon" />
           <p className={classes.successMsgText}>Successfully connected to the Studies database</p>
-        </div>
+        </div> */}
         <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
         <div className={classes.mappingTypes}>
           <Card
             className={cardSelected === 'All' ? classes.selectedCard : classes.mappingCard}
             variant="outlined"
             onClick={() => {
-              setSelected('All');
+              // setSelected('All');
             }}
           >
             <div className={classes.mappingInfo}>
@@ -198,7 +198,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
             className={cardSelected === 'Custom' ? classes.selectedCard : classes.mappingCard}
             variant="outlined"
             onClick={() => {
-              setSelected('Custom');
+              // setSelected('Custom');
             }}
           >
             <div className={classes.mappingInfo}>

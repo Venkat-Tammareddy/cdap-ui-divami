@@ -119,12 +119,18 @@ const styles = (): StyleRules => {
 
 interface ITaskDetailsProps extends WithStyles<typeof styles> {
   submitValues: (values: object) => void;
-  handleCancel: (values: object) => void;
+  handleCancel: () => void;
+  draftConfig;
 }
 
-const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues, handleCancel }) => {
-  const [taskName, setTaskName] = React.useState('');
-  const [taskDescription, setTaskDescription] = React.useState('');
+const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
+  classes,
+  submitValues,
+  handleCancel,
+  draftConfig,
+}) => {
+  const [taskName, setTaskName] = React.useState(draftConfig.name);
+  const [taskDescription, setTaskDescription] = React.useState(draftConfig.description);
   const [taskTags, setTaskTags] = React.useState('');
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
@@ -139,8 +145,8 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues, h
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const formDataObject = {
-      taskName: '',
-      taskDescription: '',
+      taskName,
+      taskDescription,
       tags: [],
     };
 
@@ -155,7 +161,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues, h
   };
 
   const onCancel = (e: React.FormEvent) => {
-    handleCancel({ name: 'cancel' });
+    handleCancel();
   };
 
   const handleTaskNameChange = (e: React.FormEvent) => {

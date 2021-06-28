@@ -1,3 +1,19 @@
+/*
+ * Copyright © 2020 Cask Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 import { TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import * as React from 'react';
@@ -119,12 +135,18 @@ const styles = (): StyleRules => {
 
 interface ITaskDetailsProps extends WithStyles<typeof styles> {
   submitValues: (values: object) => void;
-  handleCancel: (values: object) => void;
+  handleCancel: () => void;
+  draftConfig;
 }
 
-const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues, handleCancel }) => {
-  const [taskName, setTaskName] = React.useState('');
-  const [taskDescription, setTaskDescription] = React.useState('');
+const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
+  classes,
+  submitValues,
+  handleCancel,
+  draftConfig,
+}) => {
+  const [taskName, setTaskName] = React.useState(draftConfig.name);
+  const [taskDescription, setTaskDescription] = React.useState(draftConfig.description);
   const [taskTags, setTaskTags] = React.useState('');
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
@@ -139,8 +161,8 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues, h
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const formDataObject = {
-      taskName: '',
-      taskDescription: '',
+      taskName,
+      taskDescription,
       tags: [],
     };
 
@@ -155,7 +177,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes, submitValues, h
   };
 
   const onCancel = (e: React.FormEvent) => {
-    handleCancel({ name: 'cancel' });
+    handleCancel();
   };
 
   const handleTaskNameChange = (e: React.FormEvent) => {

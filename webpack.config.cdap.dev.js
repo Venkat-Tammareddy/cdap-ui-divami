@@ -37,7 +37,7 @@ const loaderExclude = [
   /node_modules/,
   /bower_components/,
   /packaged\/public\/dist/,
-  /packaged\/public\/cdap_dist/,
+  ///packaged\/public\/cdap_dist/,
   /packaged\/public\/common_dist/,
   /lib/,
 ];
@@ -68,7 +68,7 @@ const getWebpackDllPlugins = (mode) => {
   ];
 };
 var plugins = [
-  new CleanWebpackPlugin(cleanOptions),
+ // new CleanWebpackPlugin(cleanOptions),
   new CaseSensitivePathsPlugin(),
   ...getWebpackDllPlugins(mode),
   new LodashModuleReplacementPlugin({
@@ -261,7 +261,7 @@ var webpackConfig = {
     index: 'cdap.html',
     contentBase: path.join(__dirname, '/packaged/public/cdap_dist/cdap_assets/'),
     port: 8080,
-    open: 'chrome',
+    open: 'google-chrome',
     writeToDisk: true,
     publicPath: '/cdap_assets/',
     watchContentBase: devMode === 'reload',

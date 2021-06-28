@@ -17,7 +17,7 @@
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import TaskTrackingWizard from '../IngestTaskWizard/TaskTrackingWizard';
-import { Button, Paper, Typography } from '@material-ui/core';
+import If from 'components/If';
 import { EntityTopPanel } from 'components/EntityTopPanel';
 import TaskDetails from '../TaskDetails/TaskDetails';
 import SelectConnections from '../SelectConnections/SelectConnections';
@@ -28,6 +28,7 @@ import { MyPipelineApi } from 'api/pipeline';
 import { ConnectionsApi } from 'api/connections';
 import NamespaceStore from 'services/NamespaceStore';
 import history from 'services/history';
+import LoadingSVGCentered from 'components/LoadingSVGCentered';
 
 const styles = (theme): StyleRules => {
   return {
@@ -44,7 +45,9 @@ const styles = (theme): StyleRules => {
     wizard: {
       boxShadow: ' 0px -1px 10px 0.5px gray',
     },
-    content: {},
+    content: {
+      overflowY: 'auto',
+    },
   };
 };
 
@@ -53,6 +56,7 @@ interface ICreateIngestionProps extends WithStyles<typeof styles> {
 }
 const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
+  const [deployLoader, setDeployLoader] = React.useState(false);
   const [connections, setConnections] = React.useState([]);
   const [draftId] = React.useState(uuidV4());
   const [draftConfig, setDraftConfig] = React.useState({
@@ -85,7 +89,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       processTimingEnabled: true,
       stageLoggingEnabled: false,
       pushdownEnabled: false,
-      stages: [{ name: 'source' }, { name: 'target' }],
+      stages: [{}, {}],
       transformationPushdown: null,
       schedule: '0 * * * *',
       engine: 'spark',
@@ -145,6 +149,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     );
   };
   const deployPipeline = () => {
+    setDeployLoader(true);
     MyPipelineApi.publish(
       {
         namespace: currentNamespace,
@@ -156,9 +161,11 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         console.log('deploy', message);
         deleteDraft();
         goToIngestionHome();
+        setDeployLoader(false);
       },
       (err) => {
         console.log(err);
+        setDeployLoader(false);
       }
     );
   };
@@ -173,22 +180,19 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     'Configuration',
   ];
   const [activeStep, setActiveStep] = React.useState(0);
+  const [stepProgress, setStepProgress] = React.useState(0);
+
   const handleNext = () => {
+    activeStep === stepProgress && setStepProgress((prev) => prev + 1);
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-  };
   const Content = () => {
     switch (activeStep) {
       case 0:
         return (
           <TaskDetails
+            draftConfig={draftConfig}
             submitValues={(details: any) => {
               setDraftConfig((prevDraftConfig) => {
                 return {
@@ -199,7 +203,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               });
               handleNext();
             }}
-            handleCancel={(cancelEvent: any) => {
+            handleCancel={() => {
               goToIngestionHome();
             }}
           />
@@ -209,6 +213,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           <SelectConnections
             selectionType="source"
             connectionsList={connections}
+            draftConfig={draftConfig}
             submitConnection={(a: any) => {
               console.log(a);
               setDraftConfig((prevDraftConfig) => {
@@ -226,17 +231,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                       {
                         name: a.name,
                         connectionType: a.connectionType,
-                        plugin: {
-                          ...a.plugin,
-                          name: 'MultiTableDatabase',
-                          type: 'batchsource',
-                          label: 'Multiple Database Tables',
-                          artifact: {
-                            name: 'multi-table-plugins',
-                            version: '1.1.0',
-                            scope: 'USER',
-                          },
-                        },
+                        plugin: a.plugin,
                         outputSchema: [
                           {
                             name: 'etlSchemaBody',
@@ -245,6 +240,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                         ],
                         id: a.name,
                       },
+                      prevDraftConfig.config.stages[1],
                     ],
                   },
                 };
@@ -252,7 +248,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               console.log(draftConfig);
               handleNext();
             }}
-            handleCancel={(cancelEvent: any) => {
+            handleCancel={() => {
               goToIngestionHome();
             }}
           />
@@ -262,6 +258,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           <SelectConnections
             selectionType="target"
             connectionsList={connections}
+            draftConfig={draftConfig}
             submitConnection={(a: any) => {
               console.log(a);
               setDraftConfig((prevDraftConfig) => {
@@ -271,23 +268,11 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                     ...prevDraftConfig.config,
                     connections: [{ ...prevDraftConfig.config.connections[0], to: a.name }],
                     stages: [
-                      ...prevDraftConfig.config.stages,
+                      prevDraftConfig.config.stages[0],
                       {
                         name: a.name,
                         connectionType: a.connectionType,
-                        plugin: {
-                          name: 'BigQueryMultiTable',
-                          type: 'batchsink',
-                          label: 'BigQuery Multi Table',
-                          artifact: {
-                            name: 'google-cloud',
-                            version: '0.18.0-SNAPSHOT',
-                            scope: 'SYSTEM',
-                          },
-                          properties: {
-                            ...a.plugin.properties,
-                          },
-                        },
+                        plugin: a.plugin,
                         outputSchema: [
                           {
                             name: 'etlSchemaBody',
@@ -302,7 +287,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               });
               handleNext();
             }}
-            handleCancel={(cancelEvent: any) => {
+            handleCancel={() => {
               goToIngestionHome();
             }}
           />
@@ -330,9 +315,18 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   return (
     <div className={classes.root}>
       <EntityTopPanel title="Create Ingestion Task" />
+      <If condition={deployLoader}>
+        <LoadingSVGCentered />
+      </If>
       <div className={classes.wizardAndContentWrapper}>
         <div className={classes.wizard}>
-          <TaskTrackingWizard steps={steps} activeStep={activeStep} draftConfig={draftConfig} />
+          <TaskTrackingWizard
+            steps={steps}
+            activeStep={activeStep}
+            draftConfig={draftConfig}
+            stepProgress={stepProgress}
+            stepperNav={(step) => step <= stepProgress && setActiveStep(step)}
+          />
         </div>
         <div className={classes.content}>{Content()}</div>
       </div>

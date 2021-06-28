@@ -118,27 +118,37 @@ interface ISelectConnectionsProps extends WithStyles<typeof styles> {
   selectionType: string;
   connectionsList: any[];
   submitConnection: (value: object) => void;
-  handleCancel: (value: object) => void;
+  handleCancel: () => void;
+  draftConfig;
 }
 
 const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   classes,
-  selectionType,
+  selectionType = 'source',
   connectionsList = [],
   submitConnection,
   handleCancel,
+  draftConfig,
 }) => {
   const [search, setSearch] = React.useState('');
-  const [selectedConnection, setSelectedConnection] = React.useState({});
+  const [selectedConnection, setSelectedConnection] = React.useState<any>({});
+
+  React.useEffect(() => {
+    selectionType === 'source'
+      ? setSelectedConnection(draftConfig.config.stages[0])
+      : setSelectedConnection(draftConfig.config.stages[1]);
+  }, [selectionType]);
 
   const filteredList = connectionsList.filter(
     (item) =>
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.connectionType.toLowerCase().includes(search.toLowerCase())
+      (item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.connectionType.toLowerCase().includes(search.toLowerCase())) &&
+      ((selectionType === 'source' && item.plugin.type.includes('batchsource')) ||
+        (selectionType === 'target' && item.plugin.type.includes('batchsink')))
   );
 
   const onCancel = (e: React.FormEvent) => {
-    handleCancel({ name: 'cancel' });
+    handleCancel();
   };
   return (
     <div className={classes.root}>
@@ -177,7 +187,10 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
               <TableRow
                 key={index}
                 className={
-                  selectedConnection === conn ? classes.tableRowSelected : classes.tableRow
+                  selectedConnection.plugin?.properties.referenceName ===
+                  conn.plugin?.properties.referenceName
+                    ? classes.tableRowSelected
+                    : classes.tableRow
                 }
                 onClick={() => setSelectedConnection(conn)}
               >

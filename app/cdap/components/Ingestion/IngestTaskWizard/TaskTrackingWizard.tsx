@@ -143,7 +143,6 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({ classes, steps, active
         {steps.map((label, index) => (
           <Step key={label} expanded={index < activeStep}>
             <StepLabel
-              onClick={() => console.log(index)}
               className={classes.label}
               StepIconProps={{
                 classes: {

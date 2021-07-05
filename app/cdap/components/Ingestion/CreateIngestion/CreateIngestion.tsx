@@ -51,9 +51,7 @@ const styles = (theme): StyleRules => {
   };
 };
 
-interface ICreateIngestionProps extends WithStyles<typeof styles> {
-  test: string;
-}
+interface ICreateIngestionProps extends WithStyles<typeof styles> {}
 const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [deployLoader, setDeployLoader] = React.useState(false);
@@ -97,7 +95,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       maxConcurrentRuns: 1,
     },
   });
-  const isFirstRun = React.useRef(true);
+
   React.useEffect(() => {
     ConnectionsApi.listConnections({
       context: currentNamespace,
@@ -111,15 +109,18 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       }
     );
   }, []);
+
+  const isFirstRun = React.useRef(true);
   React.useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       return;
     }
-    submitDraft();
+    saveDraft();
     console.log(draftConfig);
   }, [draftConfig]);
-  const submitDraft = () => {
+
+  const saveDraft = () => {
     MyPipelineApi.saveDraft(
       {
         context: currentNamespace,
@@ -135,6 +136,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       }
     );
   };
+
   const deleteDraft = () => {
     MyPipelineApi.deleteDraft({
       context: currentNamespace,
@@ -148,6 +150,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       }
     );
   };
+
   const deployPipeline = () => {
     setDeployLoader(true);
     MyPipelineApi.publish(
@@ -170,7 +173,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     );
   };
   const goToIngestionHome = () => {
-    history.replace('/ns/:namespace/ingestion');
+    history.replace(`/ns/${currentNamespace}/ingestion`);
   };
   const steps = [
     'Task Details',

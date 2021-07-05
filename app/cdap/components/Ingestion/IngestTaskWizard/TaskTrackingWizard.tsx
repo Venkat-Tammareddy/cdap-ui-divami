@@ -25,6 +25,7 @@ const styles = (theme): StyleRules => {
       height: '100%',
       '& .MuiStepContent-root': {
         borderLeft: '1px solid green',
+        marginLeft: '17px',
       },
       '& .MuiStepLabel-label': {
         fontSize: '16px',
@@ -32,6 +33,13 @@ const styles = (theme): StyleRules => {
         color: '#202124',
         letterSpacing: '0',
         lineHeight: '24px',
+      },
+      overflowY: 'auto',
+      '& .MuiStepper-root': {
+        padding: '36px 28px',
+      },
+      '& .MuiStepConnector-vertical': {
+        marginLeft: '17px',
       },
     },
     button: {
@@ -50,6 +58,7 @@ const styles = (theme): StyleRules => {
         fontFamily: 'Lato',
         fill: '#78909C',
       },
+      margin: '4px',
       color: '#FFFFFF',
       height: '30px',
       width: '30px',
@@ -69,13 +78,19 @@ const styles = (theme): StyleRules => {
         padding: '4px',
         fontSize: '14px',
         letterSpacing: '0',
+        margin: '0px',
       },
       '&$completedIcon': {
         color: 'green',
       },
     },
     activeIcon: {},
-    completedIcon: {},
+    completedIcon: {
+      margin: '4px',
+    },
+    stepContent: {
+      wordBreak: 'break-word',
+    },
   };
 };
 
@@ -97,7 +112,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
   function getStepContent(step: number) {
     switch (step) {
       case 0:
-        return draftConfig.name;
+        return <p>{draftConfig.name}</p>;
       case 1:
         return (
           <>
@@ -119,9 +134,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
   const myimg = '/cdap_assets/img/stepperIcon.svg';
   const iconn = () => {
     return (
-      <div>
-        <img src={myimg} alt="img" height="30px" width="30px" />
-      </div>
+      <img className={classes.completedIcon} src={myimg} alt="img" height="30px" width="30px" />
     );
   };
 
@@ -133,18 +146,16 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
     },
     active: {
       '& $line': {
-        borderColor: '#4285F4',
+        borderLeft: '1px solid green',
       },
     },
     completed: {
       '& $line': {
-        borderColor: 'green',
+        borderLeft: '1px solid green',
       },
     },
     line: {
-      borderColor: 'green',
-      borderTopWidth: 3,
-      borderRadius: 1,
+      borderLeft: '1px dashed #A5A5A5',
     },
   })(StepConnector);
   return (
@@ -169,7 +180,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
               {label}
             </StepLabel>
             <StepContent>
-              <Typography component={'span'}>{getStepContent(index)}</Typography>
+              <Typography className={classes.stepContent}>{getStepContent(index)}</Typography>
             </StepContent>
           </Step>
         ))}

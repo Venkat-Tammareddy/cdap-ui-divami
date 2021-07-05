@@ -45,11 +45,7 @@ const styles = (theme): StyleRules => {
         fontFamily: 'Lato',
       },
     },
-    tableWrapper: {
-      marginTop: '20px',
-      // border: '2px solid red',
-      flex: '1 1 0%',
-    },
+
     header: {
       padding: '10px 20px',
       color: '#202124',
@@ -187,8 +183,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
               <TableRow
                 key={index}
                 className={
-                  selectedConnection.plugin?.properties.referenceName ===
-                  conn.plugin?.properties.referenceName
+                  selectedConnection.name === conn.name
                     ? classes.tableRowSelected
                     : classes.tableRow
                 }

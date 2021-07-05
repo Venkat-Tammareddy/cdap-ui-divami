@@ -109,6 +109,10 @@ const styles = (theme): StyleRules => {
       lineHeight: '24px',
       marginBottom: '0px',
     },
+    emptyList: {
+      textAlign: 'center',
+      margin: '30px 30px',
+    },
   };
 };
 
@@ -141,7 +145,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
     (item) =>
       (item.name.toLowerCase().includes(search.toLowerCase()) ||
         item.connectionType.toLowerCase().includes(search.toLowerCase())) &&
-      ((selectionType === 'source' && item.plugin.type.includes('batchsource')) ||
+      ((selectionType === 'source' && item.connectionType.includes('Database')) ||
         (selectionType === 'target' && item.plugin.type.includes('batchsink')))
   );
 
@@ -157,7 +161,6 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
       )}
       <TextField
         variant="outlined"
-        name="taskName"
         placeholder={T.translate(`${I18N_PREFIX}.placeholders`).toString()}
         className={classes.search}
         value={search}
@@ -169,34 +172,40 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
           },
         }}
         autoFocus={false}
+        data-cy="connections-search"
       />
       <Table columnTemplate="2fr 1fr 1fr">
-        <TableHeader>
-          <TableRow className={classes.header}>
+        <TableHeader data-cy="table-header">
+          <TableRow className={classes.header} data-cy="table-row">
             <TableCell>{T.translate(`${I18N_PREFIX}.Names.database`)}</TableCell>
             <TableCell>{T.translate(`${I18N_PREFIX}.Names.connection`)}</TableCell>
             <TableCell>{T.translate(`${I18N_PREFIX}.Names.lastUsedOn`)}</TableCell>
           </TableRow>
         </TableHeader>
 
-        <TableBody>
-          {filteredList.map((conn, index) => {
-            return (
-              <TableRow
-                key={index}
-                className={
-                  selectedConnection.name === conn.name
-                    ? classes.tableRowSelected
-                    : classes.tableRow
-                }
-                onClick={() => setSelectedConnection(conn)}
-              >
-                <TableCell>{conn.name}</TableCell>
-                <TableCell>{conn.connectionType}</TableCell>
-                <TableCell>{humanReadableDate(conn.updatedTimeMillis, true)}</TableCell>
-              </TableRow>
-            );
-          })}
+        <TableBody data-cy="table-body">
+          {filteredList.length === 0 ? (
+            <h3 className={classes.emptyList}>There are no connections...</h3>
+          ) : (
+            filteredList.map((conn, index) => {
+              return (
+                <TableRow
+                  data-cy={`table-row-${conn.name}`}
+                  key={index}
+                  className={
+                    selectedConnection.name === conn.name
+                      ? classes.tableRowSelected
+                      : classes.tableRow
+                  }
+                  onClick={() => setSelectedConnection(conn)}
+                >
+                  <TableCell>{conn.connectionType}</TableCell>
+                  <TableCell>{conn.name}</TableCell>
+                  <TableCell>{humanReadableDate(conn.updatedTimeMillis, true)}</TableCell>
+                </TableRow>
+              );
+            })
+          )}
         </TableBody>
       </Table>
       <div className={classes.buttonContainer}>

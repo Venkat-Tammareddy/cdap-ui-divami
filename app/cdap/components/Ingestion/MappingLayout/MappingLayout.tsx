@@ -62,8 +62,6 @@ const styles = (): StyleRules => {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      // marginTop: '60px',
-      // marginLeft: '25px',
       padding: '10px',
     },
     mappingIcons: {
@@ -157,9 +155,12 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-        <Typography className={classes.title}>{T.translate(`${I18N_PREFIX}.title`)}</Typography>
+        <Typography className={classes.title} data-cy="title">
+          {T.translate(`${I18N_PREFIX}.title`)}
+        </Typography>
         <div className={classes.mappingTypes}>
           <Card
+            data-cy="card-1"
             className={cardSelected === 'All' ? classes.selectedCard : classes.mappingCard}
             variant="outlined"
             onClick={() => {
@@ -173,7 +174,9 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
                 alt={T.translate(`${I18N_PREFIX}.altText`).toString()}
               />
               <CardContent className={classes.label}>
-                <p className={classes.labelText}>{T.translate(`${I18N_PREFIX}.AllTables.title`)}</p>
+                <p className={classes.labelText} data-cy="question-1">
+                  {T.translate(`${I18N_PREFIX}.AllTables.title`)}
+                </p>
               </CardContent>
               <CardContent className={classes.descriptionContainer}>
                 <Typography
@@ -181,6 +184,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
                   color="textSecondary"
                   component="p"
                   className={classes.mappingDescription}
+                  data-cy="b1"
                 >
                   {T.translate(`${I18N_PREFIX}.AllTables.description`)}
                 </Typography>
@@ -189,6 +193,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
                   color="textSecondary"
                   component="p"
                   className={classes.mappingDescription}
+                  data-cy="b2"
                 >
                   {T.translate(`${I18N_PREFIX}.AllTables.description2`)}
                 </Typography>
@@ -201,6 +206,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
             onClick={() => {
               // setSelected('Custom');
             }}
+            data-cy="card-2"
           >
             <div className={classes.mappingInfo}>
               <img
@@ -209,7 +215,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
                 alt={T.translate(`${I18N_PREFIX}.altText`).toString()}
               />
               <CardContent className={classes.label}>
-                <p className={classes.labelText}>
+                <p className={classes.labelText} data-cy="question-1">
                   {T.translate(`${I18N_PREFIX}.CustomTables.title`)}
                 </p>
               </CardContent>
@@ -219,6 +225,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
                   color="textSecondary"
                   component="p"
                   className={classes.mappingDescription}
+                  data-cy="desc"
                 >
                   {T.translate(`${I18N_PREFIX}.CustomTables.description`)}
                 </Typography>
@@ -227,6 +234,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
                   color="textSecondary"
                   component="p"
                   className={classes.mappingDescription}
+                  data-cy="desc2"
                 >
                   {T.translate(`${I18N_PREFIX}.CustomTables.description2`)}
                 </Typography>

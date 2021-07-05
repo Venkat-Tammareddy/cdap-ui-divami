@@ -26,6 +26,7 @@ const styles = (theme): StyleRules => {
       '& .MuiStepContent-root': {
         borderLeft: '1px solid green',
         marginLeft: '17px',
+        paddingLeft: '40px',
       },
       '& .MuiStepLabel-label': {
         fontSize: '16px',
@@ -41,6 +42,9 @@ const styles = (theme): StyleRules => {
       '& .MuiStepConnector-vertical': {
         marginLeft: '17px',
       },
+    },
+    label: {
+      cursor: 'pointer',
     },
     button: {
       marginTop: theme.spacing(1),
@@ -90,6 +94,9 @@ const styles = (theme): StyleRules => {
     },
     stepContent: {
       wordBreak: 'break-word',
+    },
+    '& .MuiTypography-body': {
+      fontSize: '14px',
     },
   };
 };

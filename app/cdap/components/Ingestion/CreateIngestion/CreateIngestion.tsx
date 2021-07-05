@@ -30,8 +30,6 @@ import { ConnectionsApi } from 'api/connections';
 import NamespaceStore from 'services/NamespaceStore';
 import history from 'services/history';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
-import ConfigurationOverlay from '../ConfigurationOverlay/ConfigurationOverlay';
-import { Modal } from 'reactstrap';
 const I18N_PREFIX = 'features.CreateIngestion';
 
 const styles = (theme): StyleRules => {
@@ -168,7 +166,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         console.log('deploy', message);
         deleteDraft();
         goToIngestionHome();
-        setOpenModal(true);
         setDeployLoader(false);
       },
       (err) => {
@@ -238,8 +235,19 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                     stages: [
                       {
                         name: a.name,
-                        connectionType: a.connectionType,
-                        plugin: a.plugin,
+                        plugin: {
+                          name: 'MultiTableDatabase',
+                          type: 'batchsource',
+                          artifact: {
+                            name: 'multi-table-plugins',
+                            version: '1.3.0',
+                            scope: 'USER',
+                          },
+                          properties: {
+                            ...a.plugin.properties,
+                            referenceName: 'ingestion-multitable-bigquery',
+                          },
+                        },
                         outputSchema: [
                           {
                             name: 'etlSchemaBody',
@@ -264,7 +272,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       case 2:
         return (
           <SelectConnections
-            selectionType={T.translate(`${I18N_PREFIX}.SelectConnections.source`).toString()}
+            selectionType={T.translate(`${I18N_PREFIX}.SelectConnections.target`).toString()}
             connectionsList={connections}
             draftConfig={draftConfig}
             submitConnection={(a: any) => {
@@ -320,7 +328,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         return;
     }
   };
-  const [OpenModal, setOpenModal] = React.useState(false);
   return (
     <div className={classes.root}>
       <EntityTopPanel title={T.translate(`${I18N_PREFIX}.createIngest`).toString()} />
@@ -339,15 +346,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         </div>
         <div className={classes.content}>{Content()}</div>
       </div>
-      <Modal isOpen={OpenModal}>
-        {OpenModal && (
-          <ConfigurationOverlay
-            closeModal={() => setOpenModal(false)}
-            runTask={() => setOpenModal(false)}
-            scheduleTask={() => setOpenModal(false)}
-          />
-        )}
-      </Modal>
     </div>
   );
 };

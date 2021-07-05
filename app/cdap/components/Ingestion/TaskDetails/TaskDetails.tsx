@@ -207,7 +207,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
       <div className={classes.textFields}>
         <TextField
           required
-          name="taskName"
+          name={T.translate(`${I18N_PREFIX}.Name.taskName`).toString()}
           label={T.translate(`${I18N_PREFIX}.Labels.taskName`)}
           value={taskName}
           className={classes.taskName}
@@ -225,7 +225,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
           {taskNameError.errorMsg}
         </p>
         <TextField
-          name="taskDescription"
+          name={T.translate(`${I18N_PREFIX}.Name.taskDescription`).toString()}
           onChange={(e) => setTaskDescription(e.target.value)}
           value={taskDescription}
           label={T.translate(`${I18N_PREFIX}.Labels.description`)}

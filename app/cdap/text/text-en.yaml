@@ -2798,6 +2798,9 @@ features:
       description: Description
       taskName: Task Name
       tags: Tags
+    Name:
+      taskName: taskName
+      taskDescription: taskDescription
       
   TriggeredPipelines:
     collapsedTabLabel: "Outbound triggers ({count})"

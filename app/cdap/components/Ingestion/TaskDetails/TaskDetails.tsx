@@ -14,10 +14,12 @@
  * the License.
  */
 
+import T from 'i18n-react';
 import { TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
+const I18N_PREFIX = 'features.TaskDetails';
 
 const styles = (): StyleRules => {
   return {
@@ -27,10 +29,6 @@ const styles = (): StyleRules => {
       margin: '40px 40px',
       display: 'flex',
       flexDirection: 'column',
-      // '& .MuiFormLabel-root': {
-      //   color: '#202124',
-      //   fontSize: '16px', // or black
-      // },
     },
     label: {
       fontSize: '16px',
@@ -150,13 +148,13 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
   const [taskTags, setTaskTags] = React.useState('');
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
-    errorMsg:
-      'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)',
+    errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`),
   });
   const [taskTagError] = React.useState({
     error: false,
-    errorMsg: 'Add tags with a comma (,) separation (ex: Studies, Courses, and etc...)',
+    errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
   });
+  const taskLengthErrorMessage = T.translate(`${I18N_PREFIX}.Errors.taskNameLengthError`);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -184,16 +182,14 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
     const inputValue = e.target as HTMLInputElement;
     if (inputValue.value.length > 64) {
       taskNameError.error = true;
-      taskNameError.errorMsg = 'Task name must be less than 64';
+      taskNameError.errorMsg = taskLengthErrorMessage;
     } else {
       if (inputValue.value.includes(' ')) {
         taskNameError.error = true;
-        taskNameError.errorMsg =
-          'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)';
+        taskNameError.errorMsg = taskNameError.errorMsg;
       } else {
         taskNameError.error = false;
-        taskNameError.errorMsg =
-          'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)';
+        taskNameError.errorMsg = taskNameError.errorMsg;
       }
     }
     setTaskNameError(taskNameError);
@@ -212,7 +208,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
         <TextField
           required
           name="taskName"
-          label="Task Name"
+          label={T.translate(`${I18N_PREFIX}.Labels.taskName`)}
           value={taskName}
           className={classes.taskName}
           color={taskNameError.error ? 'secondary' : 'primary'}
@@ -232,12 +228,12 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
           name="taskDescription"
           onChange={(e) => setTaskDescription(e.target.value)}
           value={taskDescription}
-          label="Description"
-          InputProps={{
-            classes: {
-              input: classes.resize,
-            },
-          }}
+          label={T.translate(`${I18N_PREFIX}.Labels.description`)}
+          // InputProps={{
+          //   classes: {
+          //     input: classes.resize,
+          //   },
+          // }}
           InputLabelProps={{
             classes: {
               root: classes.label,
@@ -250,7 +246,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
         />
         <TextField
           name="Tags"
-          label="Tags"
+          label={T.translate(`${I18N_PREFIX}.Labels.tags`)}
           value={taskTags}
           variant="outlined"
           className={classes.taskTags}
@@ -270,7 +266,13 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
         <Button className={classes.cancelButton} onClick={onCancel}>
           CANCEL
         </Button>
-        <Button variant="contained" color="primary" className={classes.submitButton} type="submit">
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.submitButton}
+          type="submit"
+          disabled={taskNameError.error}
+        >
           CONTINUE
         </Button>
       </div>

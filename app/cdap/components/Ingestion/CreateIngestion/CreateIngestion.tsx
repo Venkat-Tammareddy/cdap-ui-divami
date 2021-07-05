@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react';
+import T from 'i18n-react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import TaskTrackingWizard from '../IngestTaskWizard/TaskTrackingWizard';
 import If from 'components/If';
@@ -29,6 +30,9 @@ import { ConnectionsApi } from 'api/connections';
 import NamespaceStore from 'services/NamespaceStore';
 import history from 'services/history';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
+import ConfigurationOverlay from '../ConfigurationOverlay/ConfigurationOverlay';
+import { Modal } from 'reactstrap';
+const I18N_PREFIX = 'features.CreateIngestion';
 
 const styles = (theme): StyleRules => {
   return {
@@ -164,6 +168,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         console.log('deploy', message);
         deleteDraft();
         goToIngestionHome();
+        setOpenModal(true);
         setDeployLoader(false);
       },
       (err) => {
@@ -176,11 +181,11 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     history.replace(`/ns/${currentNamespace}/ingestion`);
   };
   const steps = [
-    'Task Details',
-    'Source Connection',
-    'Target Connection',
-    'Target Mapping',
-    'Configuration',
+    T.translate(`${I18N_PREFIX}.Steps.taskDetails`),
+    T.translate(`${I18N_PREFIX}.Steps.source`),
+    T.translate(`${I18N_PREFIX}.Steps.target`),
+    T.translate(`${I18N_PREFIX}.Steps.mapping`),
+    T.translate(`${I18N_PREFIX}.Steps.configuration`),
   ];
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepProgress, setStepProgress] = React.useState(0);
@@ -214,7 +219,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       case 1:
         return (
           <SelectConnections
-            selectionType="source"
+            selectionType={T.translate(`${I18N_PREFIX}.SelectConnections.source`).toString()}
             connectionsList={connections}
             draftConfig={draftConfig}
             submitConnection={(a: any) => {
@@ -259,7 +264,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       case 2:
         return (
           <SelectConnections
-            selectionType="target"
+            selectionType={T.translate(`${I18N_PREFIX}.SelectConnections.source`).toString()}
             connectionsList={connections}
             draftConfig={draftConfig}
             submitConnection={(a: any) => {
@@ -315,9 +320,10 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         return;
     }
   };
+  const [OpenModal, setOpenModal] = React.useState(false);
   return (
     <div className={classes.root}>
-      <EntityTopPanel title="Create Ingestion Task" />
+      <EntityTopPanel title={T.translate(`${I18N_PREFIX}.createIngest`).toString()} />
       <If condition={deployLoader}>
         <LoadingSVGCentered />
       </If>
@@ -333,6 +339,15 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         </div>
         <div className={classes.content}>{Content()}</div>
       </div>
+      <Modal isOpen={OpenModal}>
+        {OpenModal && (
+          <ConfigurationOverlay
+            closeModal={() => setOpenModal(false)}
+            runTask={() => setOpenModal(false)}
+            scheduleTask={() => setOpenModal(false)}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

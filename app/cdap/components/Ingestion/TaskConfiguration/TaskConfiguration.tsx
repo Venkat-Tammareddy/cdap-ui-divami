@@ -15,12 +15,16 @@
  */
 
 import * as React from 'react';
+import T from 'i18n-react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import { Button, Radio, Typography } from '@material-ui/core';
 import { RadioGroup } from '@material-ui/core';
 import { FormControlLabel } from '@material-ui/core';
 import { FormLabel } from '@material-ui/core';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { Modal } from 'reactstrap';
+import ConfigurationOverlay from '../ConfigurationOverlay/ConfigurationOverlay';
+const I18N_PREFIX = 'features.TaskConfiguration';
 
 const styles = (): StyleRules => {
   return {
@@ -98,6 +102,16 @@ const styles = (): StyleRules => {
       lineHeight: '24px',
       fontFamily: 'Lato',
     },
+    overlayActive: {
+      display: 'none',
+    },
+    modal: {
+      width: '100%',
+      border: '2px solid black',
+    },
+    modalBackdrop: {
+      backgroundColor: '#FFFFFF',
+    },
   };
 };
 
@@ -108,20 +122,19 @@ interface IIngestionProps extends WithStyles<typeof styles> {
 const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onCancel }) => {
   const [logErrors, setLogErrors] = React.useState('Yes');
   const [logPreferences, setLogPreferences] = React.useState('Replace');
+  const [OpenModal, setOpenModal] = React.useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('log error value: ' + logErrors);
-    console.log('log preferences value: ' + logPreferences);
     deploy();
   };
   return (
     <form className={classes.root} onSubmit={handleSubmit}>
       <div className={classes.configOptions}>
-        <p className={classes.headerText}>Enter Configuration details</p>
+        <p className={classes.headerText}>{T.translate(`${I18N_PREFIX}.title`)}</p>
         <div className={classes.logSection}>
           <FormLabel className={classes.labelText}>
-            Do you like to log data errors during data ingestion?
+            {T.translate(`${I18N_PREFIX}.logText`)}
           </FormLabel>
           <InfoOutlinedIcon />
           <RadioGroup row value={logErrors} onChange={(e) => setLogErrors(e.target.value)}>
@@ -142,7 +155,7 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onC
 
         <div className={classes.preferencesSection}>
           <FormLabel className={classes.labelText}>
-            Do you have a preference for data ingesting?
+            {T.translate(`${I18N_PREFIX}.preferenceText`)}
           </FormLabel>
           <InfoOutlinedIcon />
           <RadioGroup
@@ -178,10 +191,17 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onC
         <Button className={classes.cancelButton} onClick={() => onCancel()}>
           Cancel
         </Button>
-        <Button variant="contained" color="primary" type="submit" className={classes.submitButton}>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          className={classes.submitButton}
+          onClick={() => setOpenModal(true)}
+        >
           Deploy
         </Button>
       </div>
+      {/* {OpenModal && <ConfigurationOverlay closeModal={setOpenModal} />} */}
     </form>
   );
 };

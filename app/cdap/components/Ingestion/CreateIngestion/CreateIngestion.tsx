@@ -30,7 +30,6 @@ import { ConnectionsApi } from 'api/connections';
 import NamespaceStore from 'services/NamespaceStore';
 import history from 'services/history';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
-import Alert from 'components/Alert';
 const I18N_PREFIX = 'features.CreateIngestion';
 
 const styles = (theme): StyleRules => {
@@ -59,7 +58,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [deployLoader, setDeployLoader] = React.useState(false);
   const [connections, setConnections] = React.useState([]);
-  const [isError, setIsError] = React.useState(false);
   const [draftId] = React.useState(uuidV4());
   const [draftConfig, setDraftConfig] = React.useState({
     name: '',
@@ -144,8 +142,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       context: currentNamespace,
       draftId,
     }).subscribe(
-      (message) => {
-      },
+      (message) => {},
       (err) => {
         console.log(err);
       }
@@ -169,7 +166,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       },
       (err) => {
         console.log(err);
-        setIsError(true);
         setDeployLoader(false);
       }
     );
@@ -326,14 +322,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   };
   return (
     <div className={classes.root}>
-      {isError && (
-        <Alert
-          message="Error deploying the pipeline, please check console for detailed error."
-          onClose={setIsError(false)}
-          showAlert
-          type="error"
-        />
-      )}
       <EntityTopPanel title={T.translate(`${I18N_PREFIX}.createIngest`).toString()} />
       <If condition={deployLoader}>
         <LoadingSVGCentered />

@@ -22,8 +22,6 @@ import { RadioGroup } from '@material-ui/core';
 import { FormControlLabel } from '@material-ui/core';
 import { FormLabel } from '@material-ui/core';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import { Modal } from 'reactstrap';
-import ConfigurationOverlay from '../ConfigurationOverlay/ConfigurationOverlay';
 const I18N_PREFIX = 'features.TaskConfiguration';
 
 const styles = (): StyleRules => {
@@ -122,8 +120,6 @@ interface IIngestionProps extends WithStyles<typeof styles> {
 const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onCancel }) => {
   const [logErrors, setLogErrors] = React.useState('Yes');
   const [logPreferences, setLogPreferences] = React.useState('Replace');
-  const [OpenModal, setOpenModal] = React.useState(false);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     deploy();
@@ -191,17 +187,10 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onC
         <Button className={classes.cancelButton} onClick={() => onCancel()}>
           Cancel
         </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-          className={classes.submitButton}
-          onClick={() => setOpenModal(true)}
-        >
+        <Button variant="contained" color="primary" type="submit" className={classes.submitButton}>
           Deploy
         </Button>
       </div>
-      {/* {OpenModal && <ConfigurationOverlay closeModal={setOpenModal} />} */}
     </form>
   );
 };

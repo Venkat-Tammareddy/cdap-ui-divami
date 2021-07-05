@@ -301,6 +301,17 @@ features:
     label: RunID
     copiedLabel: Copied
     notAvailable: ID Not Available
+  CreateIngestion:
+    SelectConnections:
+      source: source
+      target: target
+    createIngest: Create Ingestion Task
+    Steps:
+      taskDetails: Task Details
+      source: Source Connection
+      target: Target Connection
+      mapping: Target Mapping
+      configuration: Configuration
   EntityListView:
     Cards:
       type: "Type: "
@@ -1901,6 +1912,17 @@ features:
       _: "{context} namespaces"
     popoverHeader: Select namespaces to monitor
     selectAll: Select All
+  MappingLayout:
+    title: How Would You Like to Proceed?
+    altText: Image
+    AllTables:
+      title: Select all tables & columns
+      description: I would like to extract all columns from all tables
+      description2: without any custom selection.
+    CustomTables:
+      title: Custom selection of table & columns
+      description: I would like to extract the tables and columns
+      description2: I am interested in.
   Navbar:
     ControlCenter:
       dashboard: Dashboard
@@ -2740,6 +2762,16 @@ features:
       symbolName: Symbol name
   ServiceEnableUtility:
     serviceNotFound: Cannot find {artifactName} artifact
+  SelectConnections:
+    Headers:
+      targetHeader: Select Target Database Connection
+      sourceHeader: Select Source Database Connection
+    placeholders: Search Databases & Connection
+    Names:
+      database: Database Name
+      connection: Connection Name
+      lastUsedOn: Last Used On
+
   SpotlightSearch:
     SpotlightModal:
       headerTagResults: Entities with the tag "{tag}"
@@ -2753,7 +2785,20 @@ features:
     allTags: All Tags
     labelWithCount: Tags ({count})
     notags: No tags found. Click to add a new business tag.
-
+  TaskConfiguration:
+    title: Enter Configuration details
+    logText: Do you like to log data errors during data ingestion?
+    preferenceText: Do you have a preference for data ingesting?
+  TaskDetails:
+    Errors:
+      taskNameLengthError: Task name must be less than 64
+      taskNameFormatError: 'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)'
+      taskTagError: 'Add tags with a comma (,) separation (ex: Studies, Courses, and etc...)'
+    Labels:
+      description: Description
+      taskName: Task Name
+      tags: Tags
+      
   TriggeredPipelines:
     collapsedTabLabel: "Outbound triggers ({count})"
     description: Description

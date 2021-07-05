@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react';
+import T from 'i18n-react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import { Button, TextField } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
@@ -24,6 +25,7 @@ import Table from 'components/Table';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import { humanReadableDate } from 'services/helpers';
+const I18N_PREFIX = 'features.SelectConnections';
 
 const styles = (theme): StyleRules => {
   return {
@@ -153,14 +155,14 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   return (
     <div className={classes.root}>
       {selectionType === 'target' ? (
-        <h3 className={classes.headerText}>Select Target Database Connection</h3>
+        <h3 className={classes.headerText}>{T.translate(`${I18N_PREFIX}.Headers.targetHeader`)}</h3>
       ) : (
-        <h3 className={classes.headerText}>Select Source Database Connection</h3>
+        <h3 className={classes.headerText}>{T.translate(`${I18N_PREFIX}.Headers.sourceHeader`)}</h3>
       )}
       <TextField
         variant="outlined"
         name="taskName"
-        placeholder="Search Databases & Connections"
+        placeholder={T.translate(`${I18N_PREFIX}.placeholders`).toString()}
         className={classes.search}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
@@ -175,9 +177,9 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
       <Table columnTemplate="2fr 1fr 1fr">
         <TableHeader>
           <TableRow className={classes.header}>
-            <TableCell>Database Name</TableCell>
-            <TableCell>Connection Name</TableCell>
-            <TableCell>Last Used On</TableCell>
+            <TableCell>{T.translate(`${I18N_PREFIX}.Names.database`)}</TableCell>
+            <TableCell>{T.translate(`${I18N_PREFIX}.Names.connection`)}</TableCell>
+            <TableCell>{T.translate(`${I18N_PREFIX}.Names.lastUsedOn`)}</TableCell>
           </TableRow>
         </TableHeader>
 

@@ -17,7 +17,8 @@
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import { Card, CardContent, Typography, Button } from '@material-ui/core';
-
+import T from 'i18n-react';
+const I18N_PREFIX = 'features.MappingLayout';
 const styles = (): StyleRules => {
   return {
     root: {
@@ -156,11 +157,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-        {/* <div className={classes.successMsg}>
-          <img src={successMsgIcon} className={classes.successIcon} alt="success icon" />
-          <p className={classes.successMsgText}>Successfully connected to the Studies database</p>
-        </div> */}
-        <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
+        <Typography className={classes.title}>{T.translate(`${I18N_PREFIX}.title`)}</Typography>
         <div className={classes.mappingTypes}>
           <Card
             className={cardSelected === 'All' ? classes.selectedCard : classes.mappingCard}
@@ -170,9 +167,13 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
             }}
           >
             <div className={classes.mappingInfo}>
-              <img className={classes.mappingIcons} src={allTables} alt="some text" />
+              <img
+                className={classes.mappingIcons}
+                src={allTables}
+                alt={T.translate(`${I18N_PREFIX}.altText`).toString()}
+              />
               <CardContent className={classes.label}>
-                <p className={classes.labelText}>Select all tables & columns</p>
+                <p className={classes.labelText}>{T.translate(`${I18N_PREFIX}.AllTables.title`)}</p>
               </CardContent>
               <CardContent className={classes.descriptionContainer}>
                 <Typography
@@ -181,7 +182,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
                   component="p"
                   className={classes.mappingDescription}
                 >
-                  I would like to extract all columns from all tables
+                  {T.translate(`${I18N_PREFIX}.AllTables.description`)}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -189,7 +190,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
                   component="p"
                   className={classes.mappingDescription}
                 >
-                  without any custom selection.
+                  {T.translate(`${I18N_PREFIX}.AllTables.description2`)}
                 </Typography>
               </CardContent>
             </div>
@@ -202,9 +203,15 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
             }}
           >
             <div className={classes.mappingInfo}>
-              <img src={customTable} className={classes.mappingIcons} alt="some icon" />
+              <img
+                src={customTable}
+                className={classes.mappingIcons}
+                alt={T.translate(`${I18N_PREFIX}.altText`).toString()}
+              />
               <CardContent className={classes.label}>
-                <p className={classes.labelText}>Custom selection of table & columns</p>
+                <p className={classes.labelText}>
+                  {T.translate(`${I18N_PREFIX}.CustomTables.title`)}
+                </p>
               </CardContent>
               <CardContent className={classes.descriptionContainer}>
                 <Typography
@@ -213,7 +220,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
                   component="p"
                   className={classes.mappingDescription}
                 >
-                  I would like to extract the tables and columns
+                  {T.translate(`${I18N_PREFIX}.CustomTables.description`)}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -221,7 +228,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
                   component="p"
                   className={classes.mappingDescription}
                 >
-                  I am interested in.
+                  {T.translate(`${I18N_PREFIX}.CustomTables.description2`)}
                 </Typography>
               </CardContent>
             </div>

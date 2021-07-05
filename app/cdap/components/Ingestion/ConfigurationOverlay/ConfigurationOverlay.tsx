@@ -24,8 +24,8 @@ const styles = (): StyleRules => {
   return {
     root: {
       margin: '40px 40px',
-      height: 'calc(100% - 100px)',
       display: 'flex',
+      minHeight: '865px',
       flexDirection: 'column',
     },
     container: {
@@ -121,14 +121,22 @@ const styles = (): StyleRules => {
       height: '30px',
       width: '30px',
       color: '#9E9E9E',
+      marginLeft: '100px',
     },
   };
 };
 
 interface IIngestionProps extends WithStyles<typeof styles> {
-  closeModal: (value: boolean) => void;
+  closeModal: () => void;
+  runTask: () => void;
+  scheduleTask: () => void;
 }
-const ConfigurationOverlayView: React.FC<IIngestionProps> = ({ classes, closeModal }) => {
+const ConfigurationOverlayView: React.FC<IIngestionProps> = ({
+  classes,
+  closeModal,
+  runTask,
+  scheduleTask,
+}) => {
   const [cardSelected, setSelected] = React.useState('none');
 
   const setPointer = (e) => {
@@ -151,7 +159,7 @@ const ConfigurationOverlayView: React.FC<IIngestionProps> = ({ classes, closeMod
           <CloseIcon
             onMouseOver={setPointer}
             className={classes.closeIcon}
-            onClick={() => closeModal(false)}
+            onClick={() => closeModal()}
           />
         </div>
 
@@ -161,7 +169,7 @@ const ConfigurationOverlayView: React.FC<IIngestionProps> = ({ classes, closeMod
             className={cardSelected === 'All' ? classes.selectedCard : classes.mappingCard}
             variant="outlined"
             onClick={() => {
-              setSelected('All');
+              runTask();
             }}
           >
             <div className={classes.mappingInfo}>
@@ -193,7 +201,7 @@ const ConfigurationOverlayView: React.FC<IIngestionProps> = ({ classes, closeMod
             className={cardSelected === 'Custom' ? classes.selectedCard : classes.mappingCard}
             variant="outlined"
             onClick={() => {
-              setSelected('Custom');
+              scheduleTask();
             }}
           >
             <div className={classes.mappingInfo}>

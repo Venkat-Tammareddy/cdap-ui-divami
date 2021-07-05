@@ -30,6 +30,7 @@ import { ConnectionsApi } from 'api/connections';
 import NamespaceStore from 'services/NamespaceStore';
 import history from 'services/history';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
+import Alert from 'components/Alert';
 const I18N_PREFIX = 'features.CreateIngestion';
 
 const styles = (theme): StyleRules => {
@@ -58,6 +59,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [deployLoader, setDeployLoader] = React.useState(false);
   const [connections, setConnections] = React.useState([]);
+  const [isError, setIsError] = React.useState(false);
   const [draftId] = React.useState(uuidV4());
   const [draftConfig, setDraftConfig] = React.useState({
     name: '',
@@ -103,7 +105,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       context: currentNamespace,
     }).subscribe(
       (message) => {
-        console.log('connections', message);
         setConnections(message);
       },
       (err) => {
@@ -119,7 +120,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       return;
     }
     saveDraft();
-    console.log(draftConfig);
   }, [draftConfig]);
 
   const saveDraft = () => {
@@ -145,7 +145,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       draftId,
     }).subscribe(
       (message) => {
-        console.log('draft-deleted', message);
       },
       (err) => {
         console.log(err);
@@ -170,6 +169,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       },
       (err) => {
         console.log(err);
+        setIsError(true);
         setDeployLoader(false);
       }
     );
@@ -220,7 +220,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
             connectionsList={connections}
             draftConfig={draftConfig}
             submitConnection={(a: any) => {
-              console.log(a);
               setDraftConfig((prevDraftConfig) => {
                 return {
                   ...prevDraftConfig,
@@ -261,7 +260,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                   },
                 };
               });
-              console.log(draftConfig);
               handleNext();
             }}
             handleCancel={() => {
@@ -276,7 +274,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
             connectionsList={connections}
             draftConfig={draftConfig}
             submitConnection={(a: any) => {
-              console.log(a);
               setDraftConfig((prevDraftConfig) => {
                 return {
                   ...prevDraftConfig,
@@ -312,7 +309,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         return (
           <MappingLayout
             submitMappingType={(mappingType) => {
-              console.log(mappingType);
               handleNext();
             }}
             handleCancel={(cancelEvent: any) => {
@@ -330,6 +326,14 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   };
   return (
     <div className={classes.root}>
+      {isError && (
+        <Alert
+          message="Error deploying the pipeline, please check console for detailed error."
+          onClose={setIsError(false)}
+          showAlert
+          type="error"
+        />
+      )}
       <EntityTopPanel title={T.translate(`${I18N_PREFIX}.createIngest`).toString()} />
       <If condition={deployLoader}>
         <LoadingSVGCentered />

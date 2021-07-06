@@ -146,15 +146,16 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
   const [taskName, setTaskName] = React.useState(draftConfig.name);
   const [taskDescription, setTaskDescription] = React.useState(draftConfig.description);
   const [taskTags, setTaskTags] = React.useState('');
+  const taskSpaceError = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`);
+  const taskLengthErrorMessage = T.translate(`${I18N_PREFIX}.Errors.taskNameLengthError`);
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
-    errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`),
+    errorMsg: taskSpaceError,
   });
   const [taskTagError] = React.useState({
     error: false,
     errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
   });
-  const taskLengthErrorMessage = T.translate(`${I18N_PREFIX}.Errors.taskNameLengthError`);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,7 +167,6 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
 
     let arr = [];
     const tagString = `${taskTags}`;
-    const tagName = '';
     arr = tagString.split(',');
     formDataObject.taskName = `${taskName}`;
     formDataObject.taskDescription = `${taskDescription}`;
@@ -184,12 +184,14 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
       taskNameError.error = true;
       taskNameError.errorMsg = taskLengthErrorMessage;
     } else {
+      taskNameError.error = false;
+      taskNameError.errorMsg = taskSpaceError;
       if (inputValue.value.includes(' ')) {
         taskNameError.error = true;
-        taskNameError.errorMsg = taskNameError.errorMsg;
+        taskNameError.errorMsg = taskSpaceError;
       } else {
         taskNameError.error = false;
-        taskNameError.errorMsg = taskNameError.errorMsg;
+        taskNameError.errorMsg = taskSpaceError;
       }
     }
     setTaskNameError(taskNameError);

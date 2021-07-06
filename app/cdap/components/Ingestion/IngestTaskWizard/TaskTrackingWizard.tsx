@@ -123,15 +123,15 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
       case 1:
         return (
           <>
-            <p>{draftConfig.config.stages[0]?.name}</p>
             <p>{draftConfig.config.stages[0]?.connectionType}</p>
+            <p>{draftConfig.config.stages[0]?.name}</p>
           </>
         );
       case 2:
         return (
           <>
-            <p>{draftConfig.config.stages[1]?.name}</p>
             <p>{draftConfig.config.stages[1]?.connectionType}</p>
+            <p>{draftConfig.config.stages[1]?.name}</p>
           </>
         );
       default:
@@ -187,7 +187,9 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
               {label}
             </StepLabel>
             <StepContent>
-              <Typography className={classes.stepContent}>{getStepContent(index)}</Typography>
+              <Typography component={'span'} className={classes.stepContent}>
+                {getStepContent(index)}
+              </Typography>
             </StepContent>
           </Step>
         ))}

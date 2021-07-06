@@ -163,15 +163,16 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
   const [taskName, setTaskName] = React.useState(draftConfig.name);
   const [taskDescription, setTaskDescription] = React.useState(draftConfig.description);
   const [taskTags, setTaskTags] = React.useState('');
+  const taskSpaceError = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`);
+  const taskLengthErrorMessage = T.translate(`${I18N_PREFIX}.Errors.taskNameLengthError`);
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
-    errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`),
+    errorMsg: taskSpaceError,
   });
   const [taskTagError] = React.useState({
     error: false,
     errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
   });
-  const taskLengthErrorMessage = T.translate(`${I18N_PREFIX}.Errors.taskNameLengthError`);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,7 +184,6 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
 
     let arr = [];
     const tagString = `${taskTags}`;
-    const tagName = '';
     arr = tagString.split(',');
     formDataObject.taskName = `${taskName}`;
     formDataObject.taskDescription = `${taskDescription}`;
@@ -201,12 +201,21 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
       taskNameError.error = true;
       taskNameError.errorMsg = taskLengthErrorMessage;
     } else {
+      taskNameError.error = false;
+      taskNameError.errorMsg = taskSpaceError;
       if (inputValue.value.includes(' ')) {
         taskNameError.error = true;
+<<<<<<< HEAD
         taskNameError.errorMsg = T.translate(`${I18N_PREFIX}.Errors.errorWithOutEx`);
       } else {
         taskNameError.error = false;
         taskNameError.errorMsg = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`);
+=======
+        taskNameError.errorMsg = taskSpaceError;
+      } else {
+        taskNameError.error = false;
+        taskNameError.errorMsg = taskSpaceError;
+>>>>>>> 45116d00eee6fcc867279e4e47b2847e7d143a70
       }
     }
     setTaskNameError(taskNameError);

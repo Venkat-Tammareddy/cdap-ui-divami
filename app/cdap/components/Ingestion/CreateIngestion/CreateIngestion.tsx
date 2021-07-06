@@ -230,6 +230,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                     stages: [
                       {
                         name: a.name,
+                        connectionType: a.connectionType,
                         plugin: {
                           name: 'MultiTableDatabase',
                           type: 'batchsource',

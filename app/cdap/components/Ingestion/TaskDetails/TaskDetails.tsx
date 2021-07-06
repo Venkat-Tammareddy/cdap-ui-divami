@@ -51,6 +51,8 @@ const styles = (): StyleRules => {
       marginTop: '20px',
       width: '500px',
       height: '56px',
+      boxSizing: 'border-box',
+      // height: '56px',
       '& .MuiFormHelperText-root': {
         color: 'red',
       },
@@ -114,12 +116,15 @@ const styles = (): StyleRules => {
       height: '15px',
       letterSpacing: '0.19px',
       marginTop: '10px',
+      marginLeft: '16px',
       marginBottom: '0',
     },
     errorInputInfo: {
       color: 'red',
       fontFamily: 'Lato',
       marginTop: '10px',
+      marginLeft: '16px',
+      fontSize: '12px',
     },
     tagInfo: {
       marginTop: '10px',
@@ -127,6 +132,18 @@ const styles = (): StyleRules => {
       letterSpacing: '0.19px',
       fontSize: '12px',
       color: '#666666',
+      marginLeft: '16px',
+    },
+    input1: {
+      height: '56px',
+      boxSizing: 'border-box',
+    },
+    input2: {
+      boxSizing: 'border-box',
+    },
+    input3: {
+      height: '56px',
+      boxSizing: 'border-box',
     },
   };
 };
@@ -186,10 +203,10 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
     } else {
       if (inputValue.value.includes(' ')) {
         taskNameError.error = true;
-        taskNameError.errorMsg = taskNameError.errorMsg;
+        taskNameError.errorMsg = T.translate(`${I18N_PREFIX}.Errors.errorWithOutEx`);
       } else {
         taskNameError.error = false;
-        taskNameError.errorMsg = taskNameError.errorMsg;
+        taskNameError.errorMsg = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`);
       }
     }
     setTaskNameError(taskNameError);
@@ -211,6 +228,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
           label={T.translate(`${I18N_PREFIX}.Labels.taskName`)}
           value={taskName}
           className={classes.taskName}
+          InputProps={{ classes: { input: classes.input1 } }}
           color={taskNameError.error ? 'secondary' : 'primary'}
           variant="outlined"
           onChange={handleTaskNameChange}
@@ -229,6 +247,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
           onChange={(e) => setTaskDescription(e.target.value)}
           value={taskDescription}
           label={T.translate(`${I18N_PREFIX}.Labels.description`)}
+          InputProps={{ classes: { input: classes.input2 } }}
           // InputProps={{
           //   classes: {
           //     input: classes.resize,
@@ -239,9 +258,9 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
               root: classes.label,
             },
           }}
-          className={classes.taskDescription}
           multiline={true}
-          rows={5}
+          rows={8}
+          className={classes.taskDescription}
           variant="outlined"
         />
         <TextField
@@ -249,6 +268,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
           label={T.translate(`${I18N_PREFIX}.Labels.tags`)}
           value={taskTags}
           variant="outlined"
+          InputProps={{ classes: { input: classes.input3 } }}
           className={classes.taskTags}
           onChange={handleTagsChange}
           error={taskTagError.error}
@@ -271,7 +291,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
           color="primary"
           className={classes.submitButton}
           type="submit"
-          disabled={taskNameError.error}
+          disabled={taskNameError.error || taskName.length === 0}
         >
           CONTINUE
         </Button>

@@ -2794,6 +2794,7 @@ features:
       taskNameLengthError: Task name must be less than 64
       taskNameFormatError: 'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)'
       taskTagError: 'Add tags with a comma (,) separation (ex: Studies, Courses, and etc...)'
+      errorWithOutEx: Enter task name without spaces
     Labels:
       description: Description
       taskName: Task Name

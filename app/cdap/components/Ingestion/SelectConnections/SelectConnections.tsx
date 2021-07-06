@@ -46,6 +46,8 @@ const styles = (theme): StyleRules => {
       '&::placeholder': {
         fontFamily: 'Lato',
       },
+      height: '50px',
+      boxSizing: 'border-box',
     },
 
     header: {

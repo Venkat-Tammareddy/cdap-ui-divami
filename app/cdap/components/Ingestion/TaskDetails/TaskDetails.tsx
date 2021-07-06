@@ -205,17 +205,10 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
       taskNameError.errorMsg = taskSpaceError;
       if (inputValue.value.includes(' ')) {
         taskNameError.error = true;
-<<<<<<< HEAD
         taskNameError.errorMsg = T.translate(`${I18N_PREFIX}.Errors.errorWithOutEx`);
       } else {
         taskNameError.error = false;
         taskNameError.errorMsg = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`);
-=======
-        taskNameError.errorMsg = taskSpaceError;
-      } else {
-        taskNameError.error = false;
-        taskNameError.errorMsg = taskSpaceError;
->>>>>>> 45116d00eee6fcc867279e4e47b2847e7d143a70
       }
     }
     setTaskNameError(taskNameError);

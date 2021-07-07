@@ -82,7 +82,7 @@ const styles = (theme): StyleRules => {
       fontFamily: 'Lato',
     },
     buttonContainer: {
-      marginTop: '50px',
+      marginTop: 'auto',
       display: 'flex',
       flexDirection: 'row-reverse',
       gap: '50px',
@@ -176,7 +176,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
         autoFocus={false}
         data-cy="connections-search"
       />
-      <Table columnTemplate="2fr 1fr 1fr">
+      <Table columnTemplate="1fr 1fr 1fr">
         <TableHeader data-cy="table-header">
           <TableRow className={classes.header} data-cy="table-row">
             <TableCell>{T.translate(`${I18N_PREFIX}.Names.database`)}</TableCell>
@@ -220,6 +220,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
           }}
           className={classes.submitButton}
           type="submit"
+          disabled={Object.keys(selectedConnection).length === 0}
         >
           CONTINUE
         </Button>

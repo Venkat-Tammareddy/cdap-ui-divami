@@ -2766,7 +2766,7 @@ features:
     Headers:
       targetHeader: Select Target Database Connection
       sourceHeader: Select Source Database Connection
-    placeholders: Search Databases & Connection
+    placeholders: Search Databases & Connections
     Names:
       database: Database Name
       connection: Connection Name
@@ -2786,7 +2786,7 @@ features:
     labelWithCount: Tags ({count})
     notags: No tags found. Click to add a new business tag.
   TaskConfiguration:
-    title: Enter Configuration details
+    title: Enter Configuration Details
     logText: Do you like to log data errors during data ingestion?
     preferenceText: Do you have a preference for data ingesting?
   TaskDetails:

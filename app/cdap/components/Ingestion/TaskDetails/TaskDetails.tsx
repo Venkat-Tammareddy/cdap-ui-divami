@@ -120,7 +120,7 @@ const styles = (): StyleRules => {
       marginBottom: '0',
     },
     errorInputInfo: {
-      color: 'red',
+      color: '#DB4437',
       fontFamily: 'Lato',
       marginTop: '10px',
       marginLeft: '16px',
@@ -136,6 +136,10 @@ const styles = (): StyleRules => {
     },
     input1: {
       height: '56px',
+      paddingTop: '15px',
+      paddingRight: '396px',
+      paddingLeft: '16px',
+      paddingBottom: '17px',
       boxSizing: 'border-box',
     },
     input2: {
@@ -143,6 +147,10 @@ const styles = (): StyleRules => {
     },
     input3: {
       height: '56px',
+      paddingTop: '15px',
+      paddingRight: '452px',
+      paddingLeft: '16px',
+      paddingBottom: '17px',
       boxSizing: 'border-box',
     },
   };

@@ -22,6 +22,7 @@ import { RadioGroup } from '@material-ui/core';
 import { FormControlLabel } from '@material-ui/core';
 import { FormLabel } from '@material-ui/core';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { scale } from 'vega-lite';
 const I18N_PREFIX = 'features.TaskConfiguration';
 
 const styles = (): StyleRules => {
@@ -110,6 +111,11 @@ const styles = (): StyleRules => {
     modalBackdrop: {
       backgroundColor: '#FFFFFF',
     },
+    infoIcon: {
+      marginLeft: '10px',
+      color: '#A5A5A5',
+      transform: 'scale(1.3)',
+    },
   };
 };
 
@@ -132,7 +138,7 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onC
           <FormLabel className={classes.labelText}>
             {T.translate(`${I18N_PREFIX}.logText`)}
           </FormLabel>
-          <InfoOutlinedIcon />
+          <InfoOutlinedIcon className={classes.infoIcon} />
           <RadioGroup row value={logErrors} onChange={(e) => setLogErrors(e.target.value)}>
             <FormControlLabel
               control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
@@ -153,7 +159,7 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onC
           <FormLabel className={classes.labelText}>
             {T.translate(`${I18N_PREFIX}.preferenceText`)}
           </FormLabel>
-          <InfoOutlinedIcon />
+          <InfoOutlinedIcon className={classes.infoIcon} />
           <RadioGroup
             row
             value={logPreferences}

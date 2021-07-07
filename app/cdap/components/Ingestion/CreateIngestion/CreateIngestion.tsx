@@ -31,6 +31,8 @@ import NamespaceStore from 'services/NamespaceStore';
 import history from 'services/history';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
 const I18N_PREFIX = 'features.CreateIngestion';
+import Modal from '@material-ui/core/Modal';
+import ConfigurationOverlay from '../ConfigurationOverlay/ConfigurationOverlay';
 
 const styles = (theme): StyleRules => {
   return {
@@ -57,6 +59,7 @@ interface ICreateIngestionProps extends WithStyles<typeof styles> {}
 const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [deployLoader, setDeployLoader] = React.useState(false);
+  const [overlay, setOverlay] = React.useState(false);
   const [connections, setConnections] = React.useState([]);
   const [draftId] = React.useState(uuidV4());
   const [draftConfig, setDraftConfig] = React.useState({
@@ -161,8 +164,9 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       (message) => {
         console.log('deploy', message);
         deleteDraft();
-        goToIngestionHome();
         setDeployLoader(false);
+        setOverlay(true);
+        console.log(overlay);
       },
       (err) => {
         console.log(err);
@@ -236,7 +240,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                           type: 'batchsource',
                           artifact: {
                             name: 'multi-table-plugins',
-                            version: '1.3.0',
+                            version: '1.1.0',
                             scope: 'USER',
                           },
                           properties: {
@@ -339,6 +343,28 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         </div>
         <div className={classes.content}>{Content()}</div>
       </div>
+      <Modal
+        open={overlay}
+        onClose={() => {
+          setOverlay(false);
+          goToIngestionHome();
+        }}
+      >
+        <ConfigurationOverlay
+          closeModal={() => {
+            setOverlay(false);
+            goToIngestionHome();
+          }}
+          runTask={() => {
+            setOverlay(false);
+            goToIngestionHome();
+          }}
+          scheduleTask={() => {
+            setOverlay(false);
+            goToIngestionHome();
+          }}
+        />
+      </Modal>
     </div>
   );
 };

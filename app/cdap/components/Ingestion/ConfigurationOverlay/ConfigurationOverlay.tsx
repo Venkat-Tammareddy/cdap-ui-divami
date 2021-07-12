@@ -143,9 +143,9 @@ const ConfigurationOverlayView: React.FC<IIngestionProps> = ({
     e.target.style.cursor = 'pointer';
   };
 
-  const allTables = '/cdap_assets/img/runTask.svg';
-  const customTable = '/cdap_assets/img/scheduleTask.svg';
-  const successMsgIcon = '/cdap_assets/img/sucessTick.svg';
+  const allTables = '/cdap_assets/img/run-task-big.svg';
+  const customTable = '/cdap_assets/img/schedule-task-big.svg';
+  const successMsgIcon = '/cdap_assets/img/sucess-state-tick.svg';
   return (
     <div className={classes.root}>
       <div className={classes.container}>

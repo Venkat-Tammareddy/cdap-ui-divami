@@ -22,6 +22,7 @@ import Helmet from 'react-helmet';
 import { getCurrentNamespace } from 'services/NamespaceStore';
 import CreateIngestion from './CreateIngestion/CreateIngestion';
 import IngestionHome from './IngestionHome/IngestionHome';
+import TaskDetails from './TaskDetails/TaskDetails';
 
 const styles = (theme): StyleRules => {
   return {
@@ -43,6 +44,7 @@ const IngestionView: React.FC<IIngestionProps> = ({ classes }) => {
       <Helmet title={pageTitle} />
       <Switch>
         <Route exact path={`${basepath}/create`} component={CreateIngestion} />
+        <Route exact path={`${basepath}/detail`} component={TaskDetails} />
         <Route path={basepath} component={IngestionHome} />
         <Route
           render={() => {

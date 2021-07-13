@@ -22,7 +22,10 @@ import history from 'services/history';
 import ErrorBoundary from 'components/ErrorBoundary';
 import DeployedPipelineView from 'components/PipelineList/DeployedPipelineView';
 import DraftPipelineView from 'components/PipelineList/DraftPipelineView';
+import IngestionTaskList from 'components/Ingestion/IngestionTaskList/index';
 import T from 'i18n-react';
+import SearchIcon from '@material-ui/icons/Search';
+import { TextField } from '@material-ui/core';
 
 const styles = (theme): StyleRules => {
   return {
@@ -40,11 +43,44 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       justifyContent: 'flex-end',
     },
+    tabbleViewWrpr: {
+      padding: '0px 18px',
+      height: 'calc(100% - 112px)',
+    },
+    tabsWrapper: {
+      padding: '18px 0px',
+      display: 'grid',
+      gridTemplateColumns: '0fr 1fr 0fr',
+    },
+    tabContainer: {
+      height: '80px',
+      // display: 'grid',
+      // gridTemplateColumns: '0fr 1fr 0fr',
+    },
     tabs: {
-      cursor: 'pointer',
-      margin: '0px 10px',
-      '&:hover': {
-        textDecoration: 'underline',
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: ' #202124;',
+      letterSpacing: '0.13px',
+      padding: '7.5px',
+      marginRight: '22.5px',
+      // '&:active': {
+      //   textDecoration: 'underline',
+      // },
+    },
+    search: {
+      width: '256px',
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderRadius: `25px`,
+          height: '36px',
+        },
+      },
+      '& .MuiOutlinedInput-adornedStart ': {
+        padding: '7px',
+      },
+      '& .MuiOutlinedInput-input': {
+        padding: '0px',
       },
     },
   };
@@ -57,34 +93,40 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   return (
     <div className={classes.root}>
       <EntityTopPanel title="Ingestion Tasks" />
-      <div className={classes.content}>
-        <div className={classes.btnWrapper}>
-          <Button
-            className={classes.btn}
-            variant="contained"
-            color="primary"
-            onClick={() => history.push('ingestion/create')}
-          >
-            Create Ingest
-          </Button>
+      <div className={classes.btnWrapper}>
+        <Button
+          className={classes.btn}
+          variant="contained"
+          color="primary"
+          onClick={() => history.push('ingestion/create')}
+        >
+          Create Ingest
+        </Button>
+      </div>
+      <div className={classes.tabbleViewWrpr}>
+        <div className={classes.tabsWrapper}>
+          <div>
+            <span className={classes.tabs} style={{ borderBottom: '4px solid #4285F4;' }}>
+              TASKS(22)
+            </span>
+          </div>
+          <div>
+            <span className={classes.tabs}>DRAFTS(44)</span>
+          </div>
+          <TextField
+            variant="outlined"
+            placeholder={'search tasks'}
+            className={classes.search}
+            // value={''}
+            // onChange={(e) => setSearch(e.target.value)}
+            InputProps={{
+              startAdornment: <SearchIcon />,
+            }}
+            autoFocus={false}
+            data-cy="connections-search"
+          />
         </div>
-
-        <h4>
-          <span className={classes.tabs} onClick={() => setDisplayDrafts(false)}>
-            {T.translate(`${PREFIX}.deployed`)}
-          </span>
-          <span className="separator">|</span>
-          <span className={classes.tabs} onClick={() => setDisplayDrafts(true)}>
-            {T.translate(`${PREFIX}.draft`)}
-          </span>
-        </h4>
-        {displayDrafts ? (
-          <DraftPipelineView />
-        ) : (
-          <ErrorBoundary>
-            <DeployedPipelineView />
-          </ErrorBoundary>
-        )}
+        <IngestionTaskList />
       </div>
     </div>
   );

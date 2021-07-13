@@ -2791,7 +2791,7 @@ features:
     preferenceText: Do you have a preference for data ingesting?
   TaskDetails:
     Errors:
-      taskNameLengthError: Task name must be less than 64
+      taskNameLengthError: Name cannot be longer than 64 characters.
       taskNameFormatError: 'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)'
       taskTagError: 'Add tags with a comma (,) separation (ex: Studies, Courses, and etc...)'
       errorWithOutEx: Enter task name without spaces

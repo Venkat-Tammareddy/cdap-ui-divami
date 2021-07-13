@@ -14,299 +14,198 @@
  * the License.
  */
 
-import T from 'i18n-react';
-import { TextField } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-const I18N_PREFIX = 'features.TaskDetails';
+import { EntityTopPanel } from 'components/EntityTopPanel';
+import { Card, CardContent, Typography } from '@material-ui/core';
+import IngestionHeader from '../IngestionHeader/IngestionHeader';
 
-const styles = (): StyleRules => {
+const styles = (theme): StyleRules => {
   return {
     root: {
-      borderRadius: 3,
-      height: 'calc(100% - 100px)', // margin
-      margin: '40px 40px',
+      height: '100%',
+    },
+    container: {
+      margin: '16px 28px',
+    },
+    flexContainer: {
       display: 'flex',
-      flexDirection: 'column',
-    },
-    label: {
-      fontSize: '16px',
-      color: '#202124 ',
-      letterSpacing: '0.25px',
-    },
-    headerText: {
-      fontFamily: 'Lato',
-      fontSize: '20px',
-      letterSpacing: '0',
-      color: '#202124',
-      lineHeight: '24px',
-    },
-    textFields: {
-      display: 'flex',
-      flexDirection: 'column',
-      flex: '1 1 0%',
+      alignItems: 'flex-end',
     },
     taskName: {
-      marginTop: '20px',
-      width: '500px',
-      height: '56px',
-      boxSizing: 'border-box',
-      // height: '56px',
-      '& .MuiFormHelperText-root': {
-        color: 'red',
-      },
-      '& label.Mui-focused': {
-        color: '#4285F4',
-        fontSize: '12px',
-        letterSpacing: '0.4px',
-        lineHeight: '16px',
-      },
+      fontFamily: 'Lato',
+      fontSize: '18px',
+      color: '#202124',
+      marginRight: '10px',
     },
-    taskDescription: {
-      width: '500px',
-      marginTop: '28px',
-      borderRadius: '4px',
-      '& label.Mui-focused': {
-        color: '#4285F4',
-        fontSize: '12px',
-        letterSpacing: '0.4px',
-        lineHeight: '16px',
-      },
+    taskDate: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#202124',
     },
-    taskTags: {
-      marginTop: '28px',
-      width: '500px',
-      height: '56px',
-      '& label.Mui-focused': {
-        color: '#4285F4',
-        fontSize: '12px',
-        letterSpacing: '0.4px',
-        lineHeight: '16px',
-      },
+    description: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#202124',
+      lineHeight: '20px',
+      maxWidth: '615px',
+      marginTop: '13px',
     },
-    resize: {
-      height: '113px',
-    },
-    buttonContainer: {
+    connectionContainer: {
       display: 'flex',
-      gap: '50px',
-      alignItems: 'end',
-      justifyContent: 'flex-end',
+      alignItems: 'center',
+      marginTop: '32px',
     },
-    cancelButton: {
-      textDecoration: 'none',
-      color: '#4285F4;',
-      outline: 'none',
+    arrow: {
+      margin: '0px 12px',
+    },
+    chip: {
+      border: '1px solid #E0E0E0',
+      borderRadius: '16px',
+      fontFamily: 'Lato',
       fontSize: '14px',
-      letterSpacing: '1.25px',
+      color: '#202124',
       lineHeight: '24px',
-      fontFamily: 'Lato',
+      padding: '0px 12px',
+      marginRight: '6px',
     },
-    submitButton: {
-      backgroundColor: '#4285F4',
-      letterSpacing: '1.25px',
-      lineHeight: '24px',
+    chipContainer: {
+      display: 'flex',
+      alignItems: 'flex-end',
+      marginTop: '16px',
+      paddingBottom: '21px',
+      borderBottom: '1px solid #A5A5A5',
+    },
+    title: {
+      marginTop: '32px',
+      fontFamily: 'Lato',
+      fontSize: '18px',
+      color: '#202124',
+      letterSpacing: '0.45px',
+    },
+    cardsContainer: {
+      display: 'flex',
+      margin: '20px 0px',
+    },
+    card: {
+      border: '1px solid #aaaaac',
+      borderRadius: '4px',
+      width: '497px',
+      height: '272px',
+      display: 'flex',
+      flexDirection: 'column-reverse',
+      alignItems: 'center',
+      marginRight: '40px',
+      cursor: 'pointer',
+    },
+    cardRunIcon: {
+      marginBottom: '30px',
+    },
+    cardScheduleIcon: {
+      marginBottom: '45.5px',
+    },
+    cardTitle: {
+      fontFamily: 'Lato',
+      fontSize: '18px',
+      color: '#202124',
+      textAlign: 'center',
+      marginBottom: '10px',
+    },
+    cardDescription: {
+      width: '302px',
+      fontFamily: 'Lato',
       fontSize: '14px',
-      fontFamily: 'Lato',
-    },
-    inputInfo: {
       color: '#666666',
-      fontSize: '12px',
-      height: '15px',
-      letterSpacing: '0.19px',
-      marginTop: '10px',
-      marginLeft: '16px',
-      marginBottom: '0',
+      textAlign: 'center',
+      lineHeight: '20px',
+      marginBottom: '33px',
     },
-    errorInputInfo: {
-      color: '#DB4437',
-      fontFamily: 'Lato',
-      marginTop: '10px',
-      marginLeft: '16px',
-      fontSize: '12px',
-    },
-    tagInfo: {
-      marginTop: '10px',
-      height: '15px',
-      letterSpacing: '0.19px',
-      fontSize: '12px',
-      color: '#666666',
-      marginLeft: '16px',
-    },
-    input1: {
-      height: '56px',
-      paddingTop: '15px',
-      paddingRight: '396px',
-      paddingLeft: '16px',
-      paddingBottom: '17px',
-      boxSizing: 'border-box',
-    },
-    input2: {
-      boxSizing: 'border-box',
-    },
-    input3: {
-      height: '56px',
-      paddingTop: '15px',
-      paddingRight: '452px',
-      paddingLeft: '16px',
-      paddingBottom: '17px',
-      boxSizing: 'border-box',
+    runHistoryContainer: {
+      border: '1px solid green',
+      paddingTop: '24px',
     },
   };
 };
 
 interface ITaskDetailsProps extends WithStyles<typeof styles> {
-  submitValues: (values: object) => void;
-  handleCancel: () => void;
-  draftConfig;
+  test: string;
 }
+const connection = {
+  name: 'Ingest oracle studies data to bigquery',
+  date: '04 May 21, 07:30 pm',
+  description:
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam scelerisque neque odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  source: {
+    connName: 'Oracle-global-server Connection',
+    connDb: 'Studies',
+  },
+  target: {
+    connName: 'BigQuery-global-server',
+    connDb: 'StudyPerformance',
+  },
+  tags: ['Colleges', 'Exams', 'Tests'],
+};
+const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
+  const arrowIcon = '/cdap_assets/img/arrow.svg';
+  const runTaskIcon = '/cdap_assets/img/run-task-big.svg';
+  const scheduleTaskIcon = '/cdap_assets/img/schedule-task-big.svg';
 
-const TaskDetailsView: React.FC<ITaskDetailsProps> = ({
-  classes,
-  submitValues,
-  handleCancel,
-  draftConfig,
-}) => {
-  const [taskName, setTaskName] = React.useState(draftConfig.name);
-  const [taskDescription, setTaskDescription] = React.useState(draftConfig.description);
-  const [taskTags, setTaskTags] = React.useState('');
-  const taskSpaceError = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`);
-  const taskLengthErrorMessage = T.translate(`${I18N_PREFIX}.Errors.taskNameLengthError`);
-  const [taskNameError, setTaskNameError] = React.useState({
-    error: false,
-    errorMsg: taskSpaceError,
-  });
-  const [taskTagError] = React.useState({
-    error: false,
-    errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const formDataObject = {
-      taskName,
-      taskDescription,
-      tags: [],
-    };
-
-    let arr = [];
-    const tagString = `${taskTags}`;
-    arr = tagString.split(',');
-    formDataObject.taskName = `${taskName}`;
-    formDataObject.taskDescription = `${taskDescription}`;
-    formDataObject.tags = arr;
-    submitValues(formDataObject);
-  };
-
-  const onCancel = (e: React.FormEvent) => {
-    handleCancel();
-  };
-
-  const handleTaskNameChange = (e: React.FormEvent) => {
-    const inputValue = e.target as HTMLInputElement;
-    if (inputValue.value.length > 64) {
-      taskNameError.error = true;
-      taskNameError.errorMsg = taskLengthErrorMessage;
-    } else {
-      taskNameError.error = false;
-      taskNameError.errorMsg = taskSpaceError;
-      if (inputValue.value.includes(' ')) {
-        taskNameError.error = true;
-        taskNameError.errorMsg = T.translate(`${I18N_PREFIX}.Errors.errorWithOutEx`);
-      } else {
-        taskNameError.error = false;
-        taskNameError.errorMsg = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`);
-      }
-    }
-    setTaskNameError(taskNameError);
-    setTaskName(inputValue.value);
-  };
-
-  const handleTagsChange = (e: React.FormEvent) => {
-    const tags = e.target as HTMLInputElement;
-    setTaskTags(tags.value);
-  };
-
+  const [temp, setTemp] = React.useState(true);
   return (
-    <form onSubmit={handleSubmit} className={classes.root}>
-      <p className={classes.headerText}>Enter Task Details</p>
-      <div className={classes.textFields}>
-        <TextField
-          required
-          name={T.translate(`${I18N_PREFIX}.Name.taskName`).toString()}
-          label={T.translate(`${I18N_PREFIX}.Labels.taskName`)}
-          value={taskName}
-          className={classes.taskName}
-          InputProps={{ classes: { input: classes.input1 } }}
-          color={taskNameError.error ? 'secondary' : 'primary'}
-          variant="outlined"
-          onChange={handleTaskNameChange}
-          error={taskNameError.error}
-          InputLabelProps={{
-            classes: {
-              root: classes.label,
-            },
-          }}
-        />
-        <p className={taskNameError.error ? classes.errorInputInfo : classes.inputInfo}>
-          {taskNameError.errorMsg}
-        </p>
-        <TextField
-          name={T.translate(`${I18N_PREFIX}.Name.taskDescription`).toString()}
-          onChange={(e) => setTaskDescription(e.target.value)}
-          value={taskDescription}
-          label={T.translate(`${I18N_PREFIX}.Labels.description`)}
-          InputProps={{ classes: { input: classes.input2 } }}
-          // InputProps={{
-          //   classes: {
-          //     input: classes.resize,
-          //   },
-          // }}
-          InputLabelProps={{
-            classes: {
-              root: classes.label,
-            },
-          }}
-          multiline={true}
-          rows={8}
-          className={classes.taskDescription}
-          variant="outlined"
-        />
-        <TextField
-          name="Tags"
-          label={T.translate(`${I18N_PREFIX}.Labels.tags`)}
-          value={taskTags}
-          variant="outlined"
-          InputProps={{ classes: { input: classes.input3 } }}
-          className={classes.taskTags}
-          onChange={handleTagsChange}
-          error={taskTagError.error}
-          InputLabelProps={{
-            classes: {
-              root: classes.label,
-            },
-          }}
-        />
-        <p className={taskTagError.error ? classes.tagErrorInfo : classes.tagInfo}>
-          {taskTagError.errorMsg}
-        </p>
+    <div className={classes.root}>
+      <EntityTopPanel title="test123" />
+      <div className={classes.container}>
+        <div className={classes.flexContainer}>
+          <div className={classes.taskName}>{connection.name}</div>
+          <div className={classes.taskDate}>- Deployed on {connection.date}</div>
+        </div>
+        <div className={classes.description}>{connection.description}</div>
+        <div className={classes.connectionContainer}>
+          <div className={classes.taskDate}>
+            {connection.source.connName}
+            {' | '}
+            {connection.source.connName}
+          </div>
+          <img className={classes.arrow} src={arrowIcon} alt="arrow" />
+          <div className={classes.taskDate}>
+            {connection.target.connName}
+            {' | '}
+            {connection.target.connDb}
+          </div>
+        </div>
+        <div className={classes.chipContainer}>
+          {connection.tags.map((tag) => {
+            return <div className={classes.chip}>{tag}</div>;
+          })}
+        </div>
       </div>
-      <div className={classes.buttonContainer}>
-        <Button className={classes.cancelButton} onClick={onCancel}>
-          CANCEL
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.submitButton}
-          type="submit"
-          disabled={taskNameError.error || taskName.length === 0}
-        >
-          CONTINUE
-        </Button>
-      </div>
-    </form>
+      {temp ? (
+        <>
+          <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
+          <div className={classes.cardsContainer}>
+            <div className={classes.card}>
+              <div className={classes.cardDescription}>
+                I would like to extract all columns from all tables without any custom selection.
+              </div>
+              <div className={classes.cardTitle}>Run Task</div>
+              <img className={classes.cardRunIcon} src={runTaskIcon} alt="run-task" />
+            </div>
+            <div className={classes.card}>
+              <div className={classes.cardDescription}>
+                I would like to extract all columns from all tables without any custom selection.
+              </div>
+              <div className={classes.cardTitle}>Schedule Task</div>
+              <img className={classes.cardScheduleIcon} src={scheduleTaskIcon} alt="run-task" />
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className={classes.runHistoryContainer}>
+          <IngestionHeader title="Run History" />
+          <div>table</div>
+        </div>
+      )}
+    </div>
   );
 };
 

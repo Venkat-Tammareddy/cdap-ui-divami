@@ -20,7 +20,7 @@ import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/wit
 import TaskTrackingWizard from '../IngestTaskWizard/TaskTrackingWizard';
 import If from 'components/If';
 import { EntityTopPanel } from 'components/EntityTopPanel';
-import TaskDetails from '../TaskDetails/TaskDetails';
+import TaskInfo from '../TaskInfo/TaskInfo';
 import SelectConnections from '../SelectConnections/SelectConnections';
 import TaskConfiguration from '../TaskConfiguration/TaskConfiguration';
 import MappingLayout from '../MappingLayout/MappingLayout';
@@ -196,7 +196,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     switch (activeStep) {
       case 0:
         return (
-          <TaskDetails
+          <TaskInfo
             draftConfig={draftConfig}
             submitValues={(details: any) => {
               setDraftConfig((prevDraftConfig) => {

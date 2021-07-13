@@ -26,6 +26,7 @@ import IngestionTaskList from 'components/Ingestion/IngestionTaskList/index';
 import T from 'i18n-react';
 import SearchIcon from '@material-ui/icons/Search';
 import { TextField } from '@material-ui/core';
+import IngestionHeader from '../IngestionHeader/IngestionHeader';
 
 const styles = (theme): StyleRules => {
   return {
@@ -36,16 +37,10 @@ const styles = (theme): StyleRules => {
       height: 'calc(100% - 50px)', // 100% - height of EntityTopPanel
       padding: '15px 50px',
     },
-    btn: {
-      margin: '15px',
-    },
-    btnWrapper: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-    },
     tabbleViewWrpr: {
       padding: '0px 18px',
       height: 'calc(100% - 112px)',
+      borderTop: '1px solid #A5A5A5',
     },
     tabsWrapper: {
       padding: '18px 0px',
@@ -92,17 +87,11 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const [displayDrafts, setDisplayDrafts] = React.useState(false);
   return (
     <div className={classes.root}>
-      <EntityTopPanel title="Ingestion Tasks" />
-      <div className={classes.btnWrapper}>
-        <Button
-          className={classes.btn}
-          variant="contained"
-          color="primary"
-          onClick={() => history.push('ingestion/create')}
-        >
-          Create Ingest
-        </Button>
-      </div>
+      <IngestionHeader
+        title="Ingest Tasks"
+        create
+        onCreate={() => history.push('ingestion/create')}
+      />
       <div className={classes.tabbleViewWrpr}>
         <div className={classes.tabsWrapper}>
           <div>

@@ -18,6 +18,7 @@ import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import { EntityTopPanel } from 'components/EntityTopPanel';
 import { Card, CardContent, Typography } from '@material-ui/core';
+import IngestionHeader from '../IngestionHeader/IngestionHeader';
 
 const styles = (theme): StyleRules => {
   return {
@@ -119,6 +120,10 @@ const styles = (theme): StyleRules => {
       lineHeight: '20px',
       marginBottom: '33px',
     },
+    runHistoryContainer: {
+      border: '1px solid green',
+      paddingTop: '24px',
+    },
   };
 };
 
@@ -145,6 +150,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const runTaskIcon = '/cdap_assets/img/run-task-big.svg';
   const scheduleTaskIcon = '/cdap_assets/img/schedule-task-big.svg';
 
+  const [temp, setTemp] = React.useState(true);
   return (
     <div className={classes.root}>
       <EntityTopPanel title="test123" />
@@ -172,24 +178,33 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
             return <div className={classes.chip}>{tag}</div>;
           })}
         </div>
-        <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
-        <div className={classes.cardsContainer}>
-          <div className={classes.card}>
-            <div className={classes.cardDescription}>
-              I would like to extract all columns from all tables without any custom selection.
-            </div>
-            <div className={classes.cardTitle}>Run Task</div>
-            <img className={classes.cardRunIcon} src={runTaskIcon} alt="run-task" />
-          </div>
-          <div className={classes.card}>
-            <div className={classes.cardDescription}>
-              I would like to extract all columns from all tables without any custom selection.
-            </div>
-            <div className={classes.cardTitle}>Schedule Task</div>
-            <img className={classes.cardScheduleIcon} src={scheduleTaskIcon} alt="run-task" />
-          </div>
-        </div>
       </div>
+      {temp ? (
+        <>
+          <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
+          <div className={classes.cardsContainer}>
+            <div className={classes.card}>
+              <div className={classes.cardDescription}>
+                I would like to extract all columns from all tables without any custom selection.
+              </div>
+              <div className={classes.cardTitle}>Run Task</div>
+              <img className={classes.cardRunIcon} src={runTaskIcon} alt="run-task" />
+            </div>
+            <div className={classes.card}>
+              <div className={classes.cardDescription}>
+                I would like to extract all columns from all tables without any custom selection.
+              </div>
+              <div className={classes.cardTitle}>Schedule Task</div>
+              <img className={classes.cardScheduleIcon} src={scheduleTaskIcon} alt="run-task" />
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className={classes.runHistoryContainer}>
+          <IngestionHeader title="Run History" />
+          <div>table</div>
+        </div>
+      )}
     </div>
   );
 };

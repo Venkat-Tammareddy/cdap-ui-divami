@@ -16,6 +16,8 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const styles = (theme): StyleRules => {
   return {
@@ -87,7 +89,9 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   const createIcon = '/cdap_assets/img/create.svg';
   const runIcon = '/cdap_assets/img/run.svg';
   const taskActionsIcon = '/cdap_assets/img/task-action.svg';
-
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Archive'];
   return (
     <>
       <div className={classes.root}>
@@ -118,10 +122,42 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
               src={taskActionsIcon}
               alt="task-actions-ingestion"
             />
-            <span>Task Actions</span>
+            <span
+              onClick={(e) => {
+                setAnchorEl(e.currentTarget);
+              }}
+            >
+              Task Actions
+            </span>
           </div>
         )}
       </div>
+
+      <Menu
+        id="long-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={open}
+        onClose={(e) => setAnchorEl(null)}
+        PaperProps={{
+          style: {
+            maxHeight: 48 * 4.5,
+            width: '20ch',
+          },
+        }}
+      >
+        {options.map((option) => (
+          <MenuItem
+            key={option}
+            // selected={option === 'Pyxis'}
+            onClick={(e) => {
+              // onOptionSelect(selectedRow);
+            }}
+          >
+            {option}
+          </MenuItem>
+        ))}
+      </Menu>
     </>
   );
 };

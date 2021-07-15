@@ -72,9 +72,9 @@ const styles = (theme): StyleRules => {
   };
 };
 const recurOptions = [
-  'Every 5 min',
-  'Every 10 min',
-  'Every 30 min',
+  // 'Every 5 min',
+  // 'Every 10 min',
+  // 'Every 30 min',
   'Hourly',
   'Daily',
   'Weekly',

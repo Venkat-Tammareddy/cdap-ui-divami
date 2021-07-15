@@ -91,7 +91,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const [search, setSearch] = React.useState('');
   return (
     <>
-      <SheduleTask />
+      {/* <SheduleTask /> */}
       <div className={classes.root}>
         <IngestionHeader
           title="Ingest Tasks"

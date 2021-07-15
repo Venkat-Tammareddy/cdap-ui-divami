@@ -268,6 +268,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText 
                               aria-label="more"
                               className={classes.iconButton}
                               onClick={(e) => {
+                                e.stopPropagation();
                                 setAnchorEl(e.currentTarget);
                                 setSelectedRow(item.runId);
                               }}
@@ -291,7 +292,9 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText 
                                 <MenuItem
                                   key={option}
                                   // selected={option === 'Pyxis'}
-                                  onClick={() => onOptionSelect(selectedRow)}
+                                  onClick={(e) => {
+                                    onOptionSelect(selectedRow);
+                                  }}
                                 >
                                   {option}
                                 </MenuItem>

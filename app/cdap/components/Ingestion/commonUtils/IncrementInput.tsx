@@ -120,7 +120,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ classes, type }) => {
           component="span"
           onClick={(e) => handelIncrement()}
         >
-          <AddIcon />
+          <AddIcon color="primary" />
         </Box>
         <Box
           className={classes.boxButton}
@@ -130,7 +130,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ classes, type }) => {
           component="span"
           onClick={(e) => handelDecrement()}
         >
-          <RemoveIcon />
+          <RemoveIcon color="primary" />
         </Box>
       </div>
     </>

@@ -95,7 +95,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
       <div className={classes.root}>
         <IngestionHeader
           title="Ingest Tasks"
-          create
+          createBtn
           onCreate={() => history.push('ingestion/create')}
         />
         <div className={classes.tabbleViewWrpr}>

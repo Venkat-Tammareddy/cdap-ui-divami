@@ -30,10 +30,22 @@ const styles = (theme): StyleRules => {
       fontSize: '18px',
       color: '#202124',
       letterSpacing: '0',
+      marginRight: 'auto',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+    },
+    title2: {
+      borderLeft: '1.8px solid #A5A5A5',
+      paddingLeft: '10px',
+      marginLeft: '10px',
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#0E0F12',
+      lineHeight: '17px',
     },
     titleDesign: {
       marginLeft: '10px',
-      marginRight: 'auto',
     },
     create: {
       fontFamily: 'Lato',
@@ -42,6 +54,7 @@ const styles = (theme): StyleRules => {
       letterSpacing: '0.25px',
       lineHeight: '24px',
       cursor: 'pointer',
+      marginLeft: '28px',
     },
     createIcon: {
       marginRight: '10px',
@@ -51,27 +64,61 @@ const styles = (theme): StyleRules => {
 
 interface IngestionHeaderProps extends WithStyles<typeof styles> {
   title: string;
-  create?: boolean;
+  createBtn?: boolean;
   onCreate?: () => void;
+  runBtn?: boolean;
+  onRun?: () => void;
+  taskActionsBtn?: boolean;
+  onTaskActions?: () => void;
+  navToHome?: () => void;
 }
 const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   classes,
   title,
-  create,
+  createBtn,
   onCreate,
+  runBtn,
+  onRun,
+  taskActionsBtn,
+  onTaskActions,
+  navToHome,
 }) => {
   const titleDesignIcon = '/cdap_assets/img/title-design-bar.svg';
   const createIcon = '/cdap_assets/img/create.svg';
+  const runIcon = '/cdap_assets/img/run.svg';
+  const taskActionsIcon = '/cdap_assets/img/task-action.svg';
 
   return (
     <>
       <div className={classes.root}>
-        <div className={classes.title}>{title}</div>
-        <img className={classes.titleDesign} src={titleDesignIcon} alt="Ingestion" />
-        {create && (
+        <div className={classes.title} onClick={() => taskActionsBtn && navToHome()}>
+          {title}
+          {taskActionsBtn ? (
+            <div className={classes.title2}>Task Details</div>
+          ) : (
+            <img className={classes.titleDesign} src={titleDesignIcon} alt="Ingestion" />
+          )}
+        </div>
+        {createBtn && (
           <div className={classes.create} onClick={onCreate}>
             <img className={classes.createIcon} src={createIcon} alt="create-ingestion" />
             <span>Create</span>
+          </div>
+        )}
+        {runBtn && (
+          <div className={classes.create} onClick={onRun}>
+            <img className={classes.createIcon} src={runIcon} alt="run-ingestion" />
+            <span>Run</span>
+          </div>
+        )}
+        {taskActionsBtn && (
+          <div className={classes.create} onClick={onTaskActions}>
+            <img
+              className={classes.createIcon}
+              src={taskActionsIcon}
+              alt="task-actions-ingestion"
+            />
+            <span>Task Actions</span>
           </div>
         )}
       </div>

@@ -17,6 +17,8 @@
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import { Card, CardContent } from '@material-ui/core';
+import SheduleTask from '../SheduleTask/SheduleTask';
+import If from 'components/If';
 
 const styles = (): StyleRules => {
   return {
@@ -113,8 +115,20 @@ const AcknowledgementView: React.FC<AcknowledgementProps> = ({
   gotoTasks,
   // gotoSchedule,
 }) => {
+  const [toggleSchedule, setToggleSchedule] = React.useState(false);
+
+  const handleSchedule = () => {
+    setToggleSchedule(true);
+  };
+
+  const closeSchedule = () => {
+    setToggleSchedule(false);
+  };
   return (
     <div className={classes.root}>
+      <If condition={toggleSchedule}>
+        <SheduleTask closeSchedule={closeSchedule} />
+      </If>
       <div className={classes.ackMessage}>
         <img src={ackIcon} alt="ack icon" height="92px" width="130px" />
         <p className={classes.ackMsg}>Successfully Deployed Task</p>
@@ -141,7 +155,7 @@ const AcknowledgementView: React.FC<AcknowledgementProps> = ({
               <p className={classes.optionText}>Run Task</p>
             </CardContent>
           </Card>
-          <Card className={classes.optionCard} onMouseOver={toggleCursor}>
+          <Card className={classes.optionCard} onMouseOver={toggleCursor} onClick={handleSchedule}>
             <CardContent>
               <img
                 src={scheduleTaskIcon}

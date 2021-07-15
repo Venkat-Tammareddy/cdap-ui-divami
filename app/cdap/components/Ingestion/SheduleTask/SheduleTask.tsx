@@ -83,9 +83,11 @@ const recurOptions = [
 ];
 
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-interface SheduleTaskProps extends WithStyles<typeof styles> {}
+interface SheduleTaskProps extends WithStyles<typeof styles> {
+  closeSchedule: () => void;
+}
 
-const SheduleTask: React.FC<SheduleTaskProps> = ({ classes }) => {
+const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => {
   const tileDesignBar = '/cdap_assets/img/title-design-bar.svg';
 
   const [checkedItem, setCheckedItem] = React.useState('Hourly');
@@ -172,7 +174,13 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes }) => {
             <Grid container spacing={0}>
               <Grid className={classes.gridItem} item xs={6}></Grid>
               <Grid className={classes.gridItem} item xs={3}>
-                <Button variant="outlined" size="medium" color="primary" className={classes.margin}>
+                <Button
+                  variant="outlined"
+                  size="medium"
+                  color="primary"
+                  className={classes.margin}
+                  onClick={closeSchedule}
+                >
                   CANCEL
                 </Button>
               </Grid>
@@ -182,8 +190,9 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes }) => {
                   size="medium"
                   color="primary"
                   className={classes.margin}
+                  onClick={closeSchedule}
                 >
-                  SHEDULE
+                  SCHEDULE
                 </Button>
               </Grid>
             </Grid>

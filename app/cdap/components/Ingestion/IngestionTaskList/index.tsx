@@ -15,7 +15,6 @@
  */
 
 import * as React from 'react';
-import './index.scss';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import TableHeader from 'components/Table/TableHeader';
 import TableRow from 'components/Table/TableRow';
@@ -24,11 +23,11 @@ import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import { IconButton } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import NamespaceStore from 'services/NamespaceStore';
 
 const styles = (theme): StyleRules => {
   return {
@@ -88,6 +87,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes }) => {
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [taskList, setTaskList] = React.useState([
     {
       runId: 1,
@@ -173,7 +173,12 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes }) => {
           <TableBody data-cy="table-body">
             {taskList.map((item, index) => {
               return (
-                <TableRow key={index} className={classes.tableRow} data-cy="table-row">
+                <TableRow
+                  key={index}
+                  className={classes.tableRow}
+                  data-cy="table-row"
+                  to={`/ns/${currentNamespace}/ingestion/detail`}
+                >
                   <TableCell>
                     <Grid container spacing={0}>
                       <Grid className={classes.gridItem} item xs={1}>

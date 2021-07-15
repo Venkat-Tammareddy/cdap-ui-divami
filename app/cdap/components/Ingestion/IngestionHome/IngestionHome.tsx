@@ -89,13 +89,13 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     <div className={classes.root}>
       <IngestionHeader
         title="Ingest Tasks"
-        create
+        createBtn
         onCreate={() => history.push('ingestion/create')}
       />
       <div className={classes.tabbleViewWrpr}>
         <div className={classes.tabsWrapper}>
           <div>
-            <span className={classes.tabs} style={{ borderBottom: '4px solid #4285F4;' }}>
+            <span className={classes.tabs} style={{ borderBottom: '4px solid #4285F4' }}>
               TASKS(22)
             </span>
           </div>

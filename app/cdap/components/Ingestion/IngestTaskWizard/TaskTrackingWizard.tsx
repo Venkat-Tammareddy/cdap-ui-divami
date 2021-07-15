@@ -135,7 +135,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
         return;
     }
   }
-  const myimg = '/cdap_assets/img/stepperIcon.svg';
+  const myimg = '/cdap_assets/img/side-stepper-tick.svg';
   const iconn = () => {
     return (
       <img className={classes.completedIcon} src={myimg} alt="img" height="30px" width="30px" />

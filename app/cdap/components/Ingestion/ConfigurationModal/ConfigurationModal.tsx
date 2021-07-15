@@ -133,12 +133,12 @@ const styles = (): StyleRules => {
   };
 };
 
-interface ConfigurationModalProps extends WithStyles<typeof styles> {
+interface IConfigurationModalProps extends WithStyles<typeof styles> {
   closeModal: () => void;
   runTask: () => void;
   scheduleTask: () => void;
 }
-const ConfigurationModalView: React.FC<ConfigurationModalProps> = ({
+const ConfigurationModalView: React.FC<IConfigurationModalProps> = ({
   classes,
   closeModal,
   runTask,

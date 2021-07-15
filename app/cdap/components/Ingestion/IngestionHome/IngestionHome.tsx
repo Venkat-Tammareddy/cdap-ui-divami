@@ -23,6 +23,8 @@ import ErrorBoundary from 'components/ErrorBoundary';
 import DeployedPipelineView from 'components/PipelineList/DeployedPipelineView';
 import DraftPipelineView from 'components/PipelineList/DraftPipelineView';
 import IngestionTaskList from 'components/Ingestion/IngestionTaskList/index';
+import DraftsList from 'components/Ingestion/DraftsList/DraftsList';
+import SheduleTask from 'components/Ingestion/SheduleTask/SheduleTask';
 import T from 'i18n-react';
 import SearchIcon from '@material-ui/icons/Search';
 import { TextField } from '@material-ui/core';
@@ -59,6 +61,7 @@ const styles = (theme): StyleRules => {
       letterSpacing: '0.13px',
       padding: '7.5px',
       marginRight: '22.5px',
+      cursor: 'pointer',
       // '&:active': {
       //   textDecoration: 'underline',
       // },
@@ -85,39 +88,56 @@ interface IIngestionHomeProps extends WithStyles<typeof styles> {}
 const PREFIX = 'features.PipelineList';
 const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const [displayDrafts, setDisplayDrafts] = React.useState(false);
+  const [search, setSearch] = React.useState('');
   return (
-    <div className={classes.root}>
-      <IngestionHeader
-        title="Ingest Tasks"
-        create
-        onCreate={() => history.push('ingestion/create')}
-      />
-      <div className={classes.tabbleViewWrpr}>
-        <div className={classes.tabsWrapper}>
-          <div>
-            <span className={classes.tabs} style={{ borderBottom: '4px solid #4285F4;' }}>
-              TASKS(22)
-            </span>
+    <>
+      {/* <SheduleTask /> */}
+      <div className={classes.root}>
+        <IngestionHeader
+          title="Ingest Tasks"
+          createBtn
+          onCreate={() => history.push('ingestion/create')}
+        />
+        <div className={classes.tabbleViewWrpr}>
+          <div className={classes.tabsWrapper}>
+            <div>
+              <span
+                className={classes.tabs}
+                onClick={() => setDisplayDrafts(false)}
+                style={{ borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none' }}
+              >
+                TASKS(22)
+              </span>
+            </div>
+            <div>
+              <span
+                className={classes.tabs}
+                onClick={() => setDisplayDrafts(true)}
+                style={{ borderBottom: displayDrafts ? '4px solid #4285F4' : 'none' }}
+              >
+                DRAFTS(44)
+              </span>
+            </div>
+            <TextField
+              variant="outlined"
+              placeholder={'search tasks'}
+              className={classes.search}
+              onChange={(e) => setSearch(e.target.value)}
+              InputProps={{
+                startAdornment: <SearchIcon />,
+              }}
+              autoFocus={false}
+              data-cy="connections-search"
+            />
           </div>
-          <div>
-            <span className={classes.tabs}>DRAFTS(44)</span>
-          </div>
-          <TextField
-            variant="outlined"
-            placeholder={'search tasks'}
-            className={classes.search}
-            // value={''}
-            // onChange={(e) => setSearch(e.target.value)}
-            InputProps={{
-              startAdornment: <SearchIcon />,
-            }}
-            autoFocus={false}
-            data-cy="connections-search"
-          />
+          {displayDrafts ? (
+            <DraftsList searchText={search} />
+          ) : (
+            <IngestionTaskList searchText={search} />
+          )}
         </div>
-        <IngestionTaskList />
       </div>
-    </div>
+    </>
   );
 };
 

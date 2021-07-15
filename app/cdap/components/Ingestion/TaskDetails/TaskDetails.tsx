@@ -16,9 +16,11 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { EntityTopPanel } from 'components/EntityTopPanel';
-import { Card, CardContent, Typography } from '@material-ui/core';
+import history from 'services/history';
+import { Typography } from '@material-ui/core';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
+import IngestionJobsList from '../IngestionTaskList/IngestionJobsList';
+import NamespaceStore from 'services/NamespaceStore';
 
 const styles = (theme): StyleRules => {
   return {
@@ -26,7 +28,8 @@ const styles = (theme): StyleRules => {
       height: '100%',
     },
     container: {
-      margin: '16px 28px',
+      padding: '16px 28px',
+      borderTop: '1px solid #A5A5A5',
     },
     flexContainer: {
       display: 'flex',
@@ -82,10 +85,11 @@ const styles = (theme): StyleRules => {
       fontSize: '18px',
       color: '#202124',
       letterSpacing: '0.45px',
+      marginLeft: '28px',
     },
     cardsContainer: {
       display: 'flex',
-      margin: '20px 0px',
+      margin: '20px 0px 20px 28px',
     },
     card: {
       border: '1px solid #aaaaac',
@@ -121,8 +125,33 @@ const styles = (theme): StyleRules => {
       marginBottom: '33px',
     },
     runHistoryContainer: {
-      border: '1px solid green',
-      paddingTop: '24px',
+      paddingTop: '26px',
+    },
+    runDetails: {
+      display: 'flex',
+      marginTop: '28px',
+      marginBottom: '30px',
+    },
+    runDetailsItem: {
+      marginLeft: '12px',
+      marginRight: '60px',
+    },
+    successPercentage: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#19A347',
+    },
+    runDetailsTop: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#202124',
+    },
+    runDetailsBottom: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#202124',
+      opacity: '0.8',
+      marginTop: '2px',
     },
   };
 };
@@ -149,16 +178,45 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const arrowIcon = '/cdap_assets/img/arrow.svg';
   const runTaskIcon = '/cdap_assets/img/run-task-big.svg';
   const scheduleTaskIcon = '/cdap_assets/img/schedule-task-big.svg';
-
-  const [temp, setTemp] = React.useState(true);
+  const successRatePie = '/cdap_assets/img/success-rate-pie.svg';
+  const clock = '/cdap_assets/img/clock-black.svg';
+  const calender = '/cdap_assets/img/calendar-black.svg';
+  const currentNamespace = NamespaceStore.getState().selectedNamespace;
+  const [myCase, setMyCase] = React.useState('case-1');
   return (
     <div className={classes.root}>
-      <EntityTopPanel title="test123" />
+      <IngestionHeader
+        title="Ingest Tasks"
+        taskActionsBtn
+        runBtn={myCase === 'case-3'}
+        onRun={() => console.log('run clicked')}
+        onTaskActions={() => console.log('task actions')}
+        navToHome={() => history.push(`/ns/${currentNamespace}/ingestion`)}
+      />
       <div className={classes.container}>
         <div className={classes.flexContainer}>
           <div className={classes.taskName}>{connection.name}</div>
           <div className={classes.taskDate}>- Deployed on {connection.date}</div>
         </div>
+        {myCase === 'case-3' && (
+          <div className={classes.runDetails}>
+            <img src={successRatePie} alt="success-rate-pie" />
+            <div className={classes.runDetailsItem}>
+              <div className={classes.successPercentage}>98%</div>
+              <div className={classes.runDetailsBottom}>Success Rate</div>
+            </div>
+            <img src={calender} alt="success-rate-pie" />
+            <div className={classes.runDetailsItem}>
+              <div className={classes.runDetailsTop}>Every month</div>
+              <div className={classes.runDetailsBottom}>Schedule Run</div>
+            </div>
+            <img src={clock} alt="success-rate-pie" />
+            <div className={classes.runDetailsItem}>
+              <div className={classes.runDetailsTop}>12 Jun 21, 09:30 pm</div>
+              <div className={classes.runDetailsBottom}>Next Schedule Run</div>
+            </div>
+          </div>
+        )}
         <div className={classes.description}>{connection.description}</div>
         <div className={classes.connectionContainer}>
           <div className={classes.taskDate}>
@@ -179,11 +237,11 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           })}
         </div>
       </div>
-      {temp ? (
+      {myCase === 'case-1' ? (
         <>
           <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
           <div className={classes.cardsContainer}>
-            <div className={classes.card}>
+            <div className={classes.card} onClick={() => setMyCase('case-2')}>
               <div className={classes.cardDescription}>
                 I would like to extract all columns from all tables without any custom selection.
               </div>
@@ -202,7 +260,10 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       ) : (
         <div className={classes.runHistoryContainer}>
           <IngestionHeader title="Run History" />
-          <div>table</div>
+          <IngestionJobsList
+            runType={myCase === 'case-2'}
+            onTaskClick={() => setMyCase('case-3')}
+          />
         </div>
       )}
     </div>

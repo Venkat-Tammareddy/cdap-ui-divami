@@ -76,9 +76,11 @@ const styles = (theme): StyleRules => {
 };
 const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Archive'];
 
-interface IngestTaskListProps extends WithStyles<typeof styles> {}
+interface IngestTaskListProps extends WithStyles<typeof styles> {
+  searchText: String;
+}
 
-const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes }) => {
+const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText }) => {
   const myimg = '/cdap_assets/img/idle-status.svg';
   const myimg1 = '/cdap_assets/img/last-run-tick.svg';
   const imgMore = '/cdap_assets/img/more.svg';
@@ -88,10 +90,11 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
+  const [selectedRow, setSelectedRow] = React.useState(0);
   const [taskList, setTaskList] = React.useState([
     {
       runId: 1,
-      taskName: 'Employee performance demo task',
+      taskName: 'one Employee performance demo task',
       status: 'Running',
       sourceConnectionDb: 'Study_trails',
       sourceConnection: 'Study_trails_Connection',
@@ -103,7 +106,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes }) => {
     },
     {
       runId: 2,
-      taskName: 'Employee performance demo task',
+      taskName: 'Two Employee performance demo task',
       status: 'Running',
       sourceConnectionDb: 'Study_trails',
       sourceConnection: 'Study_trails_Connection',
@@ -115,7 +118,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes }) => {
     },
     {
       runId: 3,
-      taskName: 'Employee performance demo task',
+      taskName: 'third Employee performance demo task',
       status: 'Running',
       sourceConnectionDb: 'Study_trails',
       sourceConnection: 'Study_trails_Connection',
@@ -127,7 +130,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes }) => {
     },
     {
       runId: 4,
-      taskName: 'Employee performance demo task',
+      taskName: 'four Employee performance demo task',
       status: 'Running',
       sourceConnectionDb: 'Study_trails',
       sourceConnection: 'Study_trails_Connection',
@@ -156,6 +159,10 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes }) => {
     });
   };
 
+  const filteredList = taskList.filter((item) =>
+    item.taskName?.toLowerCase().includes(searchText?.toLowerCase())
+  );
+
   return (
     <>
       <div className={classes.root}>
@@ -171,7 +178,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes }) => {
             </TableRow>
           </TableHeader>
           <TableBody data-cy="table-body">
-            {taskList.map((item, index) => {
+            {filteredList.map((item, index) => {
               return (
                 <TableRow
                   key={index}
@@ -260,7 +267,10 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes }) => {
                             <IconButton
                               aria-label="more"
                               className={classes.iconButton}
-                              onClick={(e) => setAnchorEl(e.currentTarget)}
+                              onClick={(e) => {
+                                setAnchorEl(e.currentTarget);
+                                setSelectedRow(item.runId);
+                              }}
                             >
                               <MoreVertIcon />
                             </IconButton>
@@ -281,9 +291,9 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes }) => {
                                 <MenuItem
                                   key={option}
                                   // selected={option === 'Pyxis'}
-                                  onClick={() => onOptionSelect(item.runId)}
+                                  onClick={() => onOptionSelect(selectedRow)}
                                 >
-                                  {option + index}
+                                  {option}
                                 </MenuItem>
                               ))}
                             </Menu>
@@ -303,4 +313,3 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes }) => {
 };
 
 export default withStyles(styles)(IngestionTaskList);
-// const IngestionHome = withStyles(styles)(IngestionTaskList);

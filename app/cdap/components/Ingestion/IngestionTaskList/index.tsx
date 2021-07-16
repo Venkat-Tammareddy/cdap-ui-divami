@@ -183,7 +183,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText 
                 <TableRow
                   key={index}
                   className={classes.tableRow}
-                  data-cy="table-row"
+                  data-cy={`table-row-${item.runId}`}
                   to={`/ns/${currentNamespace}/ingestion/detail`}
                 >
                   <TableCell>

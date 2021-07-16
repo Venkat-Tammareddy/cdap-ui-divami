@@ -179,7 +179,6 @@ const styles = (): StyleRules => {
     LeftRight: {
       display: 'flex',
       flexDirection: 'row',
-      gap: '30%',
       flex: '1 1 0%',
     },
     info: {
@@ -190,6 +189,8 @@ const styles = (): StyleRules => {
       alignItems: 'center',
       textAlign: 'center',
       marginTop: '83px',
+      marginLeft: 'auto',
+      marginRight: 'auto',
     },
     infoText: {
       fontFamily: 'Lato',

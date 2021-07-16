@@ -25,6 +25,9 @@ import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
+import { TimePicker } from 'antd';
+import 'antd/dist/antd.css';
+
 const styles = (theme): StyleRules => {
   return {
     root: {
@@ -100,8 +103,13 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes }) => {
           <Box mb={4}>
             <Box mb={2}>At what frequency is the event likely repeat?</Box>
             <IncrementInput type={'hour'} />
-            <Box mb={2}>Starting At ?</Box>
-            <IncrementInput type={'minutes'} />
+            <Box mb={2}>When do you want to start this event? ?</Box>
+            <TimePicker
+              style={{ width: '320px', height: '56px', borderRadius: '4px' }}
+              use12Hours
+              format="h:mm a"
+              // onChange={onChange}
+            />
           </Box>
         );
       }

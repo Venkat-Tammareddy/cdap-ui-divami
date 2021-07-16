@@ -45,9 +45,18 @@ const styles = (): StyleRules => {
     },
     mappingCard: {
       flex: '1 1 0%',
+      height: '272px',
+      borderRadius: '4px',
     },
     selectedCard: {
-      flex: '1 1 0%',
+      width: '497px',
+      height: '272px',
+      display: 'flex',
+      flex: '1',
+      flexDirection: 'column-reverse',
+      alignItems: 'center',
+      marginRight: '40px',
+      cursor: 'pointer',
       border: '1px solid #0F9D58',
       borderRadius: '4px',
     },
@@ -66,13 +75,6 @@ const styles = (): StyleRules => {
     },
     mappingIcons: {
       '& .MappingView - mappingIcons - 650': {},
-    },
-    title: {
-      fontFamily: 'Lato',
-      color: '#202124',
-      letterSpacing: '0',
-      fontSize: '20px',
-      marginTop: '40px',
     },
     label: {
       padding: '0',
@@ -131,6 +133,52 @@ const styles = (): StyleRules => {
     successMsgText: {
       marginLeft: '10px',
     },
+    title: {
+      marginTop: '32px',
+      fontFamily: 'Lato',
+      fontSize: '18px',
+      color: '#202124',
+      letterSpacing: '0.45px',
+    },
+    cardsContainer: {
+      display: 'flex',
+      margin: '20px 0px',
+      flex: '1 1 0%',
+    },
+    card: {
+      border: '1px solid #aaaaac',
+      borderRadius: '4px',
+      flex: '1',
+      width: '497px',
+      height: '272px',
+      display: 'flex',
+      flexDirection: 'column-reverse',
+      alignItems: 'center',
+      marginRight: '40px',
+      cursor: 'pointer',
+    },
+    cardRunIcon: {
+      marginBottom: '30px',
+    },
+    cardScheduleIcon: {
+      marginBottom: '30px',
+    },
+    cardTitle: {
+      fontFamily: 'Lato',
+      fontSize: '18px',
+      color: '#202124',
+      textAlign: 'center',
+      marginBottom: '10px',
+    },
+    cardDescription: {
+      width: '302px',
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#666666',
+      textAlign: 'center',
+      lineHeight: '20px',
+      marginBottom: '33px',
+    },
   };
 };
 
@@ -149,98 +197,69 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
     handleCancel({ name: 'cancel' });
   };
 
-  const allTables = '/cdap_assets/img/select-all-tables-infographic.svg';
-  const customTable = '/cdap_assets/img/custom-selection-table-infographic.svg';
+  const allTables = '/cdap_assets/img/data-base-big.svg';
+  const customTable = '/cdap_assets/img/custom-selection.svg';
   const successMsgIcon = '/cdap_assets/img/success-state-tick.svg';
+  const runTaskIcon = '/cdap_assets/img/run-task-big.svg';
+  const scheduleTaskIcon = '/cdap_assets/img/schedule-task-big.svg';
   return (
     <div className={classes.root}>
-      <div className={classes.container}>
-        <Typography className={classes.title} data-cy="title">
-          {T.translate(`${I18N_PREFIX}.title`)}
-        </Typography>
-        <div className={classes.mappingTypes}>
-          <Card
-            data-cy="card-1"
-            className={cardSelected === 'All' ? classes.selectedCard : classes.mappingCard}
-            variant="outlined"
-            onClick={() => {
-              // setSelected('All');
-            }}
-          >
-            <div className={classes.mappingInfo}>
-              <img
-                className={classes.mappingIcons}
-                src={allTables}
-                alt={T.translate(`${I18N_PREFIX}.altText`).toString()}
-              />
-              <CardContent className={classes.label}>
-                <p className={classes.labelText} data-cy="question-1">
-                  {T.translate(`${I18N_PREFIX}.AllTables.title`)}
-                </p>
-              </CardContent>
-              <CardContent className={classes.descriptionContainer}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  component="p"
-                  className={classes.mappingDescription}
-                  data-cy="b1"
-                >
-                  {T.translate(`${I18N_PREFIX}.AllTables.description`)}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  component="p"
-                  className={classes.mappingDescription}
-                  data-cy="b2"
-                >
-                  {T.translate(`${I18N_PREFIX}.AllTables.description2`)}
-                </Typography>
-              </CardContent>
-            </div>
-          </Card>
-          <Card
-            className={cardSelected === 'Custom' ? classes.selectedCard : classes.mappingCard}
-            variant="outlined"
-            onClick={() => {
-              // setSelected('Custom');
-            }}
-            data-cy="card-2"
-          >
-            <div className={classes.mappingInfo}>
-              <img
-                src={customTable}
-                className={classes.mappingIcons}
-                alt={T.translate(`${I18N_PREFIX}.altText`).toString()}
-              />
-              <CardContent className={classes.label}>
-                <p className={classes.labelText} data-cy="question-1">
-                  {T.translate(`${I18N_PREFIX}.CustomTables.title`)}
-                </p>
-              </CardContent>
-              <CardContent className={classes.descriptionContainer}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  component="p"
-                  className={classes.mappingDescription}
-                  data-cy="desc"
-                >
-                  {T.translate(`${I18N_PREFIX}.CustomTables.description`)}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  component="p"
-                  className={classes.mappingDescription}
-                  data-cy="desc2"
-                >
-                  {T.translate(`${I18N_PREFIX}.CustomTables.description2`)}
-                </Typography>
-              </CardContent>
-            </div>
-          </Card>
+      <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
+      <div className={classes.cardsContainer}>
+        <div
+          className={cardSelected === 'All' ? classes.selectedCard : classes.card}
+          onClick={() => {
+            // setSelected('All');
+          }}
+        >
+          <div className={classes.cardDescription}>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              className={classes.mappingDescription}
+              data-cy="b1"
+            >
+              {T.translate(`${I18N_PREFIX}.AllTables.description`)}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              className={classes.mappingDescription}
+              data-cy="b1"
+            >
+              {T.translate(`${I18N_PREFIX}.AllTables.description2`)}
+            </Typography>
+          </div>
+          <div className={classes.cardTitle}>{T.translate(`${I18N_PREFIX}.AllTables.title`)}</div>
+          <img className={classes.cardRunIcon} src={allTables} alt="run-task" />
+        </div>
+        <div className={cardSelected === 'Custom' ? classes.selectedCard : classes.card}>
+          <div className={classes.cardDescription}>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              className={classes.mappingDescription}
+              data-cy="desc2"
+            >
+              {T.translate(`${I18N_PREFIX}.CustomTables.description`)}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              className={classes.mappingDescription}
+              data-cy="desc2"
+            >
+              {T.translate(`${I18N_PREFIX}.CustomTables.description2`)}
+            </Typography>
+          </div>
+          <div className={classes.cardTitle}>
+            {T.translate(`${I18N_PREFIX}.CustomTables.title`)}
+          </div>
+          <img className={classes.cardScheduleIcon} src={customTable} alt="run-task" />
         </div>
       </div>
       <div className={classes.buttonContainer}>

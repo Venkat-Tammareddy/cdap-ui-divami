@@ -161,7 +161,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, runType, on
                 <TableRow
                   key={index}
                   className={classes.tableRow}
-                  data-cy="table-row"
+                  data-cy={`table-row-${item.jobId}`}
                   onClick={onTaskClick}
                 >
                   <TableCell>

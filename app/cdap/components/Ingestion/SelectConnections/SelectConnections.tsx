@@ -35,16 +35,22 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       flexDirection: 'column',
       color: '#202124',
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderRadius: '23px',
+        },
+        height: '36px',
+      },
     },
     search: {
-      width: '100%',
-      marginTop: '20px',
-      marginBottom: '20px',
+      width: '276px',
+      height: '36px',
     },
     resize: {
-      fontSize: '15px',
+      fontSize: '14px',
       '&::placeholder': {
         fontFamily: 'Lato',
+        fontColor: '#adadad',
       },
       height: '50px',
       boxSizing: 'border-box',
@@ -52,16 +58,19 @@ const styles = (theme): StyleRules => {
 
     header: {
       padding: '10px 20px',
-      color: '#202124',
+      color: '#19A347',
       fontSize: '16px',
       fontFamily: 'Lato',
       fontWeight: 'normal',
       letterSpacing: '0',
       lineHeight: '24px',
-      backgroundColor: '#e2e9f4',
+      backgroundColor: 'white',
       borderRadius: '4px',
       border: 'none',
       height: '40px',
+      borderBottom: '1px solid #D4D4D4',
+      borderBottomLeftRadius: '0px',
+      borderBottomRightRadius: '0px',
     },
     tableRow: {
       padding: '10px 20px',
@@ -105,15 +114,28 @@ const styles = (theme): StyleRules => {
     },
     headerText: {
       color: '#202124',
-      fontSize: '16px',
+      fontSize: '18px',
       letterSpacing: '0',
       fontFamily: 'Lato',
       lineHeight: '24px',
       marginBottom: '0px',
+      flex: '1',
     },
     emptyList: {
       textAlign: 'center',
       margin: '30px 30px',
+    },
+    headerContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      height: '50px',
+    },
+    flexHeader: {
+      display: 'flex',
+      gap: '10px',
+    },
+    sortIcon: {
+      marginLeft: '13.5px',
     },
   };
 };
@@ -136,6 +158,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
 }) => {
   const [search, setSearch] = React.useState('');
   const [selectedConnection, setSelectedConnection] = React.useState<any>({});
+  const [sortType, setSortType] = React.useState('Down');
 
   React.useEffect(() => {
     selectionType === 'source'
@@ -154,34 +177,65 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const onCancel = (e: React.FormEvent) => {
     handleCancel();
   };
+
+  const changeCursor = (e) => {
+    e.target.style.cursor = 'pointer';
+  };
+
+  const handleSortToggle = (e) => {
+    sortType === 'Down' ? setSortType('Up') : setSortType('Down');
+    if (sortType === 'Down') {
+      connectionsList.sort((a, b) => (a.createdTimeMillis > b.createdTimeMillis ? -1 : 1));
+    } else {
+      connectionsList.sort((a, b) => (a.createdTimeMillis > b.createdTimeMillis ? 1 : -1));
+    }
+  };
+
+  const sortDownIcon = '/cdap_assets/img/sort-down-arrow.svg';
+  const sortUpIcon = '/cdap_assets/img/sort-up-arrow.svg';
   return (
     <div className={classes.root}>
-      {selectionType === 'target' ? (
-        <h3 className={classes.headerText}>{T.translate(`${I18N_PREFIX}.Headers.targetHeader`)}</h3>
-      ) : (
-        <h3 className={classes.headerText}>{T.translate(`${I18N_PREFIX}.Headers.sourceHeader`)}</h3>
-      )}
-      <TextField
-        variant="outlined"
-        placeholder={T.translate(`${I18N_PREFIX}.placeholders`).toString()}
-        className={classes.search}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        InputProps={{
-          endAdornment: <SearchIcon />,
-          classes: {
-            input: classes.resize,
-          },
-        }}
-        autoFocus={false}
-        data-cy="connections-search"
-      />
+      <div className={classes.headerContainer}>
+        {selectionType === 'target' ? (
+          <p className={classes.headerText}>{T.translate(`${I18N_PREFIX}.Headers.targetHeader`)}</p>
+        ) : (
+          <p className={classes.headerText}>{T.translate(`${I18N_PREFIX}.Headers.sourceHeader`)}</p>
+        )}
+        <TextField
+          variant="outlined"
+          placeholder={T.translate(`${I18N_PREFIX}.placeholders`).toString()}
+          className={classes.search}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: <SearchIcon />,
+            classes: {
+              input: classes.resize,
+            },
+          }}
+          autoFocus={false}
+          data-cy="connections-search"
+        />
+      </div>
+
       <Table columnTemplate="1fr 1fr 1fr">
         <TableHeader data-cy="table-header">
           <TableRow className={classes.header} data-cy="table-row">
             <TableCell>{T.translate(`${I18N_PREFIX}.Names.database`)}</TableCell>
             <TableCell>{T.translate(`${I18N_PREFIX}.Names.connection`)}</TableCell>
-            <TableCell>{T.translate(`${I18N_PREFIX}.Names.lastUsedOn`)}</TableCell>
+            <TableCell>
+              <div className="flexHeader">
+                {T.translate(`${I18N_PREFIX}.Names.lastUsedOn`)}
+                <img
+                  src={sortType === 'Down' ? sortDownIcon : sortUpIcon}
+                  alt="some down icon sort"
+                  height="14px"
+                  className={classes.sortIcon}
+                  onMouseOver={changeCursor}
+                  onClick={handleSortToggle}
+                />
+              </div>
+            </TableCell>
           </TableRow>
         </TableHeader>
 

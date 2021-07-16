@@ -16,21 +16,27 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Card, CardContent, Typography, CardActions, Button } from '@material-ui/core';
+import Modal from '@material-ui/core/Modal';
+import { Button, Card, CardContent, Typography } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import { Modal } from 'reactstrap';
 
 const styles = (): StyleRules => {
   return {
-    root: {
-      margin: '40px 40px',
+    root: {},
+    paper: {
       display: 'flex',
-      minHeight: '865px',
       flexDirection: 'column',
+      height: '100%',
+      marginTop: '100px',
+      width: '100%',
+      backgroundColor: 'white',
+      boxShadow: 'grey',
+      padding: '5px',
     },
     container: {
       // padding: '10px',
       flex: '1 1 0%',
+      marginLeft: '11%',
     },
     successMsg: {
       display: 'flex',
@@ -47,6 +53,7 @@ const styles = (): StyleRules => {
     },
     mappingCard: {
       flex: '1 1 0%',
+      width: '40%',
     },
     selectedCard: {
       flex: '1 1 0%',
@@ -70,7 +77,7 @@ const styles = (): StyleRules => {
       padding: '10px',
     },
     mappingIcons: {
-      '& .ConfigurationOverlayView - mappingIcons - 650': {},
+      '& .ConfigurationConfigurationModalView - mappingIcons - 650': {},
     },
     title: {
       fontFamily: 'Lato',
@@ -126,32 +133,39 @@ const styles = (): StyleRules => {
   };
 };
 
-interface IIngestionProps extends WithStyles<typeof styles> {
+interface IConfigurationModalProps extends WithStyles<typeof styles> {
   closeModal: () => void;
   runTask: () => void;
   scheduleTask: () => void;
 }
-const ConfigurationOverlayView: React.FC<IIngestionProps> = ({
+const ConfigurationModalView: React.FC<IConfigurationModalProps> = ({
   classes,
   closeModal,
   runTask,
   scheduleTask,
 }) => {
+  const [open, setOpen] = React.useState(false);
   const [cardSelected, setSelected] = React.useState('none');
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const setPointer = (e) => {
     e.target.style.cursor = 'pointer';
   };
 
-  const allTables = '/cdap_assets/img/run-task-big.svg';
-  const customTable = '/cdap_assets/img/schedule-task-big.svg';
-  const successMsgIcon = '/cdap_assets/img/sucess-state-tick.svg';
+  const runTaskImg = '/cdap_assets/img/runTask.svg';
+  const scheduleTaskImg = '/cdap_assets/img/scheduleTask.svg';
   return (
-    <div className={classes.root}>
+    <div className={classes.paper}>
       <div className={classes.container}>
         <div className={classes.overlayClose}>
           <div className={classes.successMsg}>
-            <img src={successMsgIcon} className={classes.successIcon} alt="success icon" />
             <p className={classes.successMsgText}>
               Successfully Deployed Task. Ingest oracle studies data to bigquery
             </p>
@@ -166,14 +180,17 @@ const ConfigurationOverlayView: React.FC<IIngestionProps> = ({
         <Typography className={classes.title}>What would you like to do?</Typography>
         <div className={classes.mappingTypes}>
           <Card
-            className={cardSelected === 'All' ? classes.selectedCard : classes.mappingCard}
+            className={classes.mappingCard}
             variant="outlined"
+            onMouseOver={setPointer}
             onClick={() => {
               runTask();
             }}
           >
             <div className={classes.mappingInfo}>
-              <img className={classes.mappingIcons} src={allTables} alt="some text" />
+              <div className={classes.mappingIcons}>
+                <img src={runTaskImg} alt="some text" />
+              </div>
               <CardContent className={classes.label}>
                 <p className={classes.labelText}>Run Task</p>
               </CardContent>
@@ -198,14 +215,17 @@ const ConfigurationOverlayView: React.FC<IIngestionProps> = ({
             </div>
           </Card>
           <Card
-            className={cardSelected === 'Custom' ? classes.selectedCard : classes.mappingCard}
+            className={classes.mappingCard}
             variant="outlined"
+            onMouseOver={setPointer}
             onClick={() => {
               scheduleTask();
             }}
           >
             <div className={classes.mappingInfo}>
-              <img src={customTable} className={classes.mappingIcons} alt="some icon" />
+              <div className={classes.mappingIcons}>
+                <img src={scheduleTaskImg} alt="some text" />
+              </div>
               <CardContent className={classes.label}>
                 <p className={classes.labelText}>Schedule Task</p>
               </CardContent>
@@ -235,5 +255,5 @@ const ConfigurationOverlayView: React.FC<IIngestionProps> = ({
   );
 };
 
-const ConfigurationOverlay = withStyles(styles)(ConfigurationOverlayView);
-export default ConfigurationOverlay;
+const ConfigurationModal = withStyles(styles)(ConfigurationModalView);
+export default ConfigurationModal;

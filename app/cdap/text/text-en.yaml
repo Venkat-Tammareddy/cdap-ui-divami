@@ -1917,12 +1917,12 @@ features:
     altText: Image
     AllTables:
       title: Select all tables & columns
-      description: I would like to extract all columns from all tables
-      description2: without any custom selection.
+      description: I would like to extract all tables without any
+      description2: custom selection
     CustomTables:
       title: Custom selection of table & columns
-      description: I would like to extract the tables and columns
-      description2: I am interested in.
+      description: I would like to extract tables
+      description2: I am interested in
   Navbar:
     ControlCenter:
       dashboard: Dashboard
@@ -2789,9 +2789,9 @@ features:
     title: Enter Configuration Details
     logText: Do you like to log data errors during data ingestion?
     preferenceText: Do you have a preference for data ingesting?
-  TaskDetails:
+  TaskInfo:
     Errors:
-      taskNameLengthError: Task name must be less than 64
+      taskNameLengthError: Name cannot be longer than 64 characters.
       taskNameFormatError: 'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)'
       taskTagError: 'Add tags with a comma (,) separation (ex: Studies, Courses, and etc...)'
       errorWithOutEx: Enter task name without spaces

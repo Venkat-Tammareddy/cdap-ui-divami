@@ -21,6 +21,8 @@ import { Typography } from '@material-ui/core';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import IngestionJobsList from '../IngestionTaskList/IngestionJobsList';
 import NamespaceStore from 'services/NamespaceStore';
+import If from 'components/If';
+import SheduleTask from '../SheduleTask/SheduleTask';
 
 const styles = (theme): StyleRules => {
   return {
@@ -183,8 +185,20 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const calender = '/cdap_assets/img/calendar-black.svg';
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [myCase, setMyCase] = React.useState('case-1');
+  const [schedule, setSchedule] = React.useState(false);
+
+  const toggleSchedule = () => {
+    setSchedule(true);
+  };
+
+  const closeSchedule = () => {
+    setSchedule(false);
+  };
   return (
     <div className={classes.root}>
+      <If condition={schedule}>
+        <SheduleTask closeSchedule={closeSchedule} />
+      </If>
       <IngestionHeader
         title="Ingest Tasks"
         taskActionsBtn
@@ -248,7 +262,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
               <div className={classes.cardTitle}>Run Task</div>
               <img className={classes.cardRunIcon} src={runTaskIcon} alt="run-task" />
             </div>
-            <div className={classes.card}>
+            <div className={classes.card} onClick={toggleSchedule}>
               <div className={classes.cardDescription}>
                 I would like to extract all columns from all tables without any custom selection.
               </div>

@@ -24,9 +24,9 @@ const styles = (theme): StyleRules => {
     root: {
       height: '100%',
       '& .MuiStepContent-root': {
-        borderLeft: '1px solid green',
         marginLeft: '17px',
         paddingLeft: '40px',
+        borderLeft: '1px solid #A5A5A5',
       },
       '& .MuiStepLabel-label': {
         fontSize: '16px',
@@ -75,13 +75,10 @@ const styles = (theme): StyleRules => {
           fill: '#FFFFFF',
         },
         color: '#4285F4',
-        border: '1px solid #4285F4',
-        borderRadius: '50%',
-        height: '38px',
-        width: '38px',
-        padding: '4px',
-        fontSize: '14px',
-        letterSpacing: '0',
+        border: 'none',
+        height: '30px',
+        width: '30px',
+        fontSize: '16px',
         margin: '0px',
       },
       '&$completedIcon': {
@@ -138,7 +135,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
         return;
     }
   }
-  const myimg = '/cdap_assets/img/stepperIcon.svg';
+  const myimg = '/cdap_assets/img/side-stepper-tick.svg';
   const iconn = () => {
     return (
       <img className={classes.completedIcon} src={myimg} alt="img" height="30px" width="30px" />
@@ -153,12 +150,12 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
     },
     active: {
       '& $line': {
-        borderLeft: '1px solid green',
+        borderLeft: '1px solid #A5A5A5',
       },
     },
     completed: {
       '& $line': {
-        borderLeft: '1px solid green',
+        borderLeft: '1px solid #A5A5A5',
       },
     },
     line: {

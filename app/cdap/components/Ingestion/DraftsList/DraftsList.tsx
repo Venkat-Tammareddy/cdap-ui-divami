@@ -116,7 +116,11 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText }) => {
           <TableBody data-cy="table-body">
             {filteredList.map((item, index) => {
               return (
-                <TableRow key={index} className={classes.tableRow} data-cy="table-row">
+                <TableRow
+                  key={index}
+                  className={classes.tableRow}
+                  data-cy={`table-row-${item.pipeLineName}`}
+                >
                   <TableCell>{item.pipeLineName}</TableCell>
                   <TableCell>{item.type}</TableCell>
                   <TableCell>{item.lastSaved}</TableCell>

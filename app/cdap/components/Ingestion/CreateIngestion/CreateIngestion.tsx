@@ -31,8 +31,8 @@ import NamespaceStore from 'services/NamespaceStore';
 import history from 'services/history';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
 const I18N_PREFIX = 'features.CreateIngestion';
-import Modal from '@material-ui/core/Modal';
-import ConfigurationOverlay from '../ConfigurationOverlay/ConfigurationOverlay';
+import Acknowledgement from '../Acknowledgement/Acknowledgement';
+import IngestionHeader from '../IngestionHeader/IngestionHeader';
 
 const styles = (theme): StyleRules => {
   return {
@@ -45,6 +45,7 @@ const styles = (theme): StyleRules => {
       gridTemplateRows: '100%',
       height: 'calc(100% - 50px)', // 100% - height of EntityTopPanel
       overflowY: 'hidden',
+      borderTop: '1px solid #A5A5A5',
     },
     wizard: {
       boxShadow: ' 0px -1px 10px 0.5px gray',
@@ -59,7 +60,7 @@ interface ICreateIngestionProps extends WithStyles<typeof styles> {}
 const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [deployLoader, setDeployLoader] = React.useState(false);
-  const [overlay, setOverlay] = React.useState(false);
+  const [ack, setAck] = React.useState(false);
   const [connections, setConnections] = React.useState([]);
   const [draftId] = React.useState(uuidV4());
   const [draftConfig, setDraftConfig] = React.useState({
@@ -165,8 +166,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         console.log('deploy', message);
         deleteDraft();
         setDeployLoader(false);
-        setOverlay(true);
-        console.log(overlay);
+        setAck(true);
       },
       (err) => {
         console.log(err);
@@ -240,7 +240,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                           type: 'batchsource',
                           artifact: {
                             name: 'multi-table-plugins',
-                            version: '1.1.0',
+                            version: '1.3.0',
                             scope: 'USER',
                           },
                           properties: {
@@ -327,44 +327,26 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   };
   return (
     <div className={classes.root}>
-      <EntityTopPanel title={T.translate(`${I18N_PREFIX}.createIngest`).toString()} />
+      <IngestionHeader title={T.translate(`${I18N_PREFIX}.createIngest`).toString()} />
       <If condition={deployLoader}>
         <LoadingSVGCentered />
       </If>
-      <div className={classes.wizardAndContentWrapper}>
-        <div className={classes.wizard}>
-          <TaskTrackingWizard
-            steps={steps}
-            activeStep={activeStep}
-            draftConfig={draftConfig}
-            stepProgress={stepProgress}
-            stepperNav={(step) => step <= stepProgress && setActiveStep(step)}
-          />
+      {ack ? (
+        <Acknowledgement gotoTasks={() => goToIngestionHome()} />
+      ) : (
+        <div className={classes.wizardAndContentWrapper}>
+          <div className={classes.wizard}>
+            <TaskTrackingWizard
+              steps={steps}
+              activeStep={activeStep}
+              draftConfig={draftConfig}
+              stepProgress={stepProgress}
+              stepperNav={(step) => step <= stepProgress && setActiveStep(step)}
+            />
+          </div>
+          <div className={classes.content}>{Content()}</div>
         </div>
-        <div className={classes.content}>{Content()}</div>
-      </div>
-      <Modal
-        open={overlay}
-        onClose={() => {
-          setOverlay(false);
-          goToIngestionHome();
-        }}
-      >
-        <ConfigurationOverlay
-          closeModal={() => {
-            setOverlay(false);
-            goToIngestionHome();
-          }}
-          runTask={() => {
-            setOverlay(false);
-            goToIngestionHome();
-          }}
-          scheduleTask={() => {
-            setOverlay(false);
-            goToIngestionHome();
-          }}
-        />
-      </Modal>
+      )}
     </div>
   );
 };

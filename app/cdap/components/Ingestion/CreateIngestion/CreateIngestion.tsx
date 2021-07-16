@@ -240,7 +240,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                           type: 'batchsource',
                           artifact: {
                             name: 'multi-table-plugins',
-                            version: '1.1.0',
+                            version: '1.3.0',
                             scope: 'USER',
                           },
                           properties: {

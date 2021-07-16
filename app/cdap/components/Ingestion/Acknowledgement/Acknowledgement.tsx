@@ -24,7 +24,7 @@ const styles = (): StyleRules => {
   return {
     root: {
       display: 'flex',
-      margin: '40px',
+      padding: '40px',
       flexDirection: 'column',
       '& .MuiCardContent-root': {
         padding: '0',
@@ -33,6 +33,7 @@ const styles = (): StyleRules => {
       alignItems: 'center',
       fontFamily: 'Lato',
       fontSize: '18px',
+      borderTop:'1px solid #A5A5A5'
     },
     ackOptions: {
       display: 'flex',
@@ -71,6 +72,7 @@ const styles = (): StyleRules => {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
+      marginTop:'124px'
     },
     ackMsg: {
       margin: '0',

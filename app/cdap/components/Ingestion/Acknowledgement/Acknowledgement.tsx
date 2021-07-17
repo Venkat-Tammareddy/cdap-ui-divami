@@ -33,7 +33,7 @@ const styles = (): StyleRules => {
       alignItems: 'center',
       fontFamily: 'Lato',
       fontSize: '18px',
-      borderTop:'1px solid #A5A5A5'
+      borderTop: '1px solid #A5A5A5',
     },
     ackOptions: {
       display: 'flex',
@@ -72,7 +72,7 @@ const styles = (): StyleRules => {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop:'124px'
+      marginTop: '124px',
     },
     ackMsg: {
       margin: '0',

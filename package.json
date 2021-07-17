@@ -147,7 +147,11 @@
     "url-loader": "3.0.0",
     "webpack": "4.41.2",
     "webpack-cli": "3.3.10",
-    "webpack-livereload-plugin": "2.2.0"
+    "webpack-livereload-plugin": "2.2.0",
+    "date-fns": "latest",
+    "@types/date-fns": "latest",
+    "@material-ui/pickers": "latest",
+    "@date-io/date-fns": "v1"
   },
   "dependencies": {
     "@ajainarayanan/react-pan-zoom": "0.0.4",
@@ -159,7 +163,6 @@
     "@material-ui/lab": "4.0.0-alpha.57",
     "@simonwep/selection-js": "1.4.0",
     "ace-builds": "1.4.7",
-    "antd": "^4.16.7",
     "apollo-boost": "0.4.7",
     "apollo-server": "2.9.15",
     "apollo-server-express": "2.9.15",

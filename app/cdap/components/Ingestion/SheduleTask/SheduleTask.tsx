@@ -25,8 +25,16 @@ import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
-import { TimePicker } from 'antd';
-import 'antd/dist/antd.css';
+import 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+
+import { StringifyOptions } from 'query-string';
+import moment from 'moment';
 
 const styles = (theme): StyleRules => {
   return {
@@ -58,11 +66,23 @@ const styles = (theme): StyleRules => {
       bottom: '51px',
       paddingRight: '36px',
     },
+    picker: {
+      width: '320px',
+      height: '56px',
+      borderRadius: '4px',
+      background: '#FBFBFB',
+    },
+    msgName: {
+      width: '390px',
+      height: '32px',
+      background: '#dcedf5',
+      borderRadius: '15.5px',
+    },
     timePicker: {
       border: '1px solid #c8ccd0',
       width: 320,
       padding: '12px 10px',
-      borderRadius: '4px',
+
       '& ::before': {
         borderBottom: 'none',
         content: 'none',
@@ -85,17 +105,73 @@ const recurOptions = [
   'Yearly',
 ];
 
-const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+// const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const initialWeekDays = {
+  Sun: true,
+  Mon: false,
+  Tue: false,
+  Wed: false,
+  Thu: false,
+  Fri: false,
+  Sat: false,
+};
 interface SheduleTaskProps extends WithStyles<typeof styles> {
   closeSchedule: () => void;
 }
 
 const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => {
   const tileDesignBar = '/cdap_assets/img/title-design-bar.svg';
+  const calendar = '/cdap_assets/img/calendar.svg';
+  const timer = '/cdap_assets/img/timer.svg';
 
   const [checkedItem, setCheckedItem] = React.useState('Hourly');
   const onItemChecked = (item: string) => {
     setCheckedItem(item);
+  };
+  const pickerImage = () => {
+    return <img src={calendar} />;
+  };
+
+  const [selectedTime, setSelectedTime] = React.useState<Date | null>(new Date());
+  const initialSheduleObj = {
+    hours: 1,
+    days: 1,
+    weeks: 1,
+    weekDays: initialWeekDays,
+    months: 1,
+  };
+  const [sheduleObj, setSheduleObj] = React.useState(initialSheduleObj);
+  const handleDateChange = (date: Date | null) => {
+    setSelectedTime(date);
+  };
+
+  React.useEffect(() => {
+    setSheduleObj(initialSheduleObj);
+  }, [checkedItem]);
+
+  const formatAMPM = (date: Date) => {
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    const strTime = hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ' ' + ampm;
+    return strTime;
+  };
+  const handleIncremtChanges = (type, inputValue) => {
+    setSheduleObj((preState) => {
+      const copyObj = { ...preState };
+      copyObj[type] = inputValue;
+      return copyObj;
+    });
+  };
+  const onWeekDayChecked = (e, item) => {
+    setSheduleObj((preState) => {
+      const copyObj = { ...preState };
+      const copyweekObj = { ...copyObj.weekDays };
+      copyweekObj[item] = !copyweekObj[item];
+      return { ...copyObj, weekDays: copyweekObj };
+    });
   };
 
   const renderForm = () => {
@@ -103,46 +179,163 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
       case 'Hourly': {
         return (
           <Box mb={4}>
-            <Box mb={2}>At what frequency is the event likely repeat?</Box>
-            <IncrementInput type={'hour'} />
-            <Box mb={2}>When do you want to start this event? ?</Box>
-            <TimePicker
-              style={{ width: '320px', height: '56px', borderRadius: '4px' }}
-              use12Hours
-              format="h:mm a"
-              // onChange={onChange}
+            <Box mb={1}>At what frequency is the event likely repeat?</Box>
+            <IncrementInput
+              handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
+              type={'hours'}
             />
+            <Box mb={1}>When do you want to start this event? ?</Box>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardTimePicker
+                className={classes.timePicker}
+                margin="normal"
+                id="time-picker"
+                value={selectedTime}
+                onChange={handleDateChange}
+                KeyboardButtonProps={{
+                  'aria-label': 'change time',
+                }}
+              />
+            </MuiPickersUtilsProvider>
           </Box>
         );
       }
 
-      case 'Daily' || 'Monthly':
+      case 'Daily': {
+        return (
+          <Box mb={4}>
+            <Box mb={1}>At what frequency is the event likely repeat?</Box>
+            <IncrementInput
+              handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
+              type={'days'}
+            />
+            <Box mb={1}>When do you want to start this event? ?</Box>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardTimePicker
+                className={classes.timePicker}
+                margin="normal"
+                id="time-picker"
+                value={selectedTime}
+                onChange={handleDateChange}
+                KeyboardButtonProps={{
+                  'aria-label': 'change time',
+                }}
+              />
+            </MuiPickersUtilsProvider>
+          </Box>
+        );
+      }
+
+      case 'Weekly':
         {
           return (
             <Box mb={4}>
-              <Box mb={2}>At what frequency is the event likely repeat?</Box>
-              <IncrementInput type={'days'} />
-              <Box mb={2}>Starting At ?</Box>
-              <TextField
-                id="time"
-                type="time"
-                defaultValue="07:40"
-                className={classes.timePicker}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                inputProps={{
-                  endAdornment: <SearchIcon />,
-                  step: 300, // 5 min
-                }}
+              <Box mb={1}>At what frequency is the event likely repeat?</Box>
+              <IncrementInput
+                handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
+                type={'weeks'}
               />
+              <Box mb={2}>
+                <Grid container spacing={1}>
+                  {Object.keys(sheduleObj.weekDays).map((item, index) => (
+                    <Grid item xs={3}>
+                      <Checkbox
+                        checked={sheduleObj.weekDays[item]}
+                        onChange={(e) => onWeekDayChecked(e, item)}
+                        name="checkedB"
+                        color="primary"
+                      />
+                      <label>{item}</label>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+
+              <Box mb={1}>When do you want to start this event?</Box>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardTimePicker
+                  className={classes.timePicker}
+                  margin="normal"
+                  id="time-picker"
+                  value={selectedTime}
+                  onChange={handleDateChange}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change time',
+                  }}
+                />
+              </MuiPickersUtilsProvider>
             </Box>
           );
         }
         break;
-
-      case 'Weekly': {
+      case 'Monthly': {
+        return (
+          <Box mb={4}>
+            <Box mb={1}>At what frequency is the event likely repeat?</Box>
+            <IncrementInput
+              handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
+              type={'months'}
+            />
+            <Box mb={1}>Select date of month?</Box>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                margin="normal"
+                className={classes.timePicker}
+                id="date-picker-dialog"
+                format="MM/dd/yyyy"
+                value={selectedTime}
+                onChange={handleDateChange}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date',
+                }}
+              />
+            </MuiPickersUtilsProvider>
+          </Box>
+        );
       }
+      default:
+        break;
+    }
+  };
+
+  const sheduleString = () => {
+    const string = `The task is sheduled to run every  `;
+    switch (checkedItem) {
+      case 'Hourly':
+        {
+          return (
+            <span>
+              {string + (sheduleObj.hours == 1 ? ' hour at ' : sheduleObj.hours + ' hours at  ')}
+              {formatAMPM(selectedTime)}
+            </span>
+          );
+        }
+        break;
+      case 'Daily':
+        {
+          return (
+            <span>
+              {string + (sheduleObj.days == 1 ? ' day at ' : sheduleObj.days + ' days at ')}
+              {formatAMPM(selectedTime)}
+            </span>
+          );
+        }
+        break;
+      case 'Weekly':
+        {
+          return (
+            <span>
+              {string + (sheduleObj.weeks == 1 ? ' week ' : sheduleObj.weeks + ' weeks  ')}
+              {Object.keys(sheduleObj.weekDays).map((ele) => {
+                if (sheduleObj.weekDays[ele]) {
+                  return ',' + ele;
+                }
+              })}
+              {' at ' + formatAMPM(selectedTime)}
+            </span>
+          );
+        }
+        break;
 
       default:
         break;
@@ -178,6 +371,17 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
             </Grid>
           </Box>
           {renderForm()}
+
+          <Box
+            mt={2}
+            display="flex"
+            alignItems="center"
+            justifyContent="space-evenly"
+            className={classes.msgName}
+          >
+            <img src={timer} />
+            {sheduleString()}
+          </Box>
           <Box className={classes.btnFooter}>
             <Grid container spacing={0}>
               <Grid className={classes.gridItem} item xs={6}></Grid>

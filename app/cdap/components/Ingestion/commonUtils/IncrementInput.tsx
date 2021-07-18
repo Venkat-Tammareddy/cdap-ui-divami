@@ -69,6 +69,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ classes, type, handleIn
     days: { value: 31, string: 'Day' },
     weeks: { value: 4, string: 'Week' },
     months: { value: 12, string: 'Month' },
+    quarters: { value: 4, string: 'Quarter' },
   };
 
   React.useEffect(() => {

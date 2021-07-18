@@ -102,7 +102,7 @@ const recurOptions = [
   'Daily',
   'Weekly',
   'Monthly',
-  'Yearly',
+  'Quarterly',
 ];
 
 // const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -133,18 +133,22 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
   };
 
   const [selectedTime, setSelectedTime] = React.useState<Date | null>(new Date());
+  const [selectedDate, setSelectedDate] = React.useState<Date | null>(new Date());
   const initialSheduleObj = {
     hours: 1,
     days: 1,
     weeks: 1,
     weekDays: initialWeekDays,
     months: 1,
+    quarters: 1,
   };
   const [sheduleObj, setSheduleObj] = React.useState(initialSheduleObj);
-  const handleDateChange = (date: Date | null) => {
+  const handleTimeChange = (date: Date | null) => {
     setSelectedTime(date);
   };
-
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+  };
   React.useEffect(() => {
     setSheduleObj(initialSheduleObj);
   }, [checkedItem]);
@@ -158,6 +162,10 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
     const strTime = hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ' ' + ampm;
     return strTime;
   };
+  const formatDateSuffix = (date: Date) => {
+    return date.getDate() + 'th';
+  };
+
   const handleIncremtChanges = (type, inputValue) => {
     setSheduleObj((preState) => {
       const copyObj = { ...preState };
@@ -191,7 +199,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                 margin="normal"
                 id="time-picker"
                 value={selectedTime}
-                onChange={handleDateChange}
+                onChange={handleTimeChange}
                 KeyboardButtonProps={{
                   'aria-label': 'change time',
                 }}
@@ -216,7 +224,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                 margin="normal"
                 id="time-picker"
                 value={selectedTime}
-                onChange={handleDateChange}
+                onChange={handleTimeChange}
                 KeyboardButtonProps={{
                   'aria-label': 'change time',
                 }}
@@ -258,7 +266,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                   margin="normal"
                   id="time-picker"
                   value={selectedTime}
-                  onChange={handleDateChange}
+                  onChange={handleTimeChange}
                   KeyboardButtonProps={{
                     'aria-label': 'change time',
                   }}
@@ -268,13 +276,54 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
           );
         }
         break;
-      case 'Monthly': {
+      case 'Monthly':
+        {
+          return (
+            <Box mb={4}>
+              <Box mb={1}>At what frequency is the event likely repeat?</Box>
+              <IncrementInput
+                handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
+                type={'months'}
+              />
+              <Box mb={1}>Select date of month?</Box>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  margin="normal"
+                  className={classes.timePicker}
+                  id="date-picker-dialog"
+                  format="MM/dd/yyyy"
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change date',
+                  }}
+                />
+              </MuiPickersUtilsProvider>
+
+              <Box mb={1}>When do you want to start this event?</Box>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardTimePicker
+                  className={classes.timePicker}
+                  margin="normal"
+                  id="time-picker"
+                  value={selectedTime}
+                  onChange={handleTimeChange}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change time',
+                  }}
+                />
+              </MuiPickersUtilsProvider>
+            </Box>
+          );
+        }
+        break;
+      case 'Quarterly': {
         return (
           <Box mb={4}>
             <Box mb={1}>At what frequency is the event likely repeat?</Box>
             <IncrementInput
               handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
-              type={'months'}
+              type={'quarters'}
             />
             <Box mb={1}>Select date of month?</Box>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -283,16 +332,31 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                 className={classes.timePicker}
                 id="date-picker-dialog"
                 format="MM/dd/yyyy"
-                value={selectedTime}
+                value={selectedDate}
                 onChange={handleDateChange}
                 KeyboardButtonProps={{
                   'aria-label': 'change date',
                 }}
               />
             </MuiPickersUtilsProvider>
+
+            <Box mb={1}>When do you want to start this event?</Box>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardTimePicker
+                className={classes.timePicker}
+                margin="normal"
+                id="time-picker"
+                value={selectedTime}
+                onChange={handleTimeChange}
+                KeyboardButtonProps={{
+                  'aria-label': 'change time',
+                }}
+              />
+            </MuiPickersUtilsProvider>
           </Box>
         );
       }
+
       default:
         break;
     }
@@ -336,6 +400,26 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
           );
         }
         break;
+      case 'Monthly':
+        {
+          return (
+            <span>
+              {string + (sheduleObj.months == 1 ? ' month ' : sheduleObj.months + ' months ')}
+              {' on ' + formatDateSuffix(selectedDate)}
+              {' at ' + formatAMPM(selectedTime)}
+            </span>
+          );
+        }
+        break;
+      case 'Quarterly': {
+        return (
+          <span>
+            {string + (sheduleObj.quarters == 1 ? ' quarter ' : sheduleObj.quarters + ' quarters ')}
+            {' on ' + formatDateSuffix(selectedDate)}
+            {' at ' + formatAMPM(selectedTime)}
+          </span>
+        );
+      }
 
       default:
         break;

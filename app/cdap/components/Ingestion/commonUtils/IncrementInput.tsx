@@ -58,15 +58,26 @@ const styles = (theme): StyleRules => {
 
 interface IncrementInputProps extends WithStyles<typeof styles> {
   type: string;
+  handleIncremtChanges: (type: string, inputValue: string) => any;
 }
 
-const IncrementInput: React.FC<IncrementInputProps> = ({ classes, type }) => {
+const IncrementInput: React.FC<IncrementInputProps> = ({ classes, type, handleIncremtChanges }) => {
   const [inputValue, setInputValue] = React.useState('1');
   const timeConsts = {
-    hour: { value: 23, string: 'Hr' },
+    hours: { value: 23, string: 'Hr' },
     minutes: { value: 59, string: 'Min' },
     days: { value: 31, string: 'Day' },
+    weeks: { value: 4, string: 'Week' },
+    months: { value: 12, string: 'Month' },
+    quarters: { value: 4, string: 'Quarter' },
   };
+
+  React.useEffect(() => {
+    handleIncremtChanges(type, inputValue);
+  }, [inputValue]);
+  React.useEffect(() => {
+    setInputValue('1');
+  }, [type]);
 
   const handleChanges = (value: string) => {
     const reg = new RegExp('^[0-9]+$');
@@ -97,6 +108,11 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ classes, type }) => {
       }
     });
   };
+  const onBlur = () => {
+    if (inputValue == '') {
+      setInputValue('1');
+    }
+  };
   return (
     <>
       <div className={classes.root}>
@@ -107,6 +123,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ classes, type }) => {
           onChange={(e) => {
             handleChanges(e.target.value);
           }}
+          onBlur={() => onBlur()}
           InputProps={{ classes: { input: classes.input } }}
         ></TextField>
         <Box mx={2} component="span">

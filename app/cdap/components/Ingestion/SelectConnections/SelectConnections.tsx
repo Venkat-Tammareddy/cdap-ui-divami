@@ -94,7 +94,7 @@ const styles = (theme): StyleRules => {
       marginTop: 'auto',
       display: 'flex',
       flexDirection: 'row-reverse',
-      gap: '50px',
+      gap: '30px',
     },
     cancelButton: {
       textDecoration: 'none',

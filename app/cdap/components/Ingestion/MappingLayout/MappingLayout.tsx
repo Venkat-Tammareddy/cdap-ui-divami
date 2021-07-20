@@ -52,7 +52,6 @@ const styles = (): StyleRules => {
       width: '497px',
       height: '272px',
       display: 'flex',
-      flex: '1',
       flexDirection: 'column-reverse',
       alignItems: 'center',
       marginRight: '40px',
@@ -148,7 +147,6 @@ const styles = (): StyleRules => {
     card: {
       border: '1px solid #aaaaac',
       borderRadius: '4px',
-      flex: '1',
       width: '497px',
       height: '272px',
       display: 'flex',
@@ -158,10 +156,10 @@ const styles = (): StyleRules => {
       cursor: 'pointer',
     },
     cardRunIcon: {
-      marginBottom: '30px',
+      marginBottom: '40.5px',
     },
     cardScheduleIcon: {
-      marginBottom: '30px',
+      marginBottom: '40px',
     },
     cardTitle: {
       fontFamily: 'Lato',

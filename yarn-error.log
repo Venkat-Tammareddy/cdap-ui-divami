@@ -14,12 +14,17 @@ Platform:
   linux x64
 
 Trace: 
-  SyntaxError: /home/hari/projects/jun22-ui/cdap-ui-divami/package.json: Unexpected token } in JSON at position 9583
-      at JSON.parse (<anonymous>)
-      at /usr/local/lib/node_modules/yarn/lib/cli.js:1625:59
-      at Generator.next (<anonymous>)
-      at step (/usr/local/lib/node_modules/yarn/lib/cli.js:310:30)
-      at /usr/local/lib/node_modules/yarn/lib/cli.js:321:13
+  Error: https://registry.yarnpkg.com/@types%2fdate-ioDate-fns: Not found
+      at Request.params.callback [as _callback] (/usr/local/lib/node_modules/yarn/lib/cli.js:66988:18)
+      at Request.self.callback (/usr/local/lib/node_modules/yarn/lib/cli.js:140662:22)
+      at Request.emit (events.js:198:13)
+      at Request.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141634:10)
+      at Request.emit (events.js:198:13)
+      at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141556:12)
+      at Object.onceWrapper (events.js:286:20)
+      at IncomingMessage.emit (events.js:203:15)
+      at endReadableNT (_stream_readable.js:1145:12)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
 
 npm manifest: 
   {
@@ -171,7 +176,12 @@ npm manifest:
       "url-loader": "3.0.0",
       "webpack": "4.41.2",
       "webpack-cli": "3.3.10",
-      "webpack-livereload-plugin": "2.2.0"
+      "webpack-livereload-plugin": "2.2.0",
+      "date-fns": "latest",
+      "@types/date-ioDate-fns": "latest",
+      "@types/date-fns": "latest",
+      "@material-ui/pickers": "latest",
+      "@date-io/date-fns": "v1"
     },
     "dependencies": {
       "@ajainarayanan/react-pan-zoom": "0.0.4",
@@ -273,7 +283,7 @@ npm manifest:
       "vega-tooltip": "0.4.3",
       "webpack-dev-server": "3.11.0",
       "whatwg-fetch": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-1.0.0.tgz",
-      "yml-loader": "2.1.0",
+      "yml-loader": "2.1.0"
     },
     "engines": {
       "node": ">= 10.12.2"
@@ -1746,13 +1756,6 @@ Lockfile:
     dependencies:
       regenerator-runtime "^0.13.4"
   
-  "@babel/runtime@^7.13.10":
-    version "7.14.6"
-    resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.14.6.tgz#535203bc0892efc7dec60bdc27b2ecf6e409062d"
-    integrity sha512-/PCB2uJ7oM44tz8YhC4Z/6PeOKXp4K588f+5M3clr1M4zbqztlo0XEfJ2LEzj/FgwfgGcIdl8n7YYjTCI0BYwg==
-    dependencies:
-      regenerator-runtime "^0.13.4"
-  
   "@babel/standalone@^7.4.5":
     version "7.13.9"
     resolved "https://registry.yarnpkg.com/@babel/standalone/-/standalone-7.13.9.tgz#38e78673e19f5077f4b294ad346780634e59e276"
@@ -1862,24 +1865,6 @@ Lockfile:
       debug "^3.1.0"
       lodash.once "^4.1.1"
   
-  "@emotion/babel-plugin@^11.3.0":
-    version "11.3.0"
-    resolved "https://registry.yarnpkg.com/@emotion/babel-plugin/-/babel-plugin-11.3.0.tgz#3a16850ba04d8d9651f07f3fb674b3436a4fb9d7"
-    integrity sha512-UZKwBV2rADuhRp+ZOGgNWg2eYgbzKzQXfQPtJbu/PLy8onurxlNCLvxMQEvlr1/GudguPI5IU9qIY1+2z1M5bA==
-    dependencies:
-      "@babel/helper-module-imports" "^7.12.13"
-      "@babel/plugin-syntax-jsx" "^7.12.13"
-      "@babel/runtime" "^7.13.10"
-      "@emotion/hash" "^0.8.0"
-      "@emotion/memoize" "^0.7.5"
-      "@emotion/serialize" "^1.0.2"
-      babel-plugin-macros "^2.6.1"
-      convert-source-map "^1.5.0"
-      escape-string-regexp "^4.0.0"
-      find-root "^1.1.0"
-      source-map "^0.5.7"
-      stylis "^4.0.3"
-  
   "@emotion/cache@^10.0.27", "@emotion/cache@^10.0.9":
     version "10.0.29"
     resolved "https://registry.yarnpkg.com/@emotion/cache/-/cache-10.0.29.tgz#87e7e64f412c060102d589fe7c6dc042e6f9d1e0"
@@ -1889,17 +1874,6 @@ Lockfile:
       "@emotion/stylis" "0.8.5"
       "@emotion/utils" "0.11.3"
       "@emotion/weak-memoize" "0.2.5"
-  
-  "@emotion/cache@^11.4.0":
-    version "11.4.0"
-    resolved "https://registry.yarnpkg.com/@emotion/cache/-/cache-11.4.0.tgz#293fc9d9a7a38b9aad8e9337e5014366c3b09ac0"
-    integrity sha512-Zx70bjE7LErRO9OaZrhf22Qye1y4F7iDl+ITjet0J+i+B88PrAOBkKvaAWhxsZf72tDLajwCgfCjJ2dvH77C3g==
-    dependencies:
-      "@emotion/memoize" "^0.7.4"
-      "@emotion/sheet" "^1.0.0"
-      "@emotion/utils" "^1.0.0"
-      "@emotion/weak-memoize" "^0.2.5"
-      stylis "^4.0.3"
   
   "@emotion/core@^10.0.14", "@emotion/core@^10.0.9":
     version "10.1.1"
@@ -1934,35 +1908,10 @@ Lockfile:
     dependencies:
       "@emotion/memoize" "0.7.4"
   
-  "@emotion/is-prop-valid@^1.1.0":
-    version "1.1.0"
-    resolved "https://registry.yarnpkg.com/@emotion/is-prop-valid/-/is-prop-valid-1.1.0.tgz#29ef6be1e946fb4739f9707def860f316f668cde"
-    integrity sha512-9RkilvXAufQHsSsjQ3PIzSns+pxuX4EW8EbGeSPjZMHuMx6z/MOzb9LpqNieQX4F3mre3NWS2+X3JNRHTQztUQ==
-    dependencies:
-      "@emotion/memoize" "^0.7.4"
-  
   "@emotion/memoize@0.7.4":
     version "0.7.4"
     resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.7.4.tgz#19bf0f5af19149111c40d98bb0cf82119f5d9eeb"
     integrity sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==
-  
-  "@emotion/memoize@^0.7.4", "@emotion/memoize@^0.7.5":
-    version "0.7.5"
-    resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.7.5.tgz#2c40f81449a4e554e9fc6396910ed4843ec2be50"
-    integrity sha512-igX9a37DR2ZPGYtV6suZ6whr8pTFtyHL3K/oLUotxpSVO2ASaprmAe2Dkq7tBo7CRY7MMDrAa9nuQP9/YG8FxQ==
-  
-  "@emotion/react@latest":
-    version "11.4.0"
-    resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.4.0.tgz#2465ad7b073a691409b88dfd96dc17097ddad9b7"
-    integrity sha512-4XklWsl9BdtatLoJpSjusXhpKv9YVteYKh9hPKP1Sxl+mswEFoUe0WtmtWjxEjkA51DQ2QRMCNOvKcSlCQ7ivg==
-    dependencies:
-      "@babel/runtime" "^7.13.10"
-      "@emotion/cache" "^11.4.0"
-      "@emotion/serialize" "^1.0.2"
-      "@emotion/sheet" "^1.0.1"
-      "@emotion/utils" "^1.0.0"
-      "@emotion/weak-memoize" "^0.2.5"
-      hoist-non-react-statics "^3.3.1"
   
   "@emotion/serialize@^0.11.15", "@emotion/serialize@^0.11.16":
     version "0.11.16"
@@ -1975,26 +1924,10 @@ Lockfile:
       "@emotion/utils" "0.11.3"
       csstype "^2.5.7"
   
-  "@emotion/serialize@^1.0.2":
-    version "1.0.2"
-    resolved "https://registry.yarnpkg.com/@emotion/serialize/-/serialize-1.0.2.tgz#77cb21a0571c9f68eb66087754a65fa97bfcd965"
-    integrity sha512-95MgNJ9+/ajxU7QIAruiOAdYNjxZX7G2mhgrtDWswA21VviYIRP1R5QilZ/bDY42xiKsaktP4egJb3QdYQZi1A==
-    dependencies:
-      "@emotion/hash" "^0.8.0"
-      "@emotion/memoize" "^0.7.4"
-      "@emotion/unitless" "^0.7.5"
-      "@emotion/utils" "^1.0.0"
-      csstype "^3.0.2"
-  
   "@emotion/sheet@0.9.4":
     version "0.9.4"
     resolved "https://registry.yarnpkg.com/@emotion/sheet/-/sheet-0.9.4.tgz#894374bea39ec30f489bbfc3438192b9774d32e5"
     integrity sha512-zM9PFmgVSqBw4zL101Q0HrBVTGmpAxFZH/pYx/cjJT5advXguvcgjHFTCaIO3enL/xr89vK2bh0Mfyj9aa0ANA==
-  
-  "@emotion/sheet@^1.0.0", "@emotion/sheet@^1.0.1":
-    version "1.0.1"
-    resolved "https://registry.yarnpkg.com/@emotion/sheet/-/sheet-1.0.1.tgz#245f54abb02dfd82326e28689f34c27aa9b2a698"
-    integrity sha512-GbIvVMe4U+Zc+929N1V7nW6YYJtidj31lidSmdYcWozwoBIObXBnaJkKNDjZrLm9Nc0BR+ZyHNaRZxqNZbof5g==
   
   "@emotion/styled-base@^10.0.27":
     version "10.0.31"
@@ -2014,23 +1947,12 @@ Lockfile:
       "@emotion/styled-base" "^10.0.27"
       babel-plugin-emotion "^10.0.27"
   
-  "@emotion/styled@latest":
-    version "11.3.0"
-    resolved "https://registry.yarnpkg.com/@emotion/styled/-/styled-11.3.0.tgz#d63ee00537dfb6ff612e31b0e915c5cf9925a207"
-    integrity sha512-fUoLcN3BfMiLlRhJ8CuPUMEyKkLEoM+n+UyAbnqGEsCd5IzKQ7VQFLtzpJOaCD2/VR2+1hXQTnSZXVJeiTNltA==
-    dependencies:
-      "@babel/runtime" "^7.13.10"
-      "@emotion/babel-plugin" "^11.3.0"
-      "@emotion/is-prop-valid" "^1.1.0"
-      "@emotion/serialize" "^1.0.2"
-      "@emotion/utils" "^1.0.0"
-  
   "@emotion/stylis@0.8.5":
     version "0.8.5"
     resolved "https://registry.yarnpkg.com/@emotion/stylis/-/stylis-0.8.5.tgz#deacb389bd6ee77d1e7fcaccce9e16c5c7e78e04"
     integrity sha512-h6KtPihKFn3T9fuIrwvXXUOwlx3rfUvfZIcP5a6rh8Y7zjE3O06hT5Ss4S/YI1AYhuZ1kjaE/5EaOOI2NqSylQ==
   
-  "@emotion/unitless@0.7.5", "@emotion/unitless@^0.7.5":
+  "@emotion/unitless@0.7.5":
     version "0.7.5"
     resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.7.5.tgz#77211291c1900a700b8a78cfafda3160d76949ed"
     integrity sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==
@@ -2040,12 +1962,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/@emotion/utils/-/utils-0.11.3.tgz#a759863867befa7e583400d322652a3f44820924"
     integrity sha512-0o4l6pZC+hI88+bzuaX/6BgOvQVhbt2PfmxauVaYOGgbsAw14wdKyvMCZXnsnsHys94iadcF+RG/wZyx6+ZZBw==
   
-  "@emotion/utils@^1.0.0":
-    version "1.0.0"
-    resolved "https://registry.yarnpkg.com/@emotion/utils/-/utils-1.0.0.tgz#abe06a83160b10570816c913990245813a2fd6af"
-    integrity sha512-mQC2b3XLDs6QCW+pDQDiyO/EdGZYOygE8s5N5rrzjSI4M3IejPE/JPndCBwRT9z982aqQNi6beWs1UeayrQxxA==
-  
-  "@emotion/weak-memoize@0.2.5", "@emotion/weak-memoize@^0.2.5":
+  "@emotion/weak-memoize@0.2.5":
     version "0.2.5"
     resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.5.tgz#8eed982e2ee6f7f4e44c253e12962980791efd46"
     integrity sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==
@@ -2292,10 +2209,10 @@ Lockfile:
     dependencies:
       "@babel/runtime" "^7.4.4"
   
-  "@material-ui/lab@latest":
-    version "4.0.0-alpha.60"
-    resolved "https://registry.yarnpkg.com/@material-ui/lab/-/lab-4.0.0-alpha.60.tgz#5ad203aed5a8569b0f1753945a21a05efa2234d2"
-    integrity sha512-fadlYsPJF+0fx2lRuyqAuJj7hAS1tLDdIEEdov5jlrpb5pp4b+mRDUqQTUxi4inRZHS1bEXpU8QWUhO6xX88aA==
+  "@material-ui/lab@4.0.0-alpha.57":
+    version "4.0.0-alpha.57"
+    resolved "https://registry.yarnpkg.com/@material-ui/lab/-/lab-4.0.0-alpha.57.tgz#e8961bcf6449e8a8dabe84f2700daacfcafbf83a"
+    integrity sha512-qo/IuIQOmEKtzmRD2E4Aa6DB4A87kmY6h0uYhjUmrrgmEAgbbw9etXpWPVXuRK6AGIQCjFzV6WO2i21m1R4FCw==
     dependencies:
       "@babel/runtime" "^7.4.4"
       "@material-ui/utils" "^4.11.2"
@@ -5012,7 +4929,7 @@ Lockfile:
       lodash "^4.17.10"
       require-package-name "^2.0.1"
   
-  babel-plugin-macros@2.8.0, babel-plugin-macros@^2.0.0, babel-plugin-macros@^2.4.5, babel-plugin-macros@^2.6.1:
+  babel-plugin-macros@2.8.0, babel-plugin-macros@^2.0.0, babel-plugin-macros@^2.4.5:
     version "2.8.0"
     resolved "https://registry.yarnpkg.com/babel-plugin-macros/-/babel-plugin-macros-2.8.0.tgz#0f958a7cc6556b1e65344465d99111a1e5e10138"
     integrity sha512-SEP5kJpfGYqYKpBrj5XU3ahw5p5GOHJ0U5ssOSQ/WBVdwkD2Dzlce95exQTs3jOVWPPKLBN2rlEWkCK7dSmLvg==
@@ -7649,11 +7566,6 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
     integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
   
-  date-fns@latest:
-    version "2.22.1"
-    resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.22.1.tgz#1e5af959831ebb1d82992bf67b765052d8f0efc4"
-    integrity sha512-yUFPQjrxEmIsMqlHhAhmxkuH769baF21Kk+nZwZGyrMoyLA+LugaQtC0+Tqf9CBUUULWwUJt6Q5ySI3LJDDCGg==
-  
   date-format@^2.1.0:
     version "2.1.0"
     resolved "https://registry.yarnpkg.com/date-format/-/date-format-2.1.0.tgz#31d5b5ea211cf5fd764cd38baf9d033df7e125cf"
@@ -8542,11 +8454,6 @@ Lockfile:
     version "2.0.0"
     resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz#a30304e99daa32e23b2fd20f51babd07cffca344"
     integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
-  
-  escape-string-regexp@^4.0.0:
-    version "4.0.0"
-    resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz#14ba83a5d373e3d311e5afca29cf5bfad965bf34"
-    integrity sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==
   
   escodegen@^1.14.1:
     version "1.14.3"
@@ -10628,7 +10535,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
     integrity sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==
   
-  hoist-non-react-statics@^3.1.0, hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.1, hoist-non-react-statics@^3.3.2:
+  hoist-non-react-statics@^3.1.0, hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.2:
     version "3.3.2"
     resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
     integrity sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==
@@ -18695,11 +18602,6 @@ Lockfile:
       table "^5.4.6"
       v8-compile-cache "^2.1.0"
       write-file-atomic "^3.0.1"
-  
-  stylis@^4.0.3:
-    version "4.0.10"
-    resolved "https://registry.yarnpkg.com/stylis/-/stylis-4.0.10.tgz#446512d1097197ab3f02fb3c258358c3f7a14240"
-    integrity sha512-m3k+dk7QeJw660eIKRRn3xPF6uuvHs/FFzjX3HQ5ove0qYsiygoAhwn5a3IYKaZPo5LrYD0rfVmtv1gNY1uYwg==
   
   subdirs@^1.0.0:
     version "1.0.1"

@@ -73,6 +73,8 @@ interface IngestionHeaderProps extends WithStyles<typeof styles> {
   taskActionsBtn?: boolean;
   onTaskActions?: () => void;
   navToHome?: () => void;
+  browseBtn?: boolean;
+  onBrowse?: () => void;
 }
 const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   classes,
@@ -84,6 +86,8 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   taskActionsBtn,
   onTaskActions,
   navToHome,
+  browseBtn,
+  onBrowse,
 }) => {
   const titleDesignIcon = '/cdap_assets/img/title-design-bar.svg';
   const createIcon = '/cdap_assets/img/create.svg';
@@ -116,19 +120,25 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
           </div>
         )}
         {taskActionsBtn && (
-          <div className={classes.create} onClick={onTaskActions}>
+          <div
+            className={classes.create}
+            onClick={(e) => {
+              onTaskActions();
+              setAnchorEl(e.currentTarget);
+            }}
+          >
             <img
               className={classes.createIcon}
               src={taskActionsIcon}
               alt="task-actions-ingestion"
             />
-            <span
-              onClick={(e) => {
-                setAnchorEl(e.currentTarget);
-              }}
-            >
-              Task Actions
-            </span>
+            <span>Task Actions</span>
+          </div>
+        )}
+        {browseBtn && (
+          <div className={classes.create} onClick={onBrowse}>
+            <img className={classes.createIcon} src={taskActionsIcon} alt="run-ingestion" />
+            <span>Browse</span>
           </div>
         )}
       </div>

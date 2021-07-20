@@ -19,7 +19,6 @@ import T from 'i18n-react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import TaskTrackingWizard from '../IngestTaskWizard/TaskTrackingWizard';
 import If from 'components/If';
-import { EntityTopPanel } from 'components/EntityTopPanel';
 import TaskInfo from '../TaskInfo/TaskInfo';
 import SelectConnections from '../SelectConnections/SelectConnections';
 import TaskConfiguration from '../TaskConfiguration/TaskConfiguration';
@@ -48,7 +47,7 @@ const styles = (theme): StyleRules => {
       borderTop: '1px solid #A5A5A5',
     },
     wizard: {
-      boxShadow: ' 0px -1px 10px 0.5px gray',
+      boxShadow: '-2px 0 16px 0 rgba(0,0,0,0.15)',
     },
     content: {
       overflowY: 'auto',
@@ -312,9 +311,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
             submitMappingType={(mappingType) => {
               handleNext();
             }}
-            handleCancel={(cancelEvent: any) => {
-              goToIngestionHome();
-            }}
+            handleCancel={() => goToIngestionHome()}
           />
         );
       case 4:

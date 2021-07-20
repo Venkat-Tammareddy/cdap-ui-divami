@@ -23,6 +23,7 @@ import { getCurrentNamespace } from 'services/NamespaceStore';
 import CreateIngestion from './CreateIngestion/CreateIngestion';
 import IngestionHome from './IngestionHome/IngestionHome';
 import TaskDetails from './TaskDetails/TaskDetails';
+import JobDetails from './JobDetails/Jobdetails';
 
 const styles = (theme): StyleRules => {
   return {
@@ -45,6 +46,7 @@ const IngestionView: React.FC<IIngestionProps> = ({ classes }) => {
       <Switch>
         <Route exact path={`${basepath}/create`} component={CreateIngestion} />
         <Route exact path={`${basepath}/detail`} component={TaskDetails} />
+        <Route exact path={`${basepath}/job`} component={JobDetails} />
         <Route path={basepath} component={IngestionHome} />
         <Route
           render={() => {

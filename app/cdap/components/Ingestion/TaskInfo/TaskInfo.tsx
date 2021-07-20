@@ -294,7 +294,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
       setInfoMessage('Enter task name');
       setSecondInfoMessage('without spaces');
     }
-    if (name == 'Tags') {
+    if (name === 'Tags') {
       setInfoMessage('Enter multiple tags');
       setSecondInfoMessage('with spaces');
     }

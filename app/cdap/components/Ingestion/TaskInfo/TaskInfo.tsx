@@ -20,6 +20,7 @@ import Button from '@material-ui/core/Button';
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import ButtonComponent from '../ButtonComponent/ButtonComponent';
 const I18N_PREFIX = 'features.TaskInfo';
 
 const styles = (): StyleRules => {
@@ -404,20 +405,12 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
           </div>
         </div>
       </div>
-      <div className={classes.buttonContainer}>
-        <Button className={classes.cancelButton} onClick={onCancel}>
-          CANCEL
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.submitButton}
-          type="submit"
-          disabled={taskNameError.error || taskName.length === 0}
-        >
-          CONTINUE
-        </Button>
-      </div>
+      <ButtonComponent
+        onCancel={handleCancel}
+        handleSubmit={handleSubmit}
+        disableSubmit={taskNameError.error || taskName.length === 0}
+        submitText="CONTINUE"
+      />
     </form>
   );
 };

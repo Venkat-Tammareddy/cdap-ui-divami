@@ -22,11 +22,10 @@ const I18N_PREFIX = 'features.MappingLayout';
 const styles = (): StyleRules => {
   return {
     root: {
-      margin: '0px 40px',
-      height: '100%',
+      margin: '40px 40px',
+      height: 'calc(100% - 100px)', // margin
       display: 'flex',
       flexDirection: 'column',
-      paddingBottom: '20px',
     },
     container: {
       flex: '1 1 0%',
@@ -133,7 +132,6 @@ const styles = (): StyleRules => {
       marginLeft: '10px',
     },
     title: {
-      marginTop: '32px',
       fontFamily: 'Lato',
       fontSize: '18px',
       color: '#202124',

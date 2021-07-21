@@ -16,19 +16,19 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Card, CardContent, Typography, Button } from '@material-ui/core';
+import { Typography, Button } from '@material-ui/core';
 import T from 'i18n-react';
 const I18N_PREFIX = 'features.MappingLayout';
 const styles = (): StyleRules => {
   return {
     root: {
-      margin: '40px 40px',
-      height: 'calc(100% - 100px)',
+      margin: '0px 40px',
+      height: '100%',
       display: 'flex',
       flexDirection: 'column',
+      paddingBottom: '20px',
     },
     container: {
-      // padding: '10px',
       flex: '1 1 0%',
     },
     successMsg: {
@@ -56,8 +56,9 @@ const styles = (): StyleRules => {
       alignItems: 'center',
       marginRight: '40px',
       cursor: 'pointer',
-      border: '1px solid #0F9D58',
+      border: '2px solid #4285F4',
       borderRadius: '4px',
+      position: 'relative',
     },
     mappingTypes: {
       display: 'flex',
@@ -84,8 +85,7 @@ const styles = (): StyleRules => {
     buttonContainer: {
       display: 'flex',
       flexDirection: 'row',
-      gap: '50px',
-      marginTop: '50px',
+      gap: '30px',
       alignItems: 'center',
       justifyContent: 'flex-end',
     },
@@ -185,7 +185,7 @@ interface IIngestionProps extends WithStyles<typeof styles> {
   handleCancel: (value: object) => void;
 }
 const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, handleCancel }) => {
-  const [cardSelected] = React.useState('All');
+  const [cardSelected, setCardSelected] = React.useState('none');
 
   const submitMapping = () => {
     submitMappingType(cardSelected);
@@ -197,17 +197,17 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
 
   const allTables = '/cdap_assets/img/data-base-big.svg';
   const customTable = '/cdap_assets/img/custom-selection.svg';
-  const successMsgIcon = '/cdap_assets/img/success-state-tick.svg';
-  const runTaskIcon = '/cdap_assets/img/run-task-big.svg';
-  const scheduleTaskIcon = '/cdap_assets/img/schedule-task-big.svg';
+  const successCardTick = '/cdap_assets/img/card-section-tick.svg';
+
   return (
     <div className={classes.root}>
       <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
       <div className={classes.cardsContainer}>
         <div
-          className={cardSelected === 'All' ? classes.selectedCard : classes.card}
+          className={cardSelected === 'all' ? classes.selectedCard : classes.card}
           onClick={() => {
-            // setSelected('All');
+            setCardSelected('all');
+            console.log(cardSelected);
           }}
         >
           <div className={classes.cardDescription}>
@@ -232,8 +232,23 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
           </div>
           <div className={classes.cardTitle}>{T.translate(`${I18N_PREFIX}.AllTables.title`)}</div>
           <img className={classes.cardRunIcon} src={allTables} alt="run-task" />
+          <img
+            className={classes.cardRunIcon}
+            src={successCardTick}
+            alt="card-selected"
+            style={{
+              position: 'absolute',
+              right: '20px',
+              top: '20px',
+            }}
+          />
         </div>
-        <div className={cardSelected === 'Custom' ? classes.selectedCard : classes.card}>
+        <div
+          className={cardSelected === 'custom' ? classes.selectedCard : classes.card}
+          onClick={() => {
+            setCardSelected('custom');
+          }}
+        >
           <div className={classes.cardDescription}>
             <Typography
               variant="body2"
@@ -258,6 +273,16 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
             {T.translate(`${I18N_PREFIX}.CustomTables.title`)}
           </div>
           <img className={classes.cardScheduleIcon} src={customTable} alt="run-task" />
+          <img
+            className={classes.cardRunIcon}
+            src={successCardTick}
+            alt="card-selected"
+            style={{
+              position: 'absolute',
+              right: '20px',
+              top: '20px',
+            }}
+          />
         </div>
       </div>
       <div className={classes.buttonContainer}>
@@ -270,6 +295,7 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
           className={classes.submitButton}
           type="submit"
           onClick={submitMapping}
+          disabled={cardSelected === 'none'}
         >
           Continue
         </Button>

@@ -445,7 +445,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                     onClick={(e) => {
                       onItemChecked(item);
                     }}
-                    checked={checkedItem == item ? true : false}
+                    checked={checkedItem === item ? true : false}
                     size="medium"
                     color="primary"
                   />

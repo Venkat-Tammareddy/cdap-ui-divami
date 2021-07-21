@@ -98,7 +98,7 @@ const styles = (): StyleRules => {
   };
 };
 
-interface AcknowledgementProps extends WithStyles<typeof styles> {
+interface IAcknowledgementProps extends WithStyles<typeof styles> {
   gotoTasks: () => void;
   // gotoSchedule: () => void;
 }
@@ -112,7 +112,7 @@ const runTaskIcon = '/cdap_assets/img/run.svg';
 const scheduleTaskIcon = '/cdap_assets/img/schedule-task.svg';
 const taskListIcon = '/cdap_assets/img/task-list.svg';
 const configIcon = '/cdap_assets/img/view-task.svg';
-const AcknowledgementView: React.FC<AcknowledgementProps> = ({
+const AcknowledgementView: React.FC<IAcknowledgementProps> = ({
   classes,
   gotoTasks,
   // gotoSchedule,

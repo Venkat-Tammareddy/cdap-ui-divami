@@ -34,6 +34,7 @@ import Acknowledgement from '../Acknowledgement/Acknowledgement';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import CustomTablesSelection from '../CustomTableSelection/CustomTableSelection';
 import { MyArtifactApi } from 'api/artifact';
+import MyDataPrepApi from 'api/dataprep';
 
 const styles = (theme): StyleRules => {
   return {
@@ -185,6 +186,25 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     );
   };
 
+  const getTablesList = () => {
+    ConnectionsApi.exploreConnection(
+      {
+        context: currentNamespace,
+        connectionid: 'source-1',
+      },
+      {
+        path: '/public',
+        limit: 1000,
+      }
+    ).subscribe(
+      (message) => {
+        console.log('TablesList-ok', message);
+      },
+      (err) => {
+        console.log('TablesList-err', err);
+      }
+    );
+  };
   const goToIngestionHome = () => {
     history.replace(`/ns/${currentNamespace}/ingestion`);
   };
@@ -332,6 +352,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               <CustomTablesSelection
                 onSubmit={(list) => {
                   console.log(list);
+                  getTablesList();
                   handleNext();
                 }}
                 handleCancel={() => goToIngestionHome()}

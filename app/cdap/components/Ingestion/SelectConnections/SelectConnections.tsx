@@ -164,6 +164,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
     selectionType === 'source'
       ? setSelectedConnection(draftConfig.config.stages[0])
       : setSelectedConnection(draftConfig.config.stages[1]);
+    return setSearch('');
   }, [selectionType]);
 
   const filteredList = connectionsList.filter(

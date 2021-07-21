@@ -42,6 +42,10 @@ const styles = (theme): StyleRules => {
       '& .MuiStepConnector-vertical': {
         marginLeft: '17px',
       },
+      '& .MuiStepConnector-lineVertical': {
+        borderLeft: '1px solid green',
+        minHeight: '0px',
+      },
     },
     label: {
       cursor: 'pointer',
@@ -133,6 +137,8 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
             <p>{draftConfig.config.stages[1]?.name}</p>
           </div>
         );
+      case 4:
+        return;
       default:
         return <div className={classes.stepContent} />;
     }

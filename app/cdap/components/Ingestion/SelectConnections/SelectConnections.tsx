@@ -18,7 +18,6 @@ import * as React from 'react';
 import T from 'i18n-react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import { Button, TextField } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
 import TableHeader from 'components/Table/TableHeader';
 import TableRow from 'components/Table/TableRow';
 import Table from 'components/Table';
@@ -50,7 +49,9 @@ const styles = (theme): StyleRules => {
       fontSize: '14px',
       '&::placeholder': {
         fontFamily: 'Lato',
-        fontColor: '#adadad',
+        color: '#ADADAD',
+        paddingLeft: '11px',
+        opacity: '0.5',
       },
       height: '50px',
       boxSizing: 'border-box',
@@ -194,6 +195,11 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
 
   const sortDownIcon = '/cdap_assets/img/sort-down-arrow.svg';
   const sortUpIcon = '/cdap_assets/img/sort-up-arrow.svg';
+  const searchIcon = '/cdap_assets/img/search.svg';
+
+  const SearchIcon = () => {
+    return <img src={searchIcon} alt="icon" />;
+  };
   return (
     <div className={classes.root}>
       <div className={classes.headerContainer}>

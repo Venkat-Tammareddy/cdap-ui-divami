@@ -350,7 +350,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           <>
             {customTablesSelection ? (
               <CustomTablesSelection
-                onSubmit={(list) => {
+                submitValues={(list) => {
                   console.log(list);
                   getTablesList();
                   handleNext();

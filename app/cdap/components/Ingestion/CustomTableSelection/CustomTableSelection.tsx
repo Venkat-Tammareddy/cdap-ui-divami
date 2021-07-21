@@ -16,21 +16,18 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Button, TextField } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
+import { Button, Select, TextField } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import Box from '@material-ui/core/Box';
-import Favorite from '@material-ui/icons/Favorite';
-import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 
 const styles = (): StyleRules => {
   return {
     root: {
       display: 'flex',
-      border: '2px solid red',
+      height: 'calc(100% - 100px)', // margin
+      margin: '23px 28px 20px 40px',
       flexDirection: 'column',
-      margin: '0px 40px',
       '& .MuiTypography-body1': {
         fontSize: '14px',
         color: '#202124',
@@ -63,45 +60,27 @@ const styles = (): StyleRules => {
       flex: '1',
       paddingRight: '17.5px',
     },
-    tableList: {},
-    tableListOne: {
-      // display: "flex",
-      // flexDirection: "column",
-      // gap: "20px",
-      // padding: "10px",
-      // width: "20%",
-    },
-    formLists: {
-      // display: "flex",
-    },
-    // formCheckBoxes: {
-    //   marginTop: "40px",
-    //   gap: "50px",
-    //   height: "304px",
-    //   border: "2px solid green",
-    // },
-    // formControl: {
-    //   minWidth: "20%",
-    //   border: "2px solid grey",
-    //   borderTopRightRadius: "none",
-    //   borderBottomRightRadius: "none",
-    //   borderRight: "none",
-    //   borderRadius: "4px",
-    // },
     buttonContainer: {
       display: 'flex',
-      gap: '50px',
+      gap: '30px',
       alignItems: 'end',
       justifyContent: 'flex-end',
-      border: '2px solid cyan',
     },
     cancelButton: {
       textDecoration: 'none',
-      color: '#2196f3',
+      color: '#4285F4;',
       outline: 'none',
+      fontSize: '14px',
+      letterSpacing: '1.25px',
+      lineHeight: '24px',
+      fontFamily: 'Lato',
     },
     submitButton: {
-      backgroundColor: '#2196f3',
+      backgroundColor: '#4285F4',
+      letterSpacing: '1.25px',
+      lineHeight: '24px',
+      fontSize: '14px',
+      fontFamily: 'Lato',
     },
     details: {
       display: 'flex',
@@ -150,7 +129,6 @@ const styles = (): StyleRules => {
     },
     container: {
       flex: '1 1 0%',
-      padding: '20px',
     },
     search: {
       width: '276px',
@@ -160,7 +138,9 @@ const styles = (): StyleRules => {
       fontSize: '14px',
       '&::placeholder': {
         fontFamily: 'Lato',
-        fontColor: '#adadad',
+        color: '#666666',
+        paddingLeft: '11px',
+        opacity: '0.5',
       },
       height: '50px',
       boxSizing: 'border-box',
@@ -171,7 +151,7 @@ const styles = (): StyleRules => {
       letterSpacing: '0.45px',
       fontFamily: 'Lato',
       marginBottom: '0px',
-      marginLeft: '10px',
+      paddingTop: '7px',
       flex: '1',
     },
     headerContainer: {
@@ -190,17 +170,30 @@ const styles = (): StyleRules => {
     filterIcon: {
       marginLeft: '10px',
     },
+    checkboxes: { margin: '0', padding: '0' },
+    labelText: {
+      margin: '0',
+
+      paddingTop: '9.5px',
+      paddingBottom: '7.5px',
+      paddingLeft: '21px',
+      fontSize: '14px',
+      fontFamily: 'Lato',
+      color: '#202124',
+      letterSpacing: '0',
+      lineHeight: '24px',
+    },
   };
 };
 
 interface IIngestionProps extends WithStyles<typeof styles> {
-  onSubmit: (tables: string[]) => void;
+  submitValues: ([]) => void;
   handleCancel: () => void;
 }
 
-const CustomTablesSelectionView: React.FC<IIngestionProps> = ({
+const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   classes,
-  onSubmit,
+  submitValues,
   handleCancel,
 }) => {
   const tableMockData = [
@@ -230,6 +223,7 @@ const CustomTablesSelectionView: React.FC<IIngestionProps> = ({
   const checkBoxActiv = '/cdap_assets/img/check-box-active.svg';
   const search = '/cdap_assets/img/search.svg';
   const checkbox = '/cdap_assets/img/checkbox-normal.svg';
+
   React.useEffect(() => {
     if (Object.keys(checkedItems).length !== 0) {
       const result = Object.keys(checkedItems).filter((item) => checkedItems[item] === true);
@@ -238,7 +232,7 @@ const CustomTablesSelectionView: React.FC<IIngestionProps> = ({
   }, [checkedItems]);
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    onSubmit(currentChecked);
+    submitValues(currentChecked);
   };
   const handleOnChange = (e: any) => {
     setCheckedItems({
@@ -248,14 +242,14 @@ const CustomTablesSelectionView: React.FC<IIngestionProps> = ({
   };
 
   const CheckedIcon = () => {
-    return <img src={checkBoxActiv} alt="fk icon" height="18px" width="18px" />;
+    return <img src={checkBoxActiv} alt="icon" height="18px" width="18px" />;
   };
   const SearchIconn = () => {
-    return <img src={search} alt="fk icon" height="18px" width="18px" />;
+    return <img src={search} alt="icon" height="18px" width="18px" />;
   };
 
   const CheckboxNormal = () => {
-    return <img src={checkbox} alt="fk icon" height="18px" width="18px" />;
+    return <img src={checkbox} alt="icon" height="18px" width="18px" />;
   };
   return (
     <form className={classes.root} onSubmit={handleSubmit}>
@@ -264,10 +258,8 @@ const CustomTablesSelectionView: React.FC<IIngestionProps> = ({
           <p className={classes.headerText}>Select Tables to Ingest</p>
           <TextField
             variant="outlined"
-            placeholder="Search Tables"
+            placeholder="Search tables"
             className={classes.search}
-            // value={search}
-            // onChange={(e) => setSearch(e.target.value)}
             InputProps={{
               startAdornment: <SearchIconn />,
               classes: {
@@ -285,25 +277,6 @@ const CustomTablesSelectionView: React.FC<IIngestionProps> = ({
             className={classes.filterIcon}
           />
         </div>
-        {/* <div className={classes.formCheckBoxes}>
-          <FormGroup className={classes.tableListOne}>
-            {tableMockData.map((item) => (
-              <FormControlLabel
-                key={item}
-                control={
-                  <input
-                    type="checkbox"
-                    className={classes.checkboxes}
-                    name={item}
-                    checked={checkedItems[item]}
-                    onChange={handleOnChange}
-                  />
-                }
-                label={item}
-              />
-            ))}
-          </FormGroup>
-        </div> */}
         <Box className={classes.box}>
           <Grid container spacing={2}>
             {tableMockData.map((item) => (
@@ -316,7 +289,7 @@ const CustomTablesSelectionView: React.FC<IIngestionProps> = ({
                   icon={<CheckboxNormal />}
                   checkedIcon={<CheckedIcon />}
                 />
-                <label>{item}</label>
+                <label className={classes.labelText}>{item}</label>
               </Grid>
             ))}
           </Grid>
@@ -334,5 +307,5 @@ const CustomTablesSelectionView: React.FC<IIngestionProps> = ({
   );
 };
 
-const CustomTablesSelection = withStyles(styles)(CustomTablesSelectionView);
-export default CustomTablesSelection;
+const CustomTableSelection = withStyles(styles)(CustomTableSelectionView);
+export default CustomTableSelection;

@@ -32,6 +32,8 @@ import LoadingSVGCentered from 'components/LoadingSVGCentered';
 const I18N_PREFIX = 'features.CreateIngestion';
 import Acknowledgement from '../Acknowledgement/Acknowledgement';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
+import CustomTablesSelection from '../CustomTableSelection/CustomTableSelection';
+import { MyArtifactApi } from 'api/artifact';
 
 const styles = (theme): StyleRules => {
   return {
@@ -62,13 +64,14 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const [ack, setAck] = React.useState(false);
   const [connections, setConnections] = React.useState([]);
   const [draftId] = React.useState(uuidV4());
+  const [artifactsList, setArtifactsList] = React.useState([]);
   const [draftConfig, setDraftConfig] = React.useState({
     name: '',
     description: '',
     artifact: {
-      name: 'cdap-data-pipeline',
-      version: '6.5.0-SNAPSHOT',
-      scope: 'SYSTEM',
+      name: '',
+      version: '',
+      scope: '',
       label: 'Data Pipeline - Batch',
     },
     config: {
@@ -107,6 +110,14 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     }).subscribe(
       (message) => {
         setConnections(message);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    MyArtifactApi.list({ namespace: currentNamespace }).subscribe(
+      (message) => {
+        setArtifactsList(message);
       },
       (err) => {
         console.log(err);
@@ -173,6 +184,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       }
     );
   };
+
   const goToIngestionHome = () => {
     history.replace(`/ns/${currentNamespace}/ingestion`);
   };
@@ -185,6 +197,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   ];
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepProgress, setStepProgress] = React.useState(0);
+  const [customTablesSelection, setCustomTablesSelection] = React.useState(false);
 
   const handleNext = () => {
     activeStep === stepProgress && setStepProgress((prev) => prev + 1);
@@ -203,6 +216,10 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                   ...prevDraftConfig,
                   name: details.taskName,
                   description: details.taskDescription,
+                  artifact: {
+                    ...prevDraftConfig.artifact,
+                    ...artifactsList.find((artifact) => artifact.name === 'cdap-data-pipeline'),
+                  },
                 };
               });
               handleNext();
@@ -237,11 +254,9 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                         plugin: {
                           name: 'MultiTableDatabase',
                           type: 'batchsource',
-                          artifact: {
-                            name: 'multi-table-plugins',
-                            version: '1.3.0',
-                            scope: 'USER',
-                          },
+                          artifact: artifactsList.find(
+                            (artifact) => artifact.name === 'multi-table-plugins'
+                          ),
                           properties: {
                             ...a.plugin.properties,
                             referenceName: 'ingestion-multitable-bigquery',
@@ -285,7 +300,12 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                       {
                         name: a.name,
                         connectionType: a.connectionType,
-                        plugin: a.plugin,
+                        plugin: {
+                          ...a.plugin,
+                          artifact: artifactsList.find(
+                            (artifact) => artifact.name === 'google-cloud'
+                          ),
+                        },
                         outputSchema: [
                           {
                             name: 'etlSchemaBody',
@@ -307,12 +327,24 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         );
       case 3:
         return (
-          <MappingLayout
-            submitMappingType={(mappingType) => {
-              handleNext();
-            }}
-            handleCancel={() => goToIngestionHome()}
-          />
+          <>
+            {customTablesSelection ? (
+              <CustomTablesSelection
+                onSubmit={(list) => {
+                  console.log(list);
+                  handleNext();
+                }}
+                handleCancel={() => goToIngestionHome()}
+              />
+            ) : (
+              <MappingLayout
+                submitMappingType={(mappingType) => {
+                  mappingType === 'custom' ? setCustomTablesSelection(true) : handleNext();
+                }}
+                handleCancel={() => goToIngestionHome()}
+              />
+            )}
+          </>
         );
       case 4:
         return (

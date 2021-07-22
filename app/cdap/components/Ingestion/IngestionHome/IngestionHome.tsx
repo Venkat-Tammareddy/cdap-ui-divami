@@ -177,7 +177,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
       return {
         runId: 1,
         taskName: ele.name,
-        status: ele.runs.length === 0 ? '' : ele.runs[0].status.toLowerCase(),
+        status: 'Deployed',
         sourceConnectionDb: 'Study_trails',
         sourceConnection: 'Study_trails_Connection',
         targetConnection: 'Study_execution_connection',

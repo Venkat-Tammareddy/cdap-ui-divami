@@ -77,26 +77,11 @@ const styles = (theme): StyleRules => {
 
 interface DraftsListProps extends WithStyles<typeof styles> {
   searchText: String;
+  data: any[];
 }
 
-const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText }) => {
-  const [draftsList, setDraftsList] = React.useState([
-    {
-      pipeLineName: 'one task',
-      type: 'Batch',
-      lastSaved: '07-09-2021 07:55:34 AM',
-    },
-    {
-      pipeLineName: 'two task',
-      type: 'Batch',
-      lastSaved: '07-09-2021 07:55:34 AM',
-    },
-    {
-      pipeLineName: 'Three task',
-      type: 'Batch',
-      lastSaved: '07-09-2021 07:55:34 AM',
-    },
-  ]);
+const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data }) => {
+  const [draftsList, setDraftsList] = React.useState(data);
 
   const filteredList = draftsList.filter((item) =>
     item.pipeLineName.toLowerCase().includes(searchText.toLowerCase())

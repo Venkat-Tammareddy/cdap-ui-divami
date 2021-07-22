@@ -79,7 +79,7 @@ const styles = (theme): StyleRules => {
         height: '30px',
         width: '30px',
         fontSize: '16px',
-        margin: '0px',
+        margin: '4px',
       },
       '&$completedIcon': {
         color: 'green',
@@ -91,6 +91,8 @@ const styles = (theme): StyleRules => {
     },
     stepContent: {
       wordBreak: 'break-word',
+      height: '48px',
+      border: '1px solid red',
     },
     '& .MuiTypography-body': {
       fontSize: '14px',
@@ -116,23 +118,23 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
   function getStepContent(step: number) {
     switch (step) {
       case 0:
-        return <p>{draftConfig.name}</p>;
+        return <p className={classes.stepContent}>{draftConfig.name}</p>;
       case 1:
         return (
-          <>
+          <div className={classes.stepContent}>
             <p>{draftConfig.config.stages[0]?.connectionType}</p>
             <p>{draftConfig.config.stages[0]?.name}</p>
-          </>
+          </div>
         );
       case 2:
         return (
-          <>
+          <div className={classes.stepContent}>
             <p>{draftConfig.config.stages[1]?.connectionType}</p>
             <p>{draftConfig.config.stages[1]?.name}</p>
-          </>
+          </div>
         );
       default:
-        return;
+        return <div className={classes.stepContent} />;
     }
   }
   const myimg = '/cdap_assets/img/side-stepper-tick.svg';
@@ -142,31 +144,31 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
     );
   };
 
-  const QontoConnector = withStyles({
+  const Connector = withStyles({
     alternativeLabel: {
       top: 10,
       left: 'calc(-50% + 16px)',
       right: 'calc(50% + 16px)',
     },
-    active: {
-      '& $line': {
-        borderLeft: '1px solid #A5A5A5',
-      },
-    },
-    completed: {
-      '& $line': {
-        borderLeft: '1px solid #A5A5A5',
-      },
-    },
+    // active: {
+    //   '& $line': {
+    //     borderLeft: '1px solid #A5A5A5',
+    //   },
+    // },
+    // completed: {
+    //   '& $line': {
+    //     borderLeft: '1px solid #A5A5A5',
+    //   },
+    // },
     line: {
-      borderLeft: '1px dashed #A5A5A5',
+      borderLeft: '1px solid #A5A5A5',
     },
   })(StepConnector);
   return (
     <div className={classes.root}>
-      <Stepper activeStep={activeStep} orientation="vertical" connector={<QontoConnector />}>
+      <Stepper activeStep={activeStep} orientation="vertical" connector={<Connector />}>
         {steps.map((label, index) => (
-          <Step key={label} expanded={index < stepProgress}>
+          <Step key={label} expanded={index < steps.length - 1}>
             <StepLabel
               className={classes.label}
               StepIconProps={{
@@ -183,11 +185,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
             >
               {label}
             </StepLabel>
-            <StepContent>
-              <Typography component={'span'} className={classes.stepContent}>
-                {getStepContent(index)}
-              </Typography>
-            </StepContent>
+            <StepContent>{getStepContent(index)}</StepContent>
           </Step>
         ))}
       </Stepper>

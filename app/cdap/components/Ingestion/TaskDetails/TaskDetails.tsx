@@ -276,7 +276,9 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           <IngestionHeader title="Run History" />
           <IngestionJobsList
             runType={myCase === 'case-2'}
-            onTaskClick={() => setMyCase('case-3')}
+            onTaskClick={() => {
+              myCase === 'case-2' && setMyCase('case-3');
+            }}
           />
         </div>
       )}

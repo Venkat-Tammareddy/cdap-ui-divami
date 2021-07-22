@@ -120,7 +120,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, runType, on
     },
   ];
   const [jobsList, setJobsList] = React.useState([]);
-  const onOptionSelect = (id: Number) => {
+  const onOptionSelect = (id: number) => {
     // setAnchorEl(null);
     // setTaskList((oldArray) => {
     //   return [...oldArray].map((object) => {

@@ -72,7 +72,7 @@ const styles = (): StyleRules => {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: '124px',
+      marginTop: '30px',
     },
     ackMsg: {
       margin: '0',
@@ -108,7 +108,7 @@ const toggleCursor = (e: any) => {
 };
 
 const ackIcon = '/cdap_assets/img/success-message-tick.svg';
-const runTaskIcon = '/cdap_assets/img/run.svg';
+const runTaskIcon = '/cdap_assets/img/run-task.svg';
 const scheduleTaskIcon = '/cdap_assets/img/schedule-task.svg';
 const taskListIcon = '/cdap_assets/img/task-list.svg';
 const configIcon = '/cdap_assets/img/view-task.svg';

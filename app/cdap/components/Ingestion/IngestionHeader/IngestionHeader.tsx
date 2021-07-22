@@ -18,6 +18,8 @@ import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import history from 'services/history';
+import NamespaceStore from 'services/NamespaceStore';
 
 const styles = (theme): StyleRules => {
   return {
@@ -93,17 +95,31 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   const createIcon = '/cdap_assets/img/create.svg';
   const runIcon = '/cdap_assets/img/run.svg';
   const taskActionsIcon = '/cdap_assets/img/task-action.svg';
+  const browseIcon = '/cdap_assets/img/browse-data.svg';
+  const currentNamespace = NamespaceStore.getState().selectedNamespace;
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Archive'];
   return (
     <>
       <div className={classes.root}>
-        <div className={classes.title} onClick={() => taskActionsBtn && navToHome()}>
-          {title}
-          {taskActionsBtn ? (
-            <div className={classes.title2}>Task Details</div>
-          ) : (
+        <div className={classes.title}>
+          <div onClick={() => taskActionsBtn && navToHome()}>{title}</div>
+          {taskActionsBtn && <div className={classes.title2}>Task Details</div>}
+          {browseBtn && (
+            <>
+              <div
+                className={classes.title2}
+                onClick={() => history.push(`/ns/${currentNamespace}/ingestion/detail`)}
+              >
+                {' '}
+                Ingest oracle studies data to bigquery
+              </div>
+              <div className={classes.title2}> Job 01</div>
+            </>
+          )}
+          {!taskActionsBtn && !browseBtn && (
             <img className={classes.titleDesign} src={titleDesignIcon} alt="Ingestion" />
           )}
         </div>
@@ -137,7 +153,7 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
         )}
         {browseBtn && (
           <div className={classes.create} onClick={onBrowse}>
-            <img className={classes.createIcon} src={taskActionsIcon} alt="run-ingestion" />
+            <img className={classes.createIcon} src={browseIcon} alt="browse-data" />
             <span>Browse</span>
           </div>
         )}
@@ -153,6 +169,7 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
           style: {
             maxHeight: 48 * 4.5,
             width: '20ch',
+            marginTop: '40px',
           },
         }}
       >

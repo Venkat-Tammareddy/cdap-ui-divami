@@ -253,7 +253,6 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
     formDataObject.taskName = `${taskName}`;
     formDataObject.taskDescription = `${taskDescription}`;
     formDataObject.tags = autoCompleteValue;
-    console.log(formDataObject);
     submitValues(formDataObject);
   };
 

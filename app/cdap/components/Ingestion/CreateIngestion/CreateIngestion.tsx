@@ -34,7 +34,6 @@ import Acknowledgement from '../Acknowledgement/Acknowledgement';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import CustomTablesSelection from '../CustomTableSelection/CustomTableSelection';
 import { MyArtifactApi } from 'api/artifact';
-import MyDataPrepApi from 'api/dataprep';
 
 const styles = (theme): StyleRules => {
   return {
@@ -43,7 +42,7 @@ const styles = (theme): StyleRules => {
     },
     wizardAndContentWrapper: {
       display: 'grid',
-      gridTemplateColumns: '250px 1fr',
+      gridTemplateColumns: '252px 1fr',
       gridTemplateRows: '100%',
       height: 'calc(100% - 50px)', // 100% - height of EntityTopPanel
       overflowY: 'hidden',
@@ -57,7 +56,22 @@ const styles = (theme): StyleRules => {
     },
   };
 };
-
+export interface IStagesInterface {
+  name: string;
+  plugin: {
+    name: string;
+    type: string;
+    label?: string;
+    properties: {
+      referenceName: string;
+      connectionString: string;
+      jdbcPluginName: string;
+      user: string;
+      password: string;
+      whitelist: string;
+    };
+  };
+}
 interface ICreateIngestionProps extends WithStyles<typeof styles> {}
 const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
@@ -96,7 +110,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       processTimingEnabled: true,
       stageLoggingEnabled: false,
       pushdownEnabled: false,
-      stages: [{}, {}],
+      stages: [{}, {}] as IStagesInterface[],
       transformationPushdown: null,
       schedule: '0 * * * *',
       engine: 'spark',
@@ -178,6 +192,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         deleteDraft();
         setDeployLoader(false);
         setAck(true);
+        console.log('mytest', draftConfig);
       },
       (err) => {
         console.log(err);
@@ -186,25 +201,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     );
   };
 
-  const getTablesList = () => {
-    ConnectionsApi.exploreConnection(
-      {
-        context: currentNamespace,
-        connectionid: 'source-1',
-      },
-      {
-        path: '/public',
-        limit: 1000,
-      }
-    ).subscribe(
-      (message) => {
-        console.log('TablesList-ok', message);
-      },
-      (err) => {
-        console.log('TablesList-err', err);
-      }
-    );
-  };
   const goToIngestionHome = () => {
     history.replace(`/ns/${currentNamespace}/ingestion`);
   };
@@ -218,6 +214,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepProgress, setStepProgress] = React.useState(0);
   const [customTablesSelection, setCustomTablesSelection] = React.useState(false);
+  const [cardSelected, setCardSelected] = React.useState('none');
 
   const handleNext = () => {
     activeStep === stepProgress && setStepProgress((prev) => prev + 1);
@@ -280,6 +277,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                           properties: {
                             ...a.plugin.properties,
                             referenceName: 'ingestion-multitable-bigquery',
+                            whitelist: '',
                           },
                         },
                         outputSchema: [
@@ -351,14 +349,42 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
             {customTablesSelection ? (
               <CustomTablesSelection
                 submitValues={(list) => {
-                  console.log(list);
-                  getTablesList();
+                  setCustomTablesSelection(false);
+                  setDraftConfig(
+                    (prevDraftConfig) => {
+                      return {
+                        ...prevDraftConfig,
+                        config: {
+                          ...prevDraftConfig.config,
+                          stages: [
+                            {
+                              ...prevDraftConfig.config.stages[0],
+                              plugin: {
+                                ...prevDraftConfig.config.stages[0].plugin,
+                                properties: {
+                                  ...prevDraftConfig.config.stages[0].plugin.properties,
+                                  whitelist: list,
+                                },
+                              },
+                            },
+                            prevDraftConfig.config.stages[1],
+                          ],
+                        },
+                      };
+                    }
+                    // produce((state) => {
+                    //   state.config.stages[0].plugin.properties.whitelist = list.join();
+                    // })
+                  );
                   handleNext();
                 }}
                 handleCancel={() => goToIngestionHome()}
+                connectionId={draftConfig.config.stages[0].name}
               />
             ) : (
               <MappingLayout
+                cardSelected={cardSelected}
+                setCardSelected={setCardSelected}
                 submitMappingType={(mappingType) => {
                   mappingType === 'custom' ? setCustomTablesSelection(true) : handleNext();
                 }}
@@ -369,7 +395,12 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         );
       case 4:
         return (
-          <TaskConfiguration deploy={() => deployPipeline()} onCancel={() => goToIngestionHome()} />
+          <TaskConfiguration
+            deploy={() => {
+              deployPipeline();
+            }}
+            onCancel={() => goToIngestionHome()}
+          />
         );
       default:
         return;

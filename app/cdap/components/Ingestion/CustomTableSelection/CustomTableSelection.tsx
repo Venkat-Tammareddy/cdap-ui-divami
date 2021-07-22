@@ -16,10 +16,12 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Button, Select, TextField } from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import Box from '@material-ui/core/Box';
+import { ConnectionsApi } from 'api/connections';
+import NamespaceStore from 'services/NamespaceStore';
 
 const styles = (): StyleRules => {
   return {
@@ -183,40 +185,50 @@ const styles = (): StyleRules => {
       letterSpacing: '0',
       lineHeight: '24px',
     },
+    emptyList: {
+      textAlign: 'center',
+      margin: '30px 30px',
+    },
   };
 };
 
 interface IIngestionProps extends WithStyles<typeof styles> {
-  submitValues: ([]) => void;
+  submitValues: (list: string) => void;
   handleCancel: () => void;
+  connectionId: string;
 }
 
 const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   classes,
   submitValues,
   handleCancel,
+  connectionId,
 }) => {
-  const tableMockData = [
-    'table_one',
-    'table_two',
-    'table_three',
-    'table_four',
-    'table_five',
-    'table_six',
-    'table_seven',
-    'table_eight',
-    'table_nine',
-    'table_ten',
-    'table_eleven',
-    'table_twelve',
-    'table_thirteen',
-    'table_fourteen',
-    'table_fifteen',
-    'table_sixteen',
-    'table_seventeen',
-    'table_eighteen',
-  ];
-
+  React.useEffect(() => {
+    getTablesList();
+  }, []);
+  const currentNamespace = NamespaceStore.getState().selectedNamespace;
+  const getTablesList = () => {
+    ConnectionsApi.exploreConnection(
+      {
+        context: currentNamespace,
+        connectionid: `${connectionId}`,
+      },
+      {
+        path: '/public',
+        limit: 1000,
+      }
+    ).subscribe(
+      (message) => {
+        const list = message.entities.map((item) => item.name);
+        setItems(list);
+      },
+      (err) => {
+        console.log('TablesList-err', err);
+      }
+    );
+  };
+  const [items, setItems] = React.useState([]);
   const [checkedItems, setCheckedItems] = React.useState<any>({});
   const [currentChecked, setCurrentChecked] = React.useState<string[]>([]);
   const filterIcon = '/cdap_assets/img/filter.svg';
@@ -232,7 +244,7 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   }, [checkedItems]);
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    submitValues(currentChecked);
+    submitValues(currentChecked.join());
   };
   const handleOnChange = (e: any) => {
     setCheckedItems({
@@ -251,6 +263,7 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   const CheckboxNormal = () => {
     return <img src={checkbox} alt="icon" height="18px" width="18px" />;
   };
+
   return (
     <form className={classes.root} onSubmit={handleSubmit}>
       <div className={classes.container}>
@@ -278,28 +291,39 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
           />
         </div>
         <Box className={classes.box}>
-          <Grid container spacing={2}>
-            {tableMockData.map((item) => (
-              <Grid item xs={4} className={classes.gridbox}>
-                <Checkbox
-                  checked={checkedItems[item]}
-                  onChange={handleOnChange}
-                  name={item}
-                  className={classes.checkboxes}
-                  icon={<CheckboxNormal />}
-                  checkedIcon={<CheckedIcon />}
-                />
-                <label className={classes.labelText}>{item}</label>
-              </Grid>
-            ))}
-          </Grid>
+          {items.length === 0 ? (
+            <h3 className={classes.emptyList}>There are no connections...</h3>
+          ) : (
+            <Grid container spacing={2}>
+              {items.map((item) => (
+                <Grid item xs={4} className={classes.gridbox} key={item}>
+                  <Checkbox
+                    checked={checkedItems[item]}
+                    onChange={handleOnChange}
+                    name={item}
+                    className={classes.checkboxes}
+                    icon={<CheckboxNormal />}
+                    checkedIcon={<CheckedIcon />}
+                    color="primary"
+                  />
+                  <label className={classes.labelText}>{item}</label>
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </Box>
       </div>
       <div className={classes.buttonContainer}>
         <Button className={classes.cancelButton} onClick={handleCancel}>
           CANCEL
         </Button>
-        <Button variant="contained" color="primary" className={classes.submitButton} type="submit">
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.submitButton}
+          type="submit"
+          disabled={currentChecked.length === 0}
+        >
           CONTINUE
         </Button>
       </div>

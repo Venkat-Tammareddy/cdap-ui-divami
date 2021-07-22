@@ -130,9 +130,11 @@ const styles = (theme): StyleRules => {
       paddingTop: '26px',
     },
     runDetails: {
-      display: 'flex',
+      display: 'inline-flex',
       marginTop: '28px',
-      marginBottom: '30px',
+      marginBottom: '20px',
+      paddingBottom: '20px',
+      borderBottom: '1px solid #A5A5A5',
     },
     runDetailsItem: {
       marginLeft: '12px',
@@ -278,6 +280,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
             runType={myCase === 'case-2'}
             onTaskClick={() => {
               myCase === 'case-2' && setMyCase('case-3');
+              myCase === 'case-3' && history.push(`/ns/${currentNamespace}/ingestion/job`);
             }}
           />
         </div>

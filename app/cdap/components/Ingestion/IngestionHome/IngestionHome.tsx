@@ -172,11 +172,12 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   }
 
   const setIngestionTaskList = (taskList) => {
+    console.log('mytest', taskList);
     return taskList.map((ele) => {
       return {
         runId: 1,
         taskName: ele.name,
-        status: ele.runs[0].status.toLowerCase(),
+        status: ele.runs.length === 0 ? '' : ele.runs[0].status.toLowerCase(),
         sourceConnectionDb: 'Study_trails',
         sourceConnection: 'Study_trails_Connection',
         targetConnection: 'Study_execution_connection',

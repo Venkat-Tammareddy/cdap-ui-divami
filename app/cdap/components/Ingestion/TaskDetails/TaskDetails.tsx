@@ -249,7 +249,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         </div>
         <div className={classes.chipContainer}>
           {connection.tags.map((tag) => {
-            return <div className={classes.chip}>{tag}</div>;
+            return <div className={classes.chip} key={tag}>{tag}</div>;
           })}
         </div>
       </div>

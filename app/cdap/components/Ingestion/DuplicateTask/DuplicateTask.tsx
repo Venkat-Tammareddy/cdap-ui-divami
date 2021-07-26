@@ -321,7 +321,6 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    console.log('aa rha hai');
     if (extraction === 'Yes') {
       setIsSubmit(true);
     }
@@ -474,12 +473,6 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
               submitText="DUPLICATE & DEPLOY TASK"
             />
           </form>
-        </If>
-        <If condition={extraction === 'Yes' && isSubmit === true}>
-          <CustomTableSelection
-            submitValues={(value) => console.log(value)}
-            handleCancel={testCancel}
-          />
         </If>
       </div>
     </div>

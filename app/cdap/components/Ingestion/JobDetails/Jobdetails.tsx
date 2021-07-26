@@ -43,6 +43,7 @@ const styles = (theme): StyleRules => {
       fontSize: '14px',
       color: '#202124',
       letterSpacing: '0.13px',
+      cursor: 'pointer',
     },
     tabItemInActive: {
       padding: '10px',
@@ -51,6 +52,7 @@ const styles = (theme): StyleRules => {
       fontSize: '14px',
       color: '#202124',
       letterSpacing: '0.13px',
+      cursor: 'pointer',
     },
     jobInfo: {
       display: 'flex',
@@ -87,9 +89,6 @@ const styles = (theme): StyleRules => {
     tablesWrapper: {
       display: 'flex',
     },
-    table: {
-      margin: '0px 28px',
-    },
     header: {
       paddingBottom: '16px',
       fontFamily: 'Lato',
@@ -122,8 +121,10 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
   const greenTickIcon = '/cdap_assets/img/side-stepper-tick.svg';
   const arrowIcon = '/cdap_assets/img/arrow.svg';
   const timeInfoIcon = '/cdap_assets/img/info-infographic.svg';
-  const successIcon = '/cdap_assets/img/success-status.svg';
-  const failedIcon = '/cdap_assets/img/error-status.svg';
+  const infoIcon = '/cdap_assets/img/info.svg';
+  const errorIcon = '/cdap_assets/img/error.svg';
+  const warningIcon = '/cdap_assets/img/Warning.svg';
+
   const tables = [
     'Table_one',
     'Table_two',
@@ -144,7 +145,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
         'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
     },
     {
-      status: 'Information',
+      status: 'Warning',
       timeStamp: '14 Mar 20 IST, 12:20:43',
       message:
         'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
@@ -249,7 +250,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                 >
                   {tables.map((item) => {
                     return (
-                      <li>
+                      <li style={{ marginRight: '120px' }}>
                         <span className={classes.jobDetailsTop}>{item}</span>
                       </li>
                     );
@@ -268,7 +269,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                 >
                   {tables.map((item) => {
                     return (
-                      <li>
+                      <li style={{ marginRight: '120px' }}>
                         <span className={classes.jobDetailsTop}>{item}</span>
                       </li>
                     );
@@ -295,7 +296,11 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                     <TableCell>
                       <img
                         className={classes.statusIcon}
-                        src={item.status === 'Error' ? failedIcon : successIcon}
+                        src={
+                          (item.status === 'Information' && infoIcon) ||
+                          (item.status === 'Error' && errorIcon) ||
+                          (item.status === 'Warning' && warningIcon)
+                        }
                         alt="img"
                         height="30px"
                         width="30px"

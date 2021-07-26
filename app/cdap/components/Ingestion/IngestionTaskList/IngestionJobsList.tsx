@@ -78,7 +78,7 @@ interface IngestJobsListProps extends WithStyles<typeof styles> {
 }
 
 const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, runType, onTaskClick }) => {
-  const idleIcon = '/cdap_assets/img/idle-status.svg';
+  const progressIcon = '/cdap_assets/img/Inprogress.svg';
   const imgStop = '/cdap_assets/img/stop.svg';
   const successIcon = '/cdap_assets/img/success-status.svg';
   const failedIcon = '/cdap_assets/img/error-status.svg';
@@ -168,7 +168,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, runType, on
                     {runType ? (
                       <img
                         className={classes.statusIcon}
-                        src={idleIcon}
+                        src={progressIcon}
                         alt="img"
                         height="30px"
                         width="30px"

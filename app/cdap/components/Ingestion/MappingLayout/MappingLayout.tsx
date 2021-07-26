@@ -181,10 +181,16 @@ const styles = (): StyleRules => {
 interface IIngestionProps extends WithStyles<typeof styles> {
   submitMappingType: (values: string) => void;
   handleCancel: (value: object) => void;
+  cardSelected: string;
+  setCardSelected: (value: string) => void;
 }
-const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, handleCancel }) => {
-  const [cardSelected, setCardSelected] = React.useState('none');
-
+const MappingView: React.FC<IIngestionProps> = ({
+  classes,
+  submitMappingType,
+  handleCancel,
+  cardSelected,
+  setCardSelected,
+}) => {
   const submitMapping = () => {
     submitMappingType(cardSelected);
   };
@@ -230,16 +236,18 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
           </div>
           <div className={classes.cardTitle}>{T.translate(`${I18N_PREFIX}.AllTables.title`)}</div>
           <img className={classes.cardRunIcon} src={allTables} alt="run-task" />
-          <img
-            className={classes.cardRunIcon}
-            src={successCardTick}
-            alt="card-selected"
-            style={{
-              position: 'absolute',
-              right: '20px',
-              top: '20px',
-            }}
-          />
+          {cardSelected === 'all' && (
+            <img
+              className={classes.cardRunIcon}
+              src={successCardTick}
+              alt="card-selected"
+              style={{
+                position: 'absolute',
+                right: '20px',
+                top: '20px',
+              }}
+            />
+          )}
         </div>
         <div
           className={cardSelected === 'custom' ? classes.selectedCard : classes.card}
@@ -271,16 +279,18 @@ const MappingView: React.FC<IIngestionProps> = ({ classes, submitMappingType, ha
             {T.translate(`${I18N_PREFIX}.CustomTables.title`)}
           </div>
           <img className={classes.cardScheduleIcon} src={customTable} alt="run-task" />
-          <img
-            className={classes.cardRunIcon}
-            src={successCardTick}
-            alt="card-selected"
-            style={{
-              position: 'absolute',
-              right: '20px',
-              top: '20px',
-            }}
-          />
+          {cardSelected === 'custom' && (
+            <img
+              className={classes.cardRunIcon}
+              src={successCardTick}
+              alt="card-selected"
+              style={{
+                position: 'absolute',
+                right: '20px',
+                top: '20px',
+              }}
+            />
+          )}
         </div>
       </div>
       <div className={classes.buttonContainer}>

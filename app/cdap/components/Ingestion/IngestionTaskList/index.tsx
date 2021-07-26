@@ -79,9 +79,10 @@ const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate
 
 interface IngestTaskListProps extends WithStyles<typeof styles> {
   searchText: String;
+  data: any[];
 }
 
-const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText }) => {
+const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText, data }) => {
   const myimg = '/cdap_assets/img/idle-status.svg';
   const myimg1 = '/cdap_assets/img/last-run-tick.svg';
   const imgMore = '/cdap_assets/img/more.svg';
@@ -92,56 +93,57 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText 
   const open = Boolean(anchorEl);
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [selectedRow, setSelectedRow] = React.useState(0);
-  const [taskList, setTaskList] = React.useState([
-    {
-      runId: 1,
-      taskName: 'one Employee performance demo task',
-      status: 'Running',
-      sourceConnectionDb: 'Study_trails',
-      sourceConnection: 'Study_trails_Connection',
-      targetConnection: 'Study_execution_connection',
-      targetConnectionDb: 'Eduction_course_Analysis',
-      tags: ['study_tails', 'study_1', 'study_2'],
-      moreBtnVisible: true,
-      stopBtn: false,
-    },
-    {
-      runId: 2,
-      taskName: 'Two Employee performance demo task',
-      status: 'Running',
-      sourceConnectionDb: 'Study_trails',
-      sourceConnection: 'Study_trails_Connection',
-      targetConnectionDb: 'Eduction_course_Analysis',
-      tags: ['study_tails', 'study_1', 'study_2', 'hsds'],
-      targetConnection: 'Study_execution_connection',
-      moreBtnVisible: true,
-      stopBtn: false,
-    },
-    {
-      runId: 3,
-      taskName: 'third Employee performance demo task',
-      status: 'Running',
-      sourceConnectionDb: 'Study_trails',
-      sourceConnection: 'Study_trails_Connection',
-      targetConnectionDb: 'Eduction_course_Analysis',
-      tags: ['study_tails', 'study_1', 'study_2', 'hsds'],
-      targetConnection: 'Study_execution_connection',
-      moreBtnVisible: true,
-      stopBtn: false,
-    },
-    {
-      runId: 4,
-      taskName: 'four Employee performance demo task',
-      status: 'Running',
-      sourceConnectionDb: 'Study_trails',
-      sourceConnection: 'Study_trails_Connection',
-      targetConnectionDb: 'Eduction_course_Analysis',
-      tags: ['study_tails', 'study_1', 'study_2', 'hsds'],
-      targetConnection: 'Study_execution_connection',
-      moreBtnVisible: true,
-      stopBtn: false,
-    },
-  ]);
+  const [taskList, setTaskList] = React.useState(
+    data
+    //   {
+    //     runId: 1,
+    //     taskName: 'one Employee performance demo task',
+    //     status: 'Running',
+    //     sourceConnectionDb: 'Study_trails',
+    //     sourceConnection: 'Study_trails_Connection',
+    //     targetConnection: 'Study_execution_connection',
+    //     targetConnectionDb: 'Eduction_course_Analysis',
+    //     tags: ['study_tails', 'study_1', 'study_2'],
+    //     moreBtnVisible: true,
+    //     stopBtn: false,
+    //   },
+    //   {
+    //     runId: 2,
+    //     taskName: 'Two Employee performance demo task',
+    //     status: 'Running',
+    //     sourceConnectionDb: 'Study_trails',
+    //     sourceConnection: 'Study_trails_Connection',
+    //     targetConnectionDb: 'Eduction_course_Analysis',
+    //     tags: ['study_tails', 'study_1', 'study_2', 'hsds'],
+    //     targetConnection: 'Study_execution_connection',
+    //     moreBtnVisible: true,
+    //     stopBtn: false,
+    //   },
+    //   {
+    //     runId: 3,
+    //     taskName: 'third Employee performance demo task',
+    //     status: 'Running',
+    //     sourceConnectionDb: 'Study_trails',
+    //     sourceConnection: 'Study_trails_Connection',
+    //     targetConnectionDb: 'Eduction_course_Analysis',
+    //     tags: ['study_tails', 'study_1', 'study_2', 'hsds'],
+    //     targetConnection: 'Study_execution_connection',
+    //     moreBtnVisible: true,
+    //     stopBtn: false,
+    //   },
+    //   {
+    //     runId: 4,
+    //     taskName: 'four Employee performance demo task',
+    //     status: 'Running',
+    //     sourceConnectionDb: 'Study_trails',
+    //     sourceConnection: 'Study_trails_Connection',
+    //     targetConnectionDb: 'Eduction_course_Analysis',
+    //     tags: ['study_tails', 'study_1', 'study_2', 'hsds'],
+    //     targetConnection: 'Study_execution_connection',
+    //     moreBtnVisible: true,
+    //     stopBtn: false,
+    //   },
+  );
   const onOptionSelect = (id: Number) => {
     setAnchorEl(null);
     setTaskList((oldArray) => {

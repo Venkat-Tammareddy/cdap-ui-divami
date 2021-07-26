@@ -166,6 +166,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
     selectionType === 'source'
       ? setSelectedConnection(draftConfig.config.stages[0])
       : setSelectedConnection(draftConfig.config.stages[1]);
+    return setSearch('');
   }, [selectionType]);
 
   const filteredList = connectionsList.filter(
@@ -263,7 +264,11 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
                   }
                   onClick={() => setSelectedConnection(conn)}
                 >
-                  <TableCell>{conn.connectionType}</TableCell>
+                  <TableCell>
+                    {selectionType === 'source'
+                      ? conn.plugin.properties.connectionString.split('/')[3]
+                      : conn.plugin.properties.dataset}
+                  </TableCell>
                   <TableCell>{conn.name}</TableCell>
                   <TableCell>{humanReadableDate(conn.updatedTimeMillis, true)}</TableCell>
                 </TableRow>

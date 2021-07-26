@@ -29,6 +29,17 @@ import T from 'i18n-react';
 import SearchIcon from '@material-ui/icons/Search';
 import { TextField } from '@material-ui/core';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
+import { getCurrentNamespace } from 'services/NamespaceStore';
+import { gql } from 'apollo-boost';
+import LoadingSVGCentered from 'components/LoadingSVGCentered';
+import { useQuery } from '@apollo/react-hooks';
+import { categorizeGraphQlErrors } from 'services/helpers';
+import If from 'components/If';
+import ErrorBanner from 'components/ErrorBanner';
+import { MyPipelineApi } from 'api/pipeline';
+import { humanReadableDate } from 'services/helpers';
+
+const I18N_PREFIX = 'features.PipelineList.DeployedPipelineView';
 
 const styles = (theme): StyleRules => {
   return {
@@ -47,7 +58,7 @@ const styles = (theme): StyleRules => {
     tabsWrapper: {
       padding: '18px 0px',
       display: 'grid',
-      gridTemplateColumns: '0fr 1fr 0fr',
+      gridTemplateColumns: '0.1fr 1fr 0fr',
     },
     tabContainer: {
       height: '80px',
@@ -55,6 +66,7 @@ const styles = (theme): StyleRules => {
       // gridTemplateColumns: '0fr 1fr 0fr',
     },
     tabs: {
+      minWidth: '30px',
       fontFamily: 'Lato',
       fontSize: '14px',
       color: ' #202124;',
@@ -88,10 +100,110 @@ interface IIngestionHomeProps extends WithStyles<typeof styles> {}
 const PREFIX = 'features.PipelineList';
 const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const [displayDrafts, setDisplayDrafts] = React.useState(false);
+  const [draftsList, setDraftsList] = React.useState([]);
   const [search, setSearch] = React.useState('');
+
+  React.useEffect(() => {
+    const namespace = getCurrentNamespace();
+    MyPipelineApi.getDrafts({
+      context: namespace,
+    }).subscribe(
+      (list) => {
+        console.log('h', list);
+        setDraftsList(list);
+      },
+      (err) => {
+        console.log('err', err);
+      }
+    );
+  }, []);
+
+  const QUERY = gql`
+  {
+    pipelines(namespace: "${getCurrentNamespace()}") {
+      name,
+      artifact {
+        name
+      },
+      runs {
+        status,
+        starting
+      },
+      totalRuns,
+      nextRuntime {
+        id,
+        time
+      }
+    }
+  }
+`;
+
+  const { loading, error, data, refetch, networkStatus } = useQuery(QUERY, {
+    errorPolicy: 'all',
+    fetchPolicy: 'no-cache',
+    notifyOnNetworkStatusChange: true,
+  });
+  if (loading || networkStatus === 4) {
+    return <LoadingSVGCentered />;
+  }
+  let bannerMessage = '';
+  if (error) {
+    const errorMap = categorizeGraphQlErrors(error);
+    // Errors thrown here will be caught by error boundary
+    // and will show error to the user within pipeline list view
+
+    // Each error type could have multiple error messages, we're using the first one available
+    if (errorMap.hasOwnProperty('pipelines')) {
+      throw new Error(errorMap.pipelines[0]);
+    } else if (errorMap.hasOwnProperty('network')) {
+      throw new Error(errorMap.network[0]);
+    } else if (errorMap.hasOwnProperty('generic')) {
+      throw new Error(errorMap.generic[0]);
+    } else {
+      if (Object.keys(errorMap).length > 1) {
+        // If multiple services are down
+        const message = T.translate(`${I18N_PREFIX}.graphQLMultipleServicesDown`).toString();
+        throw new Error(message);
+      } else {
+        // Pick one of the leftover errors to show in the banner;
+        bannerMessage = Object.values(errorMap)[0][0];
+      }
+    }
+  }
+
+  const setIngestionTaskList = (taskList) => {
+    console.log('mytest', taskList);
+    return taskList.map((ele) => {
+      return {
+        runId: 1,
+        taskName: ele.name,
+        status: 'Deployed',
+        sourceConnectionDb: 'Study_trails',
+        sourceConnection: 'Study_trails_Connection',
+        targetConnection: 'Study_execution_connection',
+        targetConnectionDb: 'Eduction_course_Analysis',
+        tags: ['study_tails', 'study_1', 'study_2'],
+        moreBtnVisible: true,
+        stopBtn: false,
+      };
+    });
+  };
+
+  const mapDratsList = () => {
+    return draftsList.map((ele) => {
+      return {
+        pipeLineName: ele.name,
+        type: 'Batch',
+        lastSaved: humanReadableDate(ele.updatedTimeMillis),
+      };
+    });
+  };
   return (
     <>
       {/* <SheduleTask /> */}
+      <If condition={!!error && !!bannerMessage}>
+        <ErrorBanner error={bannerMessage} />
+      </If>
       <div className={classes.root}>
         <IngestionHeader
           title="Ingest Tasks"
@@ -106,7 +218,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
                 onClick={() => setDisplayDrafts(false)}
                 style={{ borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none' }}
               >
-                TASKS(22)
+                TASKS ({data.pipelines.length})
               </span>
             </div>
             <div>
@@ -115,7 +227,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
                 onClick={() => setDisplayDrafts(true)}
                 style={{ borderBottom: displayDrafts ? '4px solid #4285F4' : 'none' }}
               >
-                DRAFTS(44)
+                DRAFTS ({draftsList.length})
               </span>
             </div>
             <TextField
@@ -131,9 +243,9 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
             />
           </div>
           {displayDrafts ? (
-            <DraftsList searchText={search} />
+            <DraftsList data={mapDratsList()} searchText={search} />
           ) : (
-            <IngestionTaskList searchText={search} />
+            <IngestionTaskList searchText={search} data={setIngestionTaskList(data.pipelines)} />
           )}
         </div>
       </div>

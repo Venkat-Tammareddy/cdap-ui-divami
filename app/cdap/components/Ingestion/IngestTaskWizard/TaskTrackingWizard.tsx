@@ -24,8 +24,8 @@ const styles = (theme): StyleRules => {
     root: {
       height: '100%',
       '& .MuiStepContent-root': {
-        marginLeft: '17px',
-        paddingLeft: '40px',
+        marginLeft: '15px',
+        paddingLeft: '30px',
         borderLeft: '1px solid #A5A5A5',
       },
       '& .MuiStepLabel-label': {
@@ -37,14 +37,22 @@ const styles = (theme): StyleRules => {
       },
       overflowY: 'auto',
       '& .MuiStepper-root': {
-        padding: '36px 28px',
+        padding: '28px',
       },
       '& .MuiStepConnector-vertical': {
         marginLeft: '17px',
       },
+      '& .MuiStepConnector-lineVertical': {
+        minHeight: '0px',
+      },
     },
     label: {
       cursor: 'pointer',
+      fontFamily: 'Lato',
+      fontSize: '16px',
+      color: '#202124',
+      letterSpacing: '0',
+      lineHeight: '24px',
     },
     button: {
       marginTop: theme.spacing(1),
@@ -61,8 +69,11 @@ const styles = (theme): StyleRules => {
         fontSize: '14px',
         fontFamily: 'Lato',
         fill: '#78909C',
+        textAlign: 'center',
+        verticalAlign: 'middle',
+        lineHeight: '30px',
       },
-      margin: '4px',
+      // margin: '4px',
       color: '#FFFFFF',
       height: '30px',
       width: '30px',
@@ -79,7 +90,7 @@ const styles = (theme): StyleRules => {
         height: '30px',
         width: '30px',
         fontSize: '16px',
-        margin: '4px',
+        // margin: '4px',
       },
       '&$completedIcon': {
         color: 'green',
@@ -87,12 +98,33 @@ const styles = (theme): StyleRules => {
     },
     activeIcon: {},
     completedIcon: {
-      margin: '4px',
+      // margin: '4px',
     },
     stepContent: {
+      fontFamily: 'Lato',
+      fontSize: '16px',
+      color: '#666666',
+      letterSpacing: '0',
+      lineHeight: '24px',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+    },
+    stepContentWrapper: {
+      height: '48px',
+    },
+    stepContentInfo: {
+      display: '-webkit-box',
       wordBreak: 'break-word',
       height: '48px',
-      border: '1px solid red',
+      fontFamily: 'Lato',
+      fontSize: '16px',
+      color: '#666666',
+      letterSpacing: '0',
+      lineHeight: '24px',
+      WebkitLineClamp: 2,
+      WebkitBoxOrient: 'vertical',
+      overflow: 'hidden',
     },
     '& .MuiTypography-body': {
       fontSize: '14px',
@@ -118,23 +150,29 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
   function getStepContent(step: number) {
     switch (step) {
       case 0:
-        return <p className={classes.stepContent}>{draftConfig.name}</p>;
+        return <div className={classes.stepContentInfo}>{draftConfig.name}</div>;
       case 1:
         return (
-          <div className={classes.stepContent}>
-            <p>{draftConfig.config.stages[0]?.connectionType}</p>
-            <p>{draftConfig.config.stages[0]?.name}</p>
+          <div className={classes.stepContentWrapper}>
+            <div className={classes.stepContent}>
+              {draftConfig.config.stages[0]?.connectionType}
+            </div>
+            <div className={classes.stepContent}>{draftConfig.config.stages[0]?.name}</div>
           </div>
         );
       case 2:
         return (
-          <div className={classes.stepContent}>
-            <p>{draftConfig.config.stages[1]?.connectionType}</p>
-            <p>{draftConfig.config.stages[1]?.name}</p>
+          <div className={classes.stepContentWrapper}>
+            <div className={classes.stepContent}>
+              {draftConfig.config.stages[1]?.connectionType}
+            </div>
+            <div className={classes.stepContent}>{draftConfig.config.stages[1]?.name}</div>
           </div>
         );
+      case 4:
+        return;
       default:
-        return <div className={classes.stepContent} />;
+        return <div className={classes.stepContentInfo} />;
     }
   }
   const myimg = '/cdap_assets/img/side-stepper-tick.svg';

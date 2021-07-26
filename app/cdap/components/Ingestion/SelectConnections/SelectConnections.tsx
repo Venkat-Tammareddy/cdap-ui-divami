@@ -24,6 +24,7 @@ import Table from 'components/Table';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import { humanReadableDate } from 'services/helpers';
+import OverlaySmall from '../OverlaySmall/OverlaySmall';
 const I18N_PREFIX = 'features.SelectConnections';
 
 const styles = (theme): StyleRules => {
@@ -201,6 +202,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   };
   return (
     <div className={classes.root}>
+      {/* <OverlaySmall /> */}
       <div className={classes.headerContainer}>
         {selectionType === 'target' ? (
           <p className={classes.headerText}>{T.translate(`${I18N_PREFIX}.Headers.targetHeader`)}</p>

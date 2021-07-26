@@ -257,9 +257,9 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
     submitValues(formDataObject);
   };
 
-  const onCancel = (e: React.FormEvent) => {
-    handleCancel();
-  };
+  // const onCancel = (e: React.FormEvent) => {
+  //   handleCancel();
+  // };
 
   const handleTaskNameChange = (e: React.FormEvent) => {
     const inputValue = e.target as HTMLInputElement;
@@ -388,7 +388,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
                   label={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
                   name={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
                   onKeyDown={(e: any) => {
-                    if (e.keyCode === 13 && e.target.value) {
+                    if (e.keyCode === 32 && e.target.value) {
                       setAutoCompleteValue(autoCompleteValue.concat(e.target.value));
                     }
                   }}
@@ -407,7 +407,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
       </div>
       <ButtonComponent
         onCancel={handleCancel}
-        handleSubmit={handleSubmit}
+        onSubmit={handleSubmit}
         disableSubmit={taskNameError.error || taskName.length === 0}
         submitText="CONTINUE"
       />

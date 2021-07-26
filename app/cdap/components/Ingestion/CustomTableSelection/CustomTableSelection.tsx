@@ -173,7 +173,6 @@ const styles = (): StyleRules => {
     checkboxes: { margin: '0', padding: '0' },
     labelText: {
       margin: '0',
-
       paddingTop: '9.5px',
       paddingBottom: '7.5px',
       paddingLeft: '21px',
@@ -182,6 +181,7 @@ const styles = (): StyleRules => {
       color: '#202124',
       letterSpacing: '0',
       lineHeight: '24px',
+      cursor: 'pointer',
     },
   };
 };

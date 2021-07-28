@@ -70,76 +70,22 @@ const styles = (theme): StyleRules => {
     },
   };
 };
-const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Archive'];
 
 interface IngestJobsListProps extends WithStyles<typeof styles> {
-  runType: boolean;
   onTaskClick: () => void;
+  jobsList: any[];
 }
 
-const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, runType, onTaskClick }) => {
+const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, onTaskClick, jobsList }) => {
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
   const imgStop = '/cdap_assets/img/stop.svg';
   const successIcon = '/cdap_assets/img/success-status.svg';
   const failedIcon = '/cdap_assets/img/error-status.svg';
 
-  const runningList = [
-    {
-      jobId: 'Job 01',
-      status: 'Running',
-      executedOn: '20 May 21 IST, 09:30 PM',
-      duration: '15',
-      loadedRecords: '98989',
-      errorRecords: '3131',
-    },
-  ];
-  const successList = [
-    {
-      jobId: 'Job 02',
-      status: 'Success',
-      executedOn: '20 May 21 IST, 09:30 PM',
-      duration: '25',
-      loadedRecords: '98989',
-      errorRecords: '3131',
-    },
-    {
-      jobId: 'Job 03',
-      status: 'Failed',
-      executedOn: '20 May 21 IST, 09:30 PM',
-      duration: '30',
-      loadedRecords: '--',
-      errorRecords: '--',
-    },
-    {
-      jobId: 'Job 04',
-      status: 'Success',
-      executedOn: '20 May 21 IST, 09:30 PM',
-      duration: '15',
-      loadedRecords: '98989',
-      errorRecords: '3131',
-    },
-  ];
-  const [jobsList, setJobsList] = React.useState([]);
-  const onOptionSelect = (id: number) => {
-    // setAnchorEl(null);
-    // setTaskList((oldArray) => {
-    //   return [...oldArray].map((object) => {
-    //     const objectCopy = { ...object };
-    //     if (object.runId == id) {
-    //       return {
-    //         ...object,
-    //         moreBtnVisible: !objectCopy.moreBtnVisible,
-    //         stopBtn: !objectCopy.stopBtn,
-    //       };
-    //     } else {
-    //       return objectCopy;
-    //     }
-    //   });
-    // });
-  };
-  React.useEffect(() => {
-    runType ? setJobsList(runningList) : setJobsList(successList);
-  }, [runType]);
+  // const [jobsList, setJobsList] = React.useState([]);
+  // React.useEffect(() => {
+  //   runType ? setJobsList(runningList) : setJobsList(successList);
+  // }, [runType]);
   return (
     <>
       <div className={classes.root}>
@@ -149,9 +95,9 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, runType, on
               <TableCell>Status</TableCell>
               <TableCell>Job ID</TableCell>
               <TableCell>Executed on</TableCell>
-              <TableCell>{!runType && 'Executed on'}</TableCell>
-              <TableCell>{!runType && 'Records Loaded'}</TableCell>
-              <TableCell>{!runType && 'Error Records'}</TableCell>
+              <TableCell>Executed on</TableCell>
+              <TableCell>Records Loaded</TableCell>
+              <TableCell>Error Records</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHeader>
@@ -165,33 +111,26 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, runType, on
                   onClick={onTaskClick}
                 >
                   <TableCell>
-                    {runType ? (
-                      <img
-                        className={classes.statusIcon}
-                        src={progressIcon}
-                        alt="img"
-                        height="30px"
-                        width="30px"
-                      />
-                    ) : (
-                      <img
-                        className={classes.statusIcon}
-                        src={item.status === 'Failed' ? failedIcon : successIcon}
-                        alt="img"
-                        height="30px"
-                        width="30px"
-                      />
-                    )}
-
+                    <img
+                      className={classes.statusIcon}
+                      src={
+                        (item.status === 'RUNNING' && progressIcon) ||
+                        (item.status === 'SUCCESS' && successIcon) ||
+                        (item.status === 'FAILED' && failedIcon)
+                      }
+                      alt="img"
+                      height="30px"
+                      width="30px"
+                    />
                     {item.status}
                   </TableCell>
                   <TableCell>{item.jobId}</TableCell>
                   <TableCell>{item.executedOn}</TableCell>
-                  <TableCell>{!runType && item.duration}</TableCell>
-                  <TableCell>{!runType && item.loadedRecords}</TableCell>
-                  <TableCell>{!runType && item.errorRecords}</TableCell>
+                  <TableCell>{item.status !== 'RUNNING' && item.duration}</TableCell>
+                  <TableCell>{item.status !== 'RUNNING' && item.loadedRecords}</TableCell>
+                  <TableCell>{item.status !== 'RUNNING' && item.errorRecords}</TableCell>
                   <TableCell>
-                    {runType && (
+                    {item.status === 'RUNNING' && (
                       <>
                         <img src={imgStop} alt="img" height="20px" width="20px" />
                         <span className={classes.marginLeft}>Stop</span>

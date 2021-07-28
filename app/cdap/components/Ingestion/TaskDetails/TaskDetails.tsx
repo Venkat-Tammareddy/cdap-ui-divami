@@ -23,6 +23,7 @@ import IngestionJobsList from '../IngestionTaskList/IngestionJobsList';
 import NamespaceStore from 'services/NamespaceStore';
 import If from 'components/If';
 import SheduleTask from '../SheduleTask/SheduleTask';
+import { useParams } from 'react-router';
 
 const styles = (theme): StyleRules => {
   return {
@@ -178,6 +179,33 @@ const connection = {
   },
   tags: ['Colleges', 'Exams', 'Tests'],
 };
+const testData = {
+  name: 'adda',
+  description:
+    'Data Pipeline Application daljdajlljdalj adlkljdaljlkjda dalljdalkjlkjda dljdalkjdalkjda dajdalkjkjda dallkda dalda,da da da da da ',
+  artifact: {
+    name: 'cdap-data-pipeline',
+  },
+  runs: [
+    {
+      status: 'RUNNING',
+      starting: '1627378260',
+      runid: '5b1d7965-eebd-11eb-b833-340286b1e1f8',
+    },
+    {
+      status: 'SUCCESS',
+      starting: '1627378260',
+      runid: '5b1d7965-eebd-11eb-b833-340286b1e1f8',
+    },
+    {
+      status: 'FAILED',
+      starting: '1627378260',
+      runid: '5b1d7965-eebd-11eb-b833-340286b1e1f8',
+    },
+  ],
+  totalRuns: 2,
+  nextRuntime: [],
+};
 const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const arrowIcon = '/cdap_assets/img/arrow.svg';
   const runTaskIcon = '/cdap_assets/img/run-task-big.svg';
@@ -188,6 +216,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [myCase, setMyCase] = React.useState('case-1');
   const [schedule, setSchedule] = React.useState(false);
+  const params = useParams();
 
   const toggleSchedule = () => {
     setSchedule(true);
@@ -211,7 +240,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       />
       <div className={classes.container}>
         <div className={classes.flexContainer}>
-          <div className={classes.taskName}>{connection.name}</div>
+          <div className={classes.taskName}>{(params as any).taskName}</div>
           <div className={classes.taskDate}>- Deployed on {connection.date}</div>
         </div>
         {myCase === 'case-3' && (
@@ -281,11 +310,11 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         <div className={classes.runHistoryContainer}>
           <IngestionHeader title="Run History" />
           <IngestionJobsList
-            runType={myCase === 'case-2'}
             onTaskClick={() => {
               myCase === 'case-2' && setMyCase('case-3');
               myCase === 'case-3' && history.push(`/ns/${currentNamespace}/ingestion/job`);
             }}
+            jobsList={testData.runs}
           />
         </div>
       )}

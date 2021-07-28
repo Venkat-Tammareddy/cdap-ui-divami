@@ -111,7 +111,7 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
             <>
               <div
                 className={classes.title2}
-                onClick={() => history.push(`/ns/${currentNamespace}/ingestion/detail`)}
+                onClick={() => history.push(`/ns/${currentNamespace}/ingestion/task`)}
               >
                 {' '}
                 Ingest oracle studies data to bigquery

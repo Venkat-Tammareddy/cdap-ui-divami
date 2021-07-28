@@ -15,6 +15,8 @@
  */
 
 import * as React from 'react';
+import { useContext } from 'react';
+
 import T from 'i18n-react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import TaskTrackingWizard from '../IngestTaskWizard/TaskTrackingWizard';
@@ -34,6 +36,7 @@ import Acknowledgement from '../Acknowledgement/Acknowledgement';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import CustomTablesSelection from '../CustomTableSelection/CustomTableSelection';
 import { MyArtifactApi } from 'api/artifact';
+import { ingestionContext } from 'components/Ingestion/ingestionContext';
 
 const styles = (theme): StyleRules => {
   return {
@@ -75,6 +78,8 @@ export interface IStagesInterface {
 interface ICreateIngestionProps extends WithStyles<typeof styles> {}
 const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
+  const { draftObj } = useContext(ingestionContext);
+  const { setDraftObjfn } = useContext(ingestionContext);
   const [deployLoader, setDeployLoader] = React.useState(false);
   const [ack, setAck] = React.useState(false);
   const [connections, setConnections] = React.useState([]);
@@ -189,6 +194,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     ).subscribe(
       (message) => {
         console.log('deploy', message);
+        setDraftObjfn(draftConfig);
         deleteDraft();
         setDeployLoader(false);
         setAck(true);

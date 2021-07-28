@@ -40,7 +40,7 @@ var pipelineV1AppContextPath = `${pipelineV1AppPath}/contexts/:context`;
 export const MyPipelineApi = {
   list: apiCreator(dataSrc, 'GET', 'REQUEST', '/namespaces/:namespace/apps'),
   publish: apiCreator(dataSrc, 'PUT', 'REQUEST', basepath),
-
+  run: apiCreator(dataSrc, 'POST', 'REQUEST', `${basepath}/workflows/DataPipelineWorkflow/start`),
   schedule: apiCreator(dataSrc, 'POST', 'REQUEST', `${schedulePath}/resume`),
   suspend: apiCreator(dataSrc, 'POST', 'REQUEST', `${schedulePath}/suspend`),
   getScheduleStatus: apiCreator(dataSrc, 'GET', 'REQUEST', `${schedulePath}/status`),

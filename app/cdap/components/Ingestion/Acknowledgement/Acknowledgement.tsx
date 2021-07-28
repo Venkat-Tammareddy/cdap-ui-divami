@@ -15,10 +15,15 @@
  */
 
 import * as React from 'react';
+import { useContext } from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import { Card, CardContent } from '@material-ui/core';
 import SheduleTask from '../SheduleTask/SheduleTask';
 import If from 'components/If';
+import { ingestionContext } from 'components/Ingestion/ingestionContext';
+import { MyPipelineApi } from 'api/pipeline';
+import NamespaceStore from 'services/NamespaceStore';
+import history from 'services/history';
 
 const styles = (): StyleRules => {
   return {
@@ -112,13 +117,16 @@ const runTaskIcon = '/cdap_assets/img/run-task.svg';
 const scheduleTaskIcon = '/cdap_assets/img/schedule-task.svg';
 const taskListIcon = '/cdap_assets/img/task-list.svg';
 const configIcon = '/cdap_assets/img/view-task.svg';
+
 const AcknowledgementView: React.FC<IAcknowledgementProps> = ({
   classes,
   gotoTasks,
   // gotoSchedule,
 }) => {
+  const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [toggleSchedule, setToggleSchedule] = React.useState(false);
-
+  const { draftObj } = useContext(ingestionContext);
+  console.log('draftObj', draftObj);
   const handleSchedule = () => {
     setToggleSchedule(true);
   };
@@ -126,6 +134,20 @@ const AcknowledgementView: React.FC<IAcknowledgementProps> = ({
   const closeSchedule = () => {
     setToggleSchedule(false);
   };
+  const runTask = () => {
+    MyPipelineApi.run({
+      namespace: currentNamespace,
+      appId: draftObj.name,
+    }).subscribe(
+      (message) => {
+        history.replace(`/ns/${currentNamespace}/ingestion`);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+
   return (
     <div className={classes.root}>
       <If condition={toggleSchedule}>
@@ -154,7 +176,9 @@ const AcknowledgementView: React.FC<IAcknowledgementProps> = ({
               />
             </CardContent>
             <CardContent>
-              <p className={classes.optionText}>Run Task</p>
+              <p className={classes.optionText} onClick={(e) => runTask()}>
+                Run Task
+              </p>
             </CardContent>
           </Card>
           <Card className={classes.optionCard} onMouseOver={toggleCursor} onClick={handleSchedule}>

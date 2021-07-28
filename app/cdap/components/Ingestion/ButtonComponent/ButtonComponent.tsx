@@ -52,14 +52,14 @@ const styles = (): StyleRules => {
 
 interface IIngestionProps extends WithStyles<typeof styles> {
   onCancel: () => void;
-  handleSubmit: (values: object) => void;
+  onSubmit: (values: any) => void;
   disableSubmit: boolean;
   submitText: string;
 }
 const ButtonComponentView: React.FC<IIngestionProps> = ({
   classes,
   onCancel,
-  handleSubmit,
+  onSubmit,
   disableSubmit,
   submitText,
 }) => {
@@ -74,7 +74,7 @@ const ButtonComponentView: React.FC<IIngestionProps> = ({
         className={classes.submitButton}
         type="submit"
         disabled={disableSubmit}
-        onClick={handleSubmit}
+        onClick={onSubmit}
       >
         {submitText}
       </Button>

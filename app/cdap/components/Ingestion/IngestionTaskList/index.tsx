@@ -28,6 +28,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import NamespaceStore from 'services/NamespaceStore';
+import DuplicateTask from '../DuplicateTask/DuplicateTask';
 
 const styles = (theme): StyleRules => {
   return {
@@ -164,10 +165,17 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
   const filteredList = taskList.filter((item) =>
     item.taskName?.toLowerCase().includes(searchText?.toLowerCase())
   );
+  const goToIngestionHome = () => {
+    alert('Going to home');
+  };
 
   return (
     <>
       <div className={classes.root}>
+        {/* <DuplicateTask
+          submitValues={(value) => console.log(value)}
+          handleCancel={() => goToIngestionHome()}
+        /> */}
         <Table columnTemplate="2fr 1fr 1fr 1fr 1fr 1fr">
           <TableHeader data-cy="table-header">
             <TableRow className={classes.header} data-cy="table-row">

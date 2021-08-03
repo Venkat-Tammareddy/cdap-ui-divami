@@ -1,14 +1,22 @@
 import React, { useState, useContext, useCallback, createContext } from 'react';
 
-export const ingestionContext = createContext({ draftObj: {}, setDraftObjfn: (item: any) => {} });
+export const ingestionContext = createContext({ draftObj: {}, setDraftObjfn: (item: any) => { }, ingestionTasklList: [],
+ setIngestionListfn:(item: any) => {
+  }});
 
 export const AppProvider = ({ children }) => {
-  // const appContext = useContext(ingestionContext);
-  const [draftObj, setDraftObj] = useState({ ki: 'li' });
+  const [draftObj, setDraftObj] = useState({});
   const setDraftObjfn = (item) => {
     setDraftObj(item);
   };
-  const provider = { draftObj, setDraftObjfn: useCallback(setDraftObjfn, []) };
+  const [ingestionTasklList,setIngetionTaskList]=useState([]);
+
+  const setIngestionListfn=(item:any)=>{
+    setIngetionTaskList(item);
+  }
+
+
+  const provider = { draftObj, setDraftObjfn: useCallback(setDraftObjfn, []),ingestionTasklList,setIngestionListfn };
 
   return <ingestionContext.Provider value={provider}>{children}</ingestionContext.Provider>;
 };

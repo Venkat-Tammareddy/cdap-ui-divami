@@ -24,6 +24,7 @@ import NamespaceStore from 'services/NamespaceStore';
 import If from 'components/If';
 import SheduleTask from '../SheduleTask/SheduleTask';
 import { useParams } from 'react-router';
+import { MyPipelineApi } from 'api/pipeline';
 
 const styles = (theme): StyleRules => {
   return {
@@ -190,17 +191,17 @@ const testData = {
     {
       status: 'RUNNING',
       starting: '1627378260',
-      runid: '5b1d7965-eebd-11eb-b833-340286b1e1f8',
+      runid: '5ff7f4dd-f044-11eb-9c71-340286b1e1f8',
     },
     {
       status: 'SUCCESS',
       starting: '1627378260',
-      runid: '5b1d7965-eebd-11eb-b833-340286b1e1f8',
+      runid: '5ff7f4dd-f044-11eb-9c71-340286b1e1f8',
     },
     {
       status: 'FAILED',
       starting: '1627378260',
-      runid: '5b1d7965-eebd-11eb-b833-340286b1e1f8',
+      runid: '5ff7f4dd-f044-11eb-9c71-340286b1e1f8',
     },
   ],
   totalRuns: 2,
@@ -218,6 +219,16 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const [schedule, setSchedule] = React.useState(false);
   const params = useParams();
 
+  // React.useEffect(() => {
+  //   MyPipelineApi.get({
+  //     namespace: currentNamespace,
+  //     appId: (params as any).taskName,
+  //   }).subscribe((data) => {
+  //     return {
+  //       deployedOn: data.,
+  //     };
+  //   });
+  // }, []);
   const toggleSchedule = () => {
     setSchedule(true);
   };
@@ -310,9 +321,12 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         <div className={classes.runHistoryContainer}>
           <IngestionHeader title="Run History" />
           <IngestionJobsList
-            onTaskClick={() => {
+            onTaskClick={(jobId) => {
               myCase === 'case-2' && setMyCase('case-3');
-              myCase === 'case-3' && history.push(`/ns/${currentNamespace}/ingestion/job`);
+              myCase === 'case-3' &&
+                history.push(
+                  `/ns/${currentNamespace}/ingestion/task/${(params as any).taskName}/job/${jobId}`
+                );
             }}
             jobsList={testData.runs}
           />

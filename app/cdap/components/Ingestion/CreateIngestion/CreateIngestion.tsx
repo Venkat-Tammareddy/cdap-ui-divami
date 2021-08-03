@@ -38,6 +38,7 @@ import CustomTablesSelection from '../CustomTableSelection/CustomTableSelection'
 import { MyArtifactApi } from 'api/artifact';
 import { ingestionContext } from 'components/Ingestion/ingestionContext';
 import { MyMetadataApi } from 'api/metadata';
+import { MyProgramApi } from 'api/program';
 
 const styles = (theme): StyleRules => {
   return {

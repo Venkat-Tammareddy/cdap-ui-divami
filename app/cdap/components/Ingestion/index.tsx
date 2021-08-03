@@ -46,9 +46,9 @@ const IngestionView: React.FC<IIngestionProps> = ({ classes }) => {
       <Helmet title={pageTitle} />
       <AppProvider>
         <Switch>
-          <Route exact path={`${basepath}/create`} component={CreateIngestion} />
-          <Route path={`${basepath}/task/:taskName`} component={TaskDetails} />
-          <Route exact path={`${basepath}/job`} component={JobDetails} />
+          <Route path={`${basepath}/create`} component={CreateIngestion} />
+          <Route exact path={`${basepath}/task/:taskName`} component={TaskDetails} />
+          <Route path={`${basepath}/task/:taskName/job/:jobId`} component={JobDetails} />
           <Route path={basepath} component={IngestionHome} />
           <Route
             render={() => {

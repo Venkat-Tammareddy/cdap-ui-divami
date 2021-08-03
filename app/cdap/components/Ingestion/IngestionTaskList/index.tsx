@@ -28,8 +28,9 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import NamespaceStore from 'services/NamespaceStore';
-import DuplicateTask from '../DuplicateTask/DuplicateTask';
-
+import { MyMetadataApi } from 'api/metadata';
+import produce from 'immer';
+import { MyPipelineApi } from 'api/pipeline';
 const styles = (theme): StyleRules => {
   return {
     root: {
@@ -84,7 +85,9 @@ interface IngestTaskListProps extends WithStyles<typeof styles> {
 
 const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText, data }) => {
   const myimg = '/cdap_assets/img/idle-status.svg';
-  const myimg1 = '/cdap_assets/img/last-run-tick.svg';
+  const runSuccess = '/cdap_assets/img/last-run-tick.svg';
+  const runError = '/cdap_assets/img/lastrun-error.svg';
+  const runProgress = '/cdap_assets/img/lastrun-inprogress.svg';
   const imgMore = '/cdap_assets/img/more.svg';
   const imgStop = '/cdap_assets/img/stop.svg';
   const imglRun = '/cdap_assets/img/lastrun-inprogress.svg';
@@ -93,57 +96,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
   const open = Boolean(anchorEl);
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [selectedRow, setSelectedRow] = React.useState(0);
-  const [taskList, setTaskList] = React.useState(
-    data
-    //   {
-    //     runId: 1,
-    //     taskName: 'one Employee performance demo task',
-    //     status: 'Running',
-    //     sourceConnectionDb: 'Study_trails',
-    //     sourceConnection: 'Study_trails_Connection',
-    //     targetConnection: 'Study_execution_connection',
-    //     targetConnectionDb: 'Eduction_course_Analysis',
-    //     tags: ['study_tails', 'study_1', 'study_2'],
-    //     moreBtnVisible: true,
-    //     stopBtn: false,
-    //   },
-    //   {
-    //     runId: 2,
-    //     taskName: 'Two Employee performance demo task',
-    //     status: 'Running',
-    //     sourceConnectionDb: 'Study_trails',
-    //     sourceConnection: 'Study_trails_Connection',
-    //     targetConnectionDb: 'Eduction_course_Analysis',
-    //     tags: ['study_tails', 'study_1', 'study_2', 'hsds'],
-    //     targetConnection: 'Study_execution_connection',
-    //     moreBtnVisible: true,
-    //     stopBtn: false,
-    //   },
-    //   {
-    //     runId: 3,
-    //     taskName: 'third Employee performance demo task',
-    //     status: 'Running',
-    //     sourceConnectionDb: 'Study_trails',
-    //     sourceConnection: 'Study_trails_Connection',
-    //     targetConnectionDb: 'Eduction_course_Analysis',
-    //     tags: ['study_tails', 'study_1', 'study_2', 'hsds'],
-    //     targetConnection: 'Study_execution_connection',
-    //     moreBtnVisible: true,
-    //     stopBtn: false,
-    //   },
-    //   {
-    //     runId: 4,
-    //     taskName: 'four Employee performance demo task',
-    //     status: 'Running',
-    //     sourceConnectionDb: 'Study_trails',
-    //     sourceConnection: 'Study_trails_Connection',
-    //     targetConnectionDb: 'Eduction_course_Analysis',
-    //     tags: ['study_tails', 'study_1', 'study_2', 'hsds'],
-    //     targetConnection: 'Study_execution_connection',
-    //     moreBtnVisible: true,
-    //     stopBtn: false,
-    //   },
-  );
+  const [taskList, setTaskList] = React.useState(data);
   const onOptionSelect = (id: Number) => {
     setAnchorEl(null);
     setTaskList((oldArray) => {
@@ -169,6 +122,60 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
     alert('Going to home');
   };
 
+  React.useEffect(() => {
+    taskList.map((item, index) => {
+      MyPipelineApi.fetchMacros({
+        appId: item.taskName,
+        namespace: currentNamespace,
+      }).subscribe(
+        (res) => {
+          setTaskList(
+            produce((draft) => {
+              (draft[
+                index
+              ].sourceConnectionDb = res[1].spec.properties.properties.connectionString?.split(
+                '/'
+              )[3]),
+                (draft[index].sourceConnection = res[1].id),
+                (draft[index].targetConnection = res[2].id),
+                (draft[index].targetConnectionDb = res[2].spec.properties.properties.dataset);
+            })
+          );
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+      MyMetadataApi.getTags({
+        namespace: currentNamespace,
+        entityType: 'apps',
+        entityId: item.taskName,
+      }).subscribe((tags) => {
+        console.log(tags);
+        setTaskList(
+          produce((draft) => {
+            draft[index].tags = tags.tags
+              .filter((tag) => tag.scope === 'USER')
+              .map((tag) => tag.name);
+          })
+        );
+      });
+      MyPipelineApi.getRuns({
+        namespace: currentNamespace,
+        appId: item.taskName,
+        programType: 'workflows',
+        programName: 'DataPipelineWorkflow',
+      }).subscribe((runs) => {
+        setTaskList(
+          produce((draft) => {
+            draft[index].runs = runs.map((run) => run.status);
+            console.log('test', draft);
+          })
+        );
+      }),
+        (err) => console.log(err);
+    });
+  }, []);
   return (
     <>
       <div className={classes.root}>
@@ -239,28 +246,34 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
                   </TableCell>
                   <TableCell>
                     <Grid container spacing={0}>
-                      <Grid item xs={2}>
-                        <Paper className={classes.paper}>
-                          <img src={myimg1} alt="img" height="20px" width="20px" />
-                        </Paper>
-                      </Grid>
-                      <Grid item xs={2}>
-                        <Paper className={classes.paper}>
-                          <img src={myimg1} alt="img" height="20px" width="20px" />
-                        </Paper>
-                      </Grid>
-                      <Grid item xs={2}>
-                        <Paper className={classes.paper}>
-                          <img src={myimg1} alt="img" height="20px" width="20px" />
-                        </Paper>
-                      </Grid>
+                      {item.runs.map(
+                        (run, i) =>
+                          i < 3 && (
+                            <Grid item xs={2}>
+                              <Paper className={classes.paper}>
+                                <img
+                                  src={
+                                    (run === 'RUNNING' && runProgress) ||
+                                    (run === 'SUCCESS' && runSuccess) ||
+                                    (run === 'FAILED' && runError)
+                                  }
+                                  alt="img"
+                                  height="20px"
+                                  width="20px"
+                                />
+                              </Paper>
+                            </Grid>
+                          )
+                      )}
                     </Grid>
                   </TableCell>
                   <TableCell>
                     <Grid container spacing={0}>
                       <Grid item xs={8}>
                         <Paper
-                          style={{ visibility: item.stopBtn ? 'visible' : 'hidden' }}
+                          style={{
+                            visibility: item.stopBtn ? 'visible' : 'hidden',
+                          }}
                           className={classes.paper}
                           onClick={(e) => onOptionSelect(item.runId)}
                         >
@@ -270,7 +283,9 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
                       </Grid>
                       <Grid item xs={4}>
                         <Paper
-                          style={{ visibility: item.moreBtnVisible ? 'visible' : 'hidden' }}
+                          style={{
+                            visibility: item.moreBtnVisible ? 'visible' : 'hidden',
+                          }}
                           className={classes.paper}
                         >
                           <div>

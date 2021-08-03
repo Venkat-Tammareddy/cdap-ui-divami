@@ -37,6 +37,8 @@ import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import CustomTablesSelection from '../CustomTableSelection/CustomTableSelection';
 import { MyArtifactApi } from 'api/artifact';
 import { ingestionContext } from 'components/Ingestion/ingestionContext';
+import { MyMetadataApi } from 'api/metadata';
+import { MyProgramApi } from 'api/program';
 
 const styles = (theme): StyleRules => {
   return {
@@ -85,6 +87,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const [connections, setConnections] = React.useState([]);
   const [draftId] = React.useState(uuidV4());
   const [artifactsList, setArtifactsList] = React.useState([]);
+  const [tags, setTags] = React.useState([]);
   const [draftConfig, setDraftConfig] = React.useState({
     name: '',
     description: '',
@@ -152,6 +155,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       return;
     }
     saveDraft();
+    console.log('mytags', tags);
   }, [draftConfig]);
 
   const saveDraft = () => {
@@ -199,10 +203,26 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         setDeployLoader(false);
         setAck(true);
         console.log('mytest', draftConfig);
+        addTags(draftConfig.name);
       },
       (err) => {
         console.log(err);
         setDeployLoader(false);
+      }
+    );
+  };
+  const addTags = (entityId) => {
+    const params = {
+      namespace: currentNamespace,
+      entityType: 'apps',
+      entityId,
+    };
+    MyMetadataApi.addTags(params, tags).subscribe(
+      (message) => {
+        console.log('tags updated');
+      },
+      (error) => {
+        console.log('tags-error', error);
       }
     );
   };
@@ -233,6 +253,8 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         return (
           <TaskInfo
             draftConfig={draftConfig}
+            tags={tags}
+            setTags={setTags}
             submitValues={(details: any) => {
               setDraftConfig((prevDraftConfig) => {
                 return {

@@ -431,6 +431,7 @@ class LogViewerView extends React.PureComponent<ILogViewerProps, ILogViewerState
     return (
       <React.Fragment>
         {this.state.logs.map((logObj, i) => {
+          console.log('log-obj', logObj);
           return <LogRow key={`${logObj.offset}-${i}`} logObj={logObj} />;
         })}
       </React.Fragment>

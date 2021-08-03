@@ -72,7 +72,7 @@ const styles = (theme): StyleRules => {
 };
 
 interface IngestJobsListProps extends WithStyles<typeof styles> {
-  onTaskClick: () => void;
+  onTaskClick: (jobId: string) => void;
   jobsList: any[];
 }
 
@@ -107,8 +107,8 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, onTaskClick
                 <TableRow
                   key={index}
                   className={classes.tableRow}
-                  data-cy={`table-row-${item.jobId}`}
-                  onClick={onTaskClick}
+                  data-cy={`table-row-${item.runid}`}
+                  onClick={() => onTaskClick(item.runid)}
                 >
                   <TableCell>
                     <img

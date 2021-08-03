@@ -22,6 +22,11 @@ import TableRow from 'components/Table/TableRow';
 import Table from 'components/Table';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
+import { useParams } from 'react-router';
+import NamespaceStore from 'services/NamespaceStore';
+import { MyProgramApi } from 'api/program';
+import { humanReadableDate } from 'services/helpers';
+import { MyPipelineApi } from 'api/pipeline';
 
 const styles = (theme): StyleRules => {
   return {
@@ -99,12 +104,11 @@ const styles = (theme): StyleRules => {
       letterSpacing: 0,
     },
     tableRow: {
-      cursor: 'pointer',
       fontSize: '14px',
       fontFamily: 'Lato',
       letterSpacing: '0',
       lineHeight: '24px',
-      height: '78px',
+      padding: '15.5px 0px',
     },
     logsWrapper: {
       margin: '10px 28px',
@@ -124,6 +128,9 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
   const infoIcon = '/cdap_assets/img/info.svg';
   const errorIcon = '/cdap_assets/img/error.svg';
   const warningIcon = '/cdap_assets/img/Warning.svg';
+  const params = useParams();
+  const taskName = (params as any).taskName;
+  const jobId = (params as any).jobId;
 
   const tables = [
     'Table_one',
@@ -137,47 +144,107 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
     'Table_nine',
     'Table_ten',
   ];
-  const jobList = [
-    {
-      status: 'Information',
-      timeStamp: '14 Mar 20 IST, 12:20:43',
-      message:
-        'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
+  // const jobList = [
+  //   {
+  //     status: 'Information',
+  //     timeStamp: '14 Mar 20 IST, 12:20:43',
+  //     message:
+  //       'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
+  //   },
+  //   {
+  //     status: 'Warning',
+  //     timeStamp: '14 Mar 20 IST, 12:20:43',
+  //     message:
+  //       'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
+  //   },
+  //   {
+  //     status: 'Error',
+  //     timeStamp: '14 Mar 20 IST, 12:20:43',
+  //     message:
+  //       'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
+  //   },
+  //   {
+  //     status: 'Information',
+  //     timeStamp: '14 Mar 20 IST, 12:20:43',
+  //     message:
+  //       'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
+  //   },
+  //   {
+  //     status: 'Error',
+  //     timeStamp: '14 Mar 20 IST, 12:20:43',
+  //     message:
+  //       'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
+  //   },
+  //   {
+  //     status: 'Information',
+  //     timeStamp: '14 Mar 20 IST, 12:20:43',
+  //     message:
+  //       'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
+  //   },
+  // ];
+  const currentNamespace = NamespaceStore.getState().selectedNamespace;
+  const [logs, setLogs] = React.useState([]);
+  const [jobDetails, setJobDetails] = React.useState({
+    jobConfig: {
+      sourceConnection: '',
+      sourceDb: '',
+      targetConnection: '',
+      targetDb: '',
     },
-    {
-      status: 'Warning',
-      timeStamp: '14 Mar 20 IST, 12:20:43',
-      message:
-        'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
-    },
-    {
-      status: 'Error',
-      timeStamp: '14 Mar 20 IST, 12:20:43',
-      message:
-        'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
-    },
-    {
-      status: 'Information',
-      timeStamp: '14 Mar 20 IST, 12:20:43',
-      message:
-        'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
-    },
-    {
-      status: 'Error',
-      timeStamp: '14 Mar 20 IST, 12:20:43',
-      message:
-        'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
-    },
-    {
-      status: 'Information',
-      timeStamp: '14 Mar 20 IST, 12:20:43',
-      message:
-        'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
-    },
-  ];
+  });
+  React.useEffect(() => {
+    MyPipelineApi.fetchMacros({ appId: taskName, namespace: currentNamespace }).subscribe(
+      (res) => {
+        console.log('res', res);
+        setJobDetails((prevData) => {
+          return {
+            ...prevData,
+            jobConfig: {
+              ...prevData.jobConfig,
+              sourceConnection: res[1].id,
+              sourceDb: res[1].spec.properties.properties.connectionString.split('/')[3],
+              targetConnection: res[2].id,
+              targetDb: res[2].spec.properties.properties.dataset,
+            },
+          };
+        });
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }, []);
+
+  function mylogs() {
+    MyProgramApi.prevLogs({
+      namespace: currentNamespace,
+      appId: taskName,
+      programType: 'workflows',
+      programId: 'DataPipelineWorkflow',
+      runId: '5ff7f4dd-f044-11eb-9c71-340286b1e1f8',
+      format: 'json',
+      filter:
+        'loglevel=INFO AND .origin=plugin OR MDC:eventType=lifecycle OR MDC:eventType=userLog',
+    }).subscribe(
+      (message) => {
+        console.log('mylogs', message);
+        setLogs(message);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }
+
   return (
     <div className={classes.root}>
-      <IngestionHeader title="Ingest Tasks" browseBtn onBrowse={() => console.log('browse data')} />
+      <IngestionHeader
+        title="Ingest Tasks"
+        taskName={taskName}
+        jobName={jobId}
+        browseBtn
+        onBrowse={() => console.log('browse data')}
+      />
       <div className={classes.container}>
         <div className={classes.tabsWrapper}>
           <div
@@ -188,7 +255,10 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
           </div>
           <div
             className={!displaySummary ? classes.tabItemActive : classes.tabItemInActive}
-            onClick={() => setDisplaySummary(false)}
+            onClick={() => {
+              setDisplaySummary(false);
+              mylogs();
+            }}
           >
             EXECUTION LOGS
           </div>
@@ -234,9 +304,13 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
           </div>
           <IngestionHeader title="Job Configuration" />
           <div className={classes.connectionContainer}>
-            <div className={classes.jobDetailsTop}>Oracle-global-server Connection | Studies</div>
+            <div className={classes.jobDetailsTop}>
+              {jobDetails.jobConfig.sourceConnection + ' | ' + jobDetails.jobConfig.sourceDb}
+            </div>
             <img className={classes.arrow} src={arrowIcon} alt="arrow" />
-            <div className={classes.jobDetailsTop}>BigQuery-global-server | StudyPerformance</div>
+            <div className={classes.jobDetailsTop}>
+              {jobDetails.jobConfig.targetConnection + ' | ' + jobDetails.jobConfig.targetDb}
+            </div>
           </div>
           <div className={classes.tablesWrapper}>
             <div>
@@ -281,7 +355,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
         </>
       ) : (
         <div className={classes.logsWrapper}>
-          <Table columnTemplate="1fr 1fr 4fr">
+          <Table columnTemplate="1fr 1fr 5fr">
             <TableHeader data-cy="table-header">
               <TableRow className={classes.header} data-cy="table-row">
                 <TableCell>Log Type</TableCell>
@@ -290,25 +364,25 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
               </TableRow>
             </TableHeader>
             <TableBody data-cy="table-body">
-              {jobList.map((item, index) => {
+              {logs.map((item, index) => {
                 return (
                   <TableRow key={index} className={classes.tableRow} data-cy={`table-row-${index}`}>
                     <TableCell>
                       <img
                         className={classes.statusIcon}
                         src={
-                          (item.status === 'Information' && infoIcon) ||
-                          (item.status === 'Error' && errorIcon) ||
-                          (item.status === 'Warning' && warningIcon)
+                          (item.log.logLevel === 'INFO' && infoIcon) ||
+                          (item.log.logLevel === 'ERROR' && errorIcon) ||
+                          (item.log.logLevel === 'WARN' && warningIcon)
                         }
                         alt="img"
                         height="30px"
                         width="30px"
                       />
-                      {item.status}
+                      {item.log.logLevel}
                     </TableCell>
-                    <TableCell>{item.timeStamp}</TableCell>
-                    <TableCell>{item.message}</TableCell>
+                    <TableCell>{humanReadableDate(item.log.timestamp, true)}</TableCell>
+                    <TableCell>{item.log.message}</TableCell>
                   </TableRow>
                 );
               })}

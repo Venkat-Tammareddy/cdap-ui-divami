@@ -215,6 +215,8 @@ interface ITaskInfoProps extends WithStyles<typeof styles> {
   submitValues: (values: object) => void;
   handleCancel: () => void;
   draftConfig;
+  tags: string[];
+  setTags: (values: string[]) => void;
 }
 
 const TaskInfoView: React.FC<ITaskInfoProps> = ({
@@ -222,17 +224,17 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
   submitValues,
   handleCancel,
   draftConfig,
+  tags,
+  setTags,
 }) => {
   const [taskName, setTaskName] = React.useState(draftConfig.name);
   const [taskDescription, setTaskDescription] = React.useState(draftConfig.description);
-  const [taskTags, setTaskTags] = React.useState('');
   const taskSpaceError = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`).toString();
   const taskLengthErrorMessage = T.translate(
     `${I18N_PREFIX}.Errors.taskNameLengthError`
   ).toString();
   const [infoMessage, setInfoMessage] = React.useState('Enter task name');
   const [secondInfoMessage, setSecondInfoMessage] = React.useState('without spaces');
-  const [autoCompleteValue, setAutoCompleteValue] = React.useState([]);
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
     errorMsg: '',
@@ -252,7 +254,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
 
     formDataObject.taskName = `${taskName}`;
     formDataObject.taskDescription = `${taskDescription}`;
-    formDataObject.tags = autoCompleteValue;
+    formDataObject.tags = tags;
     submitValues(formDataObject);
   };
 
@@ -280,11 +282,6 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
     }
     setTaskNameError(taskNameError);
     setTaskName(inputValue.value);
-  };
-
-  const handleTagsChange = (e: React.FormEvent) => {
-    const tags = e.target as HTMLInputElement;
-    setTaskTags(tags.value);
   };
 
   const handleFocus = (e: React.FormEvent) => {
@@ -375,9 +372,9 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
               id="tags-outlined"
               options={[]}
               freeSolo
-              value={autoCompleteValue}
-              onChange={(e, newval) => {
-                setAutoCompleteValue(newval);
+              value={tags}
+              onChange={(e, newval: any) => {
+                setTags(newval);
               }}
               renderInput={(params) => (
                 <TextField
@@ -388,7 +385,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
                   name={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
                   onKeyDown={(e: any) => {
                     if (e.keyCode === 32 && e.target.value) {
-                      setAutoCompleteValue(autoCompleteValue.concat(e.target.value));
+                      setTags(tags.concat(e.target.value));
                     }
                   }}
                 />

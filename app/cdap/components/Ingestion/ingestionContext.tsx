@@ -5,7 +5,11 @@ export const ingestionContext = createContext({ draftObj: {}, setDraftObjfn: (it
   }});
 
 export const AppProvider = ({ children }) => {
+<<<<<<< HEAD
   const [draftObj, setDraftObj] = useState({});
+=======
+  const [draftObj, setDraftObj] = useState({ ki: 'li' });
+>>>>>>> a36f5a0934fc8a50c970830f0daae204acbf26d4
   const setDraftObjfn = (item) => {
     setDraftObj(item);
   };

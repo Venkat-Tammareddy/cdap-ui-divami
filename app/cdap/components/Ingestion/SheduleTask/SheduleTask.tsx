@@ -26,12 +26,16 @@ import SearchIcon from '@material-ui/icons/Search';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import 'date-fns';
+import { ingestionContext } from 'components/Ingestion/ingestionContext';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
+import { MyPipelineApi } from 'api/pipeline';
+import NamespaceStore from 'services/NamespaceStore';
+import { useContext } from 'react';
 
 import { StringifyOptions } from 'query-string';
 import moment from 'moment';
@@ -72,9 +76,12 @@ const styles = (theme): StyleRules => {
       borderRadius: '4px',
       background: '#FBFBFB',
     },
+    sheduleString: {
+      fontSize: '14px',
+    },
     msgName: {
-      width: '390px',
-      height: '32px',
+      minWidth: '390px',
+      minHeight: '32px',
       background: '#dcedf5',
       borderRadius: '15.5px',
     },
@@ -102,7 +109,7 @@ const recurOptions = [
   'Daily',
   'Weekly',
   'Monthly',
-  'Quarterly',
+  // 'Quarterly',
 ];
 
 // const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -131,11 +138,12 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
   const pickerImage = () => {
     return <img src={calendar} />;
   };
-
+  const { draftObj } = useContext(ingestionContext);
   const [selectedTime, setSelectedTime] = React.useState<Date | null>(new Date());
   const [selectedDate, setSelectedDate] = React.useState<Date | null>(new Date());
   const initialSheduleObj = {
     hours: 1,
+    minutes: 1,
     days: 1,
     weeks: 1,
     weekDays: initialWeekDays,
@@ -181,6 +189,99 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
       return { ...copyObj, weekDays: copyweekObj };
     });
   };
+  const setTimeString = () => {
+    switch (checkedItem) {
+      case 'Hourly':
+        {
+          return `${sheduleObj.minutes} */${sheduleObj.hours} * * *`;
+        }
+        break;
+      case 'Daily':
+        {
+          return `${selectedTime.getMinutes()} ${selectedTime.getHours()} */${sheduleObj.days} * *`;
+        }
+        break;
+      case 'Weekly':
+        {
+          return `${selectedTime.getMinutes()} ${selectedTime.getHours()} * * ${Object.values(
+            sheduleObj.weekDays
+          )
+            .map((ele, index) => {
+              if (ele) {
+                return index + 1;
+              }
+            })
+            .join()}`;
+        }
+        break;
+      case 'Monthly': {
+        return `${selectedTime.getMinutes()} ${selectedTime.getHours()} ${sheduleObj.days} * *`;
+      }
+      default:
+        break;
+    }
+  };
+
+  const shedule = () => {
+    const sheduleBody = {
+      namespace: 'default',
+      application: draftObj.name,
+      applicationVersion: '-SNAPSHOT',
+      name: 'dataPipelineSchedule',
+      description: 'Data pipeline schedule',
+      program: {
+        programName: 'DataPipelineWorkflow',
+        programType: 'WORKFLOW',
+      },
+      properties: {
+        'system.profile.name': 'SYSTEM:native',
+      },
+      trigger: {
+        cronExpression: setTimeString(),
+        type: 'TIME',
+      },
+      constraints: [
+        {
+          maxConcurrency: 1,
+          type: 'CONCURRENCY',
+          waitUntilMet: false,
+        },
+      ],
+      timeoutMillis: 86400000,
+      status: 'SUSPENDED',
+      lastUpdateTime: 1628031868239,
+    };
+    MyPipelineApi.scheduleUpdate(
+      {
+        namespace: NamespaceStore.getState().selectedNamespace,
+        appId: draftObj.name,
+        scheduleId: 'dataPipelineSchedule',
+      },
+      sheduleBody
+    ).subscribe(
+      (message) => {
+        console.log('sheduleUpdate', message);
+        MyPipelineApi.schedule(
+          {
+            namespace: NamespaceStore.getState().selectedNamespace,
+            appId: draftObj.name,
+            scheduleId: 'dataPipelineSchedule',
+          },
+          sheduleBody
+        ).subscribe(
+          (message) => {
+            console.log('shedule', message);
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
 
   const renderForm = () => {
     switch (checkedItem) {
@@ -192,19 +293,11 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
               handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
               type={'hours'}
             />
-            <Box mb={1}>When do you want to start this event? ?</Box>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardTimePicker
-                className={classes.timePicker}
-                margin="normal"
-                id="time-picker"
-                value={selectedTime}
-                onChange={handleTimeChange}
-                KeyboardButtonProps={{
-                  'aria-label': 'change time',
-                }}
-              />
-            </MuiPickersUtilsProvider>
+            <Box mb={1}>When do you want to start this event? </Box>
+            <IncrementInput
+              handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
+              type={'minutes'}
+            />
           </Box>
         );
       }
@@ -239,10 +332,6 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
           return (
             <Box mb={4}>
               <Box mb={1}>At what frequency is the event likely repeat?</Box>
-              <IncrementInput
-                handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
-                type={'weeks'}
-              />
               <Box mb={2}>
                 <Grid container spacing={1}>
                   {Object.keys(sheduleObj.weekDays).map((item, index) => (
@@ -283,9 +372,9 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
               <Box mb={1}>At what frequency is the event likely repeat?</Box>
               <IncrementInput
                 handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
-                type={'months'}
+                type={'days'}
               />
-              <Box mb={1}>Select date of month?</Box>
+              {/* <Box mb={1}>Select date of month?</Box>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                   margin="normal"
@@ -298,7 +387,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                     'aria-label': 'change date',
                   }}
                 />
-              </MuiPickersUtilsProvider>
+              </MuiPickersUtilsProvider> */}
 
               <Box mb={1}>When do you want to start this event?</Box>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -368,9 +457,9 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
       case 'Hourly':
         {
           return (
-            <span>
+            <span className={classes.sheduleString}>
               {string + (sheduleObj.hours == 1 ? ' hour at ' : sheduleObj.hours + ' hours at  ')}
-              {formatAMPM(selectedTime)}
+              {sheduleObj.minutes} minutes past the hour
             </span>
           );
         }
@@ -389,7 +478,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
         {
           return (
             <span>
-              {string + (sheduleObj.weeks == 1 ? ' week ' : sheduleObj.weeks + ' weeks  ')}
+              {string}
               {Object.keys(sheduleObj.weekDays).map((ele) => {
                 if (sheduleObj.weekDays[ele]) {
                   return ',' + ele;
@@ -404,9 +493,9 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
         {
           return (
             <span>
-              {string + (sheduleObj.months == 1 ? ' month ' : sheduleObj.months + ' months ')}
-              {' on ' + formatDateSuffix(selectedDate)}
-              {' at ' + formatAMPM(selectedTime)}
+              {string + sheduleObj.days}
+              {/* {' on ' + formatDateSuffix(selectedDate)} */}
+              {' day of the month, at ' + formatAMPM(selectedTime)}
             </span>
           );
         }
@@ -486,7 +575,10 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                   size="medium"
                   color="primary"
                   className={classes.margin}
-                  onClick={closeSchedule}
+                  onClick={(e) => {
+                    closeSchedule();
+                    shedule();
+                  }}
                 >
                   SCHEDULE
                 </Button>

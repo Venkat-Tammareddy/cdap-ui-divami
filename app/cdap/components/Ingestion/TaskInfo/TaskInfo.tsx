@@ -392,7 +392,10 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
               freeSolo
               value={tags}
               onChange={(e, newval: any) => {
-                // setTags(newval);
+                if (taskTagError.error) {
+                  return;
+                }
+                setTags(newval);
               }}
               renderInput={(params) => (
                 <TextField

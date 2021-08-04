@@ -16,7 +16,6 @@
 
 import T from 'i18n-react';
 import { TextField } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -42,12 +41,15 @@ const styles = (): StyleRules => {
         letterSpacing: '0.25px',
       },
       '& .MuiInputLabel-outlined': {
-        fontSize: '16px',
+        fontSize: '12px',
         color: '#202124',
       },
       '& .MuiFormLabel-root.Mui-error': {
         color: '#DB4437',
         fontSize: '12px',
+      },
+      '& .MuiAutocomplete-input': {
+        fontSize: '16px',
       },
     },
     label: {
@@ -185,11 +187,11 @@ const styles = (): StyleRules => {
     info: {
       display: 'flex',
       flexDirection: 'column',
-      height: '200px',
+      height: '181px',
       justifyContent: 'center',
       alignItems: 'center',
       textAlign: 'center',
-      marginTop: '83px',
+      marginTop: '40px',
       marginLeft: 'auto',
       marginRight: 'auto',
     },
@@ -235,11 +237,12 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
   ).toString();
   const [infoMessage, setInfoMessage] = React.useState('Enter task name');
   const [secondInfoMessage, setSecondInfoMessage] = React.useState('without spaces');
+  const [autoCompleteValue, setAutoCompleteValue] = React.useState([]);
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
     errorMsg: '',
   });
-  const [taskTagError] = React.useState({
+  const [taskTagError, setTaskTagError] = React.useState({
     error: false,
     errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
   });
@@ -297,6 +300,21 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
     }
   };
 
+  const checkValidation = (e) => {
+    const curTag = e.target as HTMLInputElement;
+    const format = /^[a-zA-Z0-9]*$/;
+    if (!format.test(curTag.value)) {
+      setTaskTagError({
+        error: true,
+        errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
+      });
+    } else {
+      setTaskTagError({
+        error: false,
+        errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
+      });
+    }
+  };
   const infoIcon = '/cdap_assets/img/info-infographic.svg';
   return (
     <form onSubmit={handleSubmit} className={classes.root}>
@@ -374,23 +392,36 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
               freeSolo
               value={tags}
               onChange={(e, newval: any) => {
-                setTags(newval);
+                // setTags(newval);
               }}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   variant="outlined"
+                  error={taskTagError.error}
                   onFocus={handleFocus}
                   label={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
                   name={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
                   onKeyDown={(e: any) => {
-                    if (e.keyCode === 32 && e.target.value) {
-                      setTags(tags.concat(e.target.value));
+                    if (e.keyCode === 13) {
+                      if (taskTagError.error) {
+                        setTaskTagError({
+                          error: false,
+                          errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
+                        });
+                        return;
+                      } else {
+                        setTags(tags.concat(e.target.value));
+                      }
                     }
                   }}
+                  onChange={checkValidation}
                 />
               )}
             />
+            <p className={taskTagError.error ? classes.errorInputInfo : classes.inputInfo}>
+              {taskTagError.errorMsg}
+            </p>
           </div>
         </div>
         <div className={classes.info}>
@@ -404,7 +435,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
       <ButtonComponent
         onCancel={handleCancel}
         onSubmit={handleSubmit}
-        disableSubmit={taskNameError.error || taskName.length === 0}
+        disableSubmit={taskNameError.error || taskName.length === 0 || taskTagError.error}
         submitText="CONTINUE"
       />
     </form>

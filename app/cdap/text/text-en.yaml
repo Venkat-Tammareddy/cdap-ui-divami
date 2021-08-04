@@ -2793,7 +2793,7 @@ features:
     Errors:
       taskNameLengthError: Name cannot be longer than 64 characters.
       taskNameFormatError: 'Enter task name without spaces (EX: IngestOracleData, Ingest_Oracle_Data and etc...)'
-      taskTagError: 'Add tags with a comma (,) separation (ex: Studies, Courses, and etc...)'
+      taskTagError: 'Only alphanumeric characters and hypher are allowed(a-z,A-Z,0-9,-)'
       errorWithOutEx: Enter task name without spaces
     Labels:
       description: Description

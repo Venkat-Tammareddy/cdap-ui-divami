@@ -18,6 +18,7 @@ import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import { Typography, Button } from '@material-ui/core';
 import T from 'i18n-react';
+import ButtonComponent from '../ButtonComponent/ButtonComponent';
 const I18N_PREFIX = 'features.MappingLayout';
 const styles = (): StyleRules => {
   return {
@@ -180,7 +181,7 @@ const styles = (): StyleRules => {
 
 interface IIngestionProps extends WithStyles<typeof styles> {
   submitMappingType: (values: string) => void;
-  handleCancel: (value: object) => void;
+  handleCancel: () => void;
   cardSelected: string;
   setCardSelected: (value: string) => void;
 }
@@ -193,10 +194,6 @@ const MappingView: React.FC<IIngestionProps> = ({
 }) => {
   const submitMapping = () => {
     submitMappingType(cardSelected);
-  };
-
-  const onCancel = (e: React.FormEvent) => {
-    handleCancel({ name: 'cancel' });
   };
 
   const allTables = '/cdap_assets/img/data-base-big.svg';
@@ -293,21 +290,12 @@ const MappingView: React.FC<IIngestionProps> = ({
           )}
         </div>
       </div>
-      <div className={classes.buttonContainer}>
-        <Button className={classes.cancelButton} onClick={onCancel}>
-          CANCEL
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.submitButton}
-          type="submit"
-          onClick={submitMapping}
-          disabled={cardSelected === 'none'}
-        >
-          Continue
-        </Button>
-      </div>
+      <ButtonComponent
+        onCancel={handleCancel}
+        onSubmit={submitMapping}
+        disableSubmit={cardSelected === 'none'}
+        submitText="CONTINUE"
+      />
     </div>
   );
 };

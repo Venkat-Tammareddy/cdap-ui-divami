@@ -190,6 +190,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const calender = '/cdap_assets/img/calendar-black.svg';
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [schedule, setSchedule] = React.useState(false);
+  const [graph, setGraph] = React.useState(false);
   const params = useParams();
   const taskName = (params as any).taskName;
   const [taskDetails, setTaskDetails] = React.useState({
@@ -369,12 +370,13 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         </>
       ) : (
         <div className={classes.runHistoryContainer}>
-          <IngestionHeader title="Run History" />
+          <IngestionHeader title="Run History" graphicalView={true} setGraph={setGraph} />
           <IngestionJobsList
             onTaskClick={(jobId) => {
               taskDetails.runs.length !== 0 &&
                 history.push(`/ns/${currentNamespace}/ingestion/task/${taskName}/job/${jobId}`);
             }}
+            graph={graph}
             jobsList={taskDetails.runs}
           />
         </div>

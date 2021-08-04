@@ -22,6 +22,9 @@ import Table from 'components/Table';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import { humanReadableDate, humanReadableDuration } from 'services/helpers';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import If from 'components/If';
+import Graphs from '../Graph/Graph';
 
 const styles = (theme): StyleRules => {
   return {
@@ -69,79 +72,143 @@ const styles = (theme): StyleRules => {
     marginLeft: {
       marginLeft: '10px',
     },
+    toggleView: {
+      display: 'flex',
+      flexDirection: 'row-reverse',
+    },
+    listIcon: {
+      border: '1px solid blue',
+      borderRadiusTopLeft: '10px',
+      borderTopLeftRadius: '23px',
+      borderBottomLeftRadius: '23px',
+      borderRadiusBottomLeft: '23px',
+      height: '18px',
+      width: '18px',
+    },
+    graphIcn: {
+      cursor: 'pointer',
+    },
   };
 };
 
 interface IngestJobsListProps extends WithStyles<typeof styles> {
+  graph?: boolean;
   onTaskClick: (jobId: string) => void;
   jobsList: any[];
 }
 
-const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, onTaskClick, jobsList }) => {
+const IngestionJobsList: React.FC<IngestJobsListProps> = ({
+  classes,
+  onTaskClick,
+  jobsList,
+  graph,
+}) => {
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
   const imgStop = '/cdap_assets/img/stop.svg';
   const successIcon = '/cdap_assets/img/success-status.svg';
   const failedIcon = '/cdap_assets/img/error-status.svg';
+  // const [Graph, setGraph] = React.useState(true);
+
+  const runningList = [
+    {
+      jobId: 'Job 01',
+      status: 'Running',
+      executedOn: '20 May 21 IST, 09:30 PM',
+      duration: '15',
+      loadedRecords: '98989',
+      errorRecords: '3131',
+    },
+  ];
+  const successList = [
+    {
+      jobId: 'Job 02',
+      status: 'Success',
+      executedOn: '20 May 21 IST, 09:30 PM',
+      duration: '25',
+      loadedRecords: '98989',
+      errorRecords: '3131',
+    },
+    {
+      jobId: 'Job 03',
+      status: 'Failed',
+      executedOn: '20 May 21 IST, 09:30 PM',
+      duration: '30',
+      loadedRecords: '--',
+      errorRecords: '--',
+    },
+    {
+      jobId: 'Job 04',
+      status: 'Success',
+      executedOn: '20 May 21 IST, 09:30 PM',
+      duration: '15',
+      loadedRecords: '98989',
+      errorRecords: '3131',
+    },
+  ];
 
   return (
     <>
       <div className={classes.root}>
-        <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr 2fr">
-          <TableHeader data-cy="table-header">
-            <TableRow className={classes.header} data-cy="table-row">
-              <TableCell>Status</TableCell>
-              <TableCell>Job ID</TableCell>
-              <TableCell>Executed on</TableCell>
-              <TableCell>Duration</TableCell>
-              <TableCell>Records Loaded</TableCell>
-              <TableCell>Error Records</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody data-cy="table-body">
-            {jobsList.map((item, index) => {
-              return (
-                <TableRow
-                  key={index}
-                  className={classes.tableRow}
-                  data-cy={`table-row-${item.runid}`}
-                  onClick={() => onTaskClick(item.runId)}
-                >
-                  <TableCell>
-                    <img
-                      className={classes.statusIcon}
-                      src={
-                        (item.status === 'SUCCESS' && successIcon) ||
-                        (item.status === 'FAILED' && failedIcon) ||
-                        progressIcon
-                      }
-                      alt="img"
-                      height="30px"
-                      width="30px"
-                    />
-                    {item.status}
-                  </TableCell>
-                  <TableCell>{item.runId}</TableCell>
-                  <TableCell>{humanReadableDate(item.start, false)}</TableCell>
-                  <TableCell>
-                    {item.status !== 'RUNNING' &&
-                      humanReadableDuration(item.end - item.start, false)}
-                  </TableCell>
-                  <TableCell>{item.status !== 'RUNNING' && item.loadedRecords}</TableCell>
-                  <TableCell>{item.status !== 'RUNNING' && item.errorRecords}</TableCell>
-                  <TableCell>
-                    {item.status === 'RUNNING' && (
-                      <>
-                        <img src={imgStop} alt="img" height="20px" width="20px" />
-                        <span className={classes.marginLeft}>Stop</span>
-                      </>
-                    )}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        {graph ? (
+          <Graphs />
+        ) : (
+          <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr 2fr">
+            <TableHeader data-cy="table-header">
+              <TableRow className={classes.header} data-cy="table-row">
+                <TableCell>Status</TableCell>
+                <TableCell>Job ID</TableCell>
+                <TableCell>Executed on</TableCell>
+                <TableCell>Duration</TableCell>
+                <TableCell>Records Loaded</TableCell>
+                <TableCell>Error Records</TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody data-cy="table-body">
+              {jobsList.map((item, index) => {
+                return (
+                  <TableRow
+                    key={index}
+                    className={classes.tableRow}
+                    data-cy={`table-row-${item.runid}`}
+                    onClick={() => onTaskClick(item.runId)}
+                  >
+                    <TableCell>
+                      <img
+                        className={classes.statusIcon}
+                        src={
+                          (item.status === 'SUCCESS' && successIcon) ||
+                          (item.status === 'FAILED' && failedIcon) ||
+                          progressIcon
+                        }
+                        alt="img"
+                        height="30px"
+                        width="30px"
+                      />
+                      {item.status}
+                    </TableCell>
+                    <TableCell>{item.runId}</TableCell>
+                    <TableCell>{humanReadableDate(item.start, false)}</TableCell>
+                    <TableCell>
+                      {item.status !== 'RUNNING' &&
+                        humanReadableDuration(item.end - item.start, false)}
+                    </TableCell>
+                    <TableCell>{item.status !== 'RUNNING' && item.loadedRecords}</TableCell>
+                    <TableCell>{item.status !== 'RUNNING' && item.errorRecords}</TableCell>
+                    <TableCell>
+                      {item.status === 'RUNNING' && (
+                        <>
+                          <img src={imgStop} alt="img" height="20px" width="20px" />
+                          <span className={classes.marginLeft}>Stop</span>
+                        </>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </>
   );

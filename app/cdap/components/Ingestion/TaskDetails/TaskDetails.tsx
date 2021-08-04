@@ -188,6 +188,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [myCase, setMyCase] = React.useState('case-1');
   const [schedule, setSchedule] = React.useState(false);
+  const [graph, setGraph] = React.useState(false);
 
   const toggleSchedule = () => {
     setSchedule(true);
@@ -279,13 +280,14 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         </>
       ) : (
         <div className={classes.runHistoryContainer}>
-          <IngestionHeader title="Run History" />
+          <IngestionHeader title="Run History" graphicalView={true} setGraph={setGraph} />
           <IngestionJobsList
             runType={myCase === 'case-2'}
             onTaskClick={() => {
               myCase === 'case-2' && setMyCase('case-3');
               myCase === 'case-3' && history.push(`/ns/${currentNamespace}/ingestion/job`);
             }}
+            graph={graph}
           />
         </div>
       )}

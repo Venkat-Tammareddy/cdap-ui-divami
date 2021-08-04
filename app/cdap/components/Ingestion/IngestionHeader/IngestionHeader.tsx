@@ -20,6 +20,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import history from 'services/history';
 import NamespaceStore from 'services/NamespaceStore';
+import If from 'components/If';
 
 const styles = (theme): StyleRules => {
   return {
@@ -63,6 +64,28 @@ const styles = (theme): StyleRules => {
     createIcon: {
       marginRight: '10px',
     },
+    toggleButton: {
+      display: 'flex',
+      gap: '10px',
+      alignItems: 'center',
+    },
+    listIcons: {
+      padding: '6px 12px 6px 12px',
+      borderRight: '1px solid #A5A5A5',
+      cursor: 'pointer',
+    },
+    graphIcons: { padding: '6px 12px 6px 12px', cursor: 'pointer' },
+    buttons: {
+      display: 'flex',
+      border: '1px solid #A5A5A5',
+      borderRadius: '23px',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    txt: {
+      marginBottom: '0',
+    },
+    viewTxt: { marginBottom: '0' },
   };
 };
 
@@ -77,6 +100,8 @@ interface IngestionHeaderProps extends WithStyles<typeof styles> {
   navToHome?: () => void;
   browseBtn?: boolean;
   onBrowse?: () => void;
+  graphicalView?: boolean;
+  setGraph?: any;
 }
 const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   classes,
@@ -90,6 +115,8 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   navToHome,
   browseBtn,
   onBrowse,
+  graphicalView,
+  setGraph,
 }) => {
   const titleDesignIcon = '/cdap_assets/img/title-design-bar.svg';
   const createIcon = '/cdap_assets/img/create.svg';
@@ -97,10 +124,13 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   const taskActionsIcon = '/cdap_assets/img/task-action.svg';
   const browseIcon = '/cdap_assets/img/browse-data.svg';
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
+  const listView = '/cdap_assets/img/list-view.svg';
+  const graphView = '/cdap_assets/img/graph-view.svg';
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Archive'];
+
   return (
     <>
       <div className={classes.root}>
@@ -155,6 +185,21 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
           <div className={classes.create} onClick={onBrowse}>
             <img className={classes.createIcon} src={browseIcon} alt="browse-data" />
             <span>Browse</span>
+          </div>
+        )}
+        {graphicalView && (
+          <div className={classes.toggleButton}>
+            <p className={classes.txt}>Records Loaded</p>
+            <p className={classes.txt}>Errors</p>
+            <p className={classes.viewTxt}>View by</p>
+            <div className={classes.buttons}>
+              <div className={classes.listIcons} onClick={() => setGraph(false)}>
+                <img src={listView} height="18px" width="18px" />
+              </div>
+              <div className={classes.graphIcons} onClick={() => setGraph(true)}>
+                <img src={graphView} height="15px" width="13px" />
+              </div>
+            </div>
           </div>
         )}
       </div>

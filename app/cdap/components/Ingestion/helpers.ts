@@ -141,3 +141,39 @@ export function getPluginDisplayName(plugin) {
   const pluginName = objectQuery(plugin, 'name') || '';
   return displayName ? displayName : pluginName;
 }
+
+export const parseJdbcString = (connectionString: string, databaseType: string) => {
+  const type1 = [
+    'postgres',
+    'netezza',
+    'mysql',
+    'memsql',
+    'mariadb',
+    'db2',
+    'aurora-postgres',
+    'aurora-mysql',
+    'oracle',
+    'cloudsql-mysql',
+    'cloudsql-postgresql',
+  ];
+  const type2 = [,];
+  if (type1.includes(databaseType)) {
+    return connectionString.split('/')[3];
+  }
+  if (databaseType === 'sqlserver') {
+    return connectionString
+      .split('/')[2]
+      .split(';')[1]
+      .split('=')[1];
+  }
+  if (databaseType === 'teradata') {
+    return connectionString
+      .split('/')[3]
+      .split(' ')[0]
+      .split('=')[1]
+      .split(',')[0];
+  }
+  if (databaseType === 'saphana') {
+    return connectionString.split('/')[2].split(':')[1];
+  }
+};

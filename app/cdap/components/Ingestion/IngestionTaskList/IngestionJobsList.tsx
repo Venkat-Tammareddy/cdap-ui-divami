@@ -21,6 +21,9 @@ import TableRow from 'components/Table/TableRow';
 import Table from 'components/Table';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import If from 'components/If';
+import Graphs from '../Graph/Graph';
 
 const styles = (theme): StyleRules => {
   return {
@@ -68,6 +71,22 @@ const styles = (theme): StyleRules => {
     marginLeft: {
       marginLeft: '10px',
     },
+    toggleView: {
+      display: 'flex',
+      flexDirection: 'row-reverse',
+    },
+    listIcon: {
+      border: '1px solid blue',
+      borderRadiusTopLeft: '10px',
+      borderTopLeftRadius: '23px',
+      borderBottomLeftRadius: '23px',
+      borderRadiusBottomLeft: '23px',
+      height: '18px',
+      width: '18px',
+    },
+    graphIcn: {
+      cursor: 'pointer',
+    },
   };
 };
 const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Archive'];
@@ -75,13 +94,20 @@ const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate
 interface IngestJobsListProps extends WithStyles<typeof styles> {
   runType: boolean;
   onTaskClick: () => void;
+  graph?: boolean;
 }
 
-const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, runType, onTaskClick }) => {
+const IngestionJobsList: React.FC<IngestJobsListProps> = ({
+  classes,
+  runType,
+  onTaskClick,
+  graph,
+}) => {
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
   const imgStop = '/cdap_assets/img/stop.svg';
   const successIcon = '/cdap_assets/img/success-status.svg';
   const failedIcon = '/cdap_assets/img/error-status.svg';
+  // const [Graph, setGraph] = React.useState(true);
 
   const runningList = [
     {
@@ -120,6 +146,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, runType, on
     },
   ];
   const [jobsList, setJobsList] = React.useState([]);
+
   const onOptionSelect = (id: number) => {
     // setAnchorEl(null);
     // setTaskList((oldArray) => {
@@ -143,66 +170,71 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, runType, on
   return (
     <>
       <div className={classes.root}>
-        <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr 2fr">
-          <TableHeader data-cy="table-header">
-            <TableRow className={classes.header} data-cy="table-row">
-              <TableCell>Status</TableCell>
-              <TableCell>Job ID</TableCell>
-              <TableCell>Executed on</TableCell>
-              <TableCell>{!runType && 'Executed on'}</TableCell>
-              <TableCell>{!runType && 'Records Loaded'}</TableCell>
-              <TableCell>{!runType && 'Error Records'}</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody data-cy="table-body">
-            {jobsList.map((item, index) => {
-              return (
-                <TableRow
-                  key={index}
-                  className={classes.tableRow}
-                  data-cy={`table-row-${item.jobId}`}
-                  onClick={onTaskClick}
-                >
-                  <TableCell>
-                    {runType ? (
-                      <img
-                        className={classes.statusIcon}
-                        src={progressIcon}
-                        alt="img"
-                        height="30px"
-                        width="30px"
-                      />
-                    ) : (
-                      <img
-                        className={classes.statusIcon}
-                        src={item.status === 'Failed' ? failedIcon : successIcon}
-                        alt="img"
-                        height="30px"
-                        width="30px"
-                      />
-                    )}
+        <If condition={graph}>
+          <Graphs />
+        </If>
+        <If condition={!graph}>
+          <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr 2fr">
+            <TableHeader data-cy="table-header">
+              <TableRow className={classes.header} data-cy="table-row">
+                <TableCell>Status</TableCell>
+                <TableCell>Job ID</TableCell>
+                <TableCell>Executed on</TableCell>
+                <TableCell>{!runType && 'Executed on'}</TableCell>
+                <TableCell>{!runType && 'Records Loaded'}</TableCell>
+                <TableCell>{!runType && 'Error Records'}</TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody data-cy="table-body">
+              {jobsList.map((item, index) => {
+                return (
+                  <TableRow
+                    key={index}
+                    className={classes.tableRow}
+                    data-cy={`table-row-${item.jobId}`}
+                    onClick={onTaskClick}
+                  >
+                    <TableCell>
+                      {runType ? (
+                        <img
+                          className={classes.statusIcon}
+                          src={progressIcon}
+                          alt="img"
+                          height="30px"
+                          width="30px"
+                        />
+                      ) : (
+                        <img
+                          className={classes.statusIcon}
+                          src={item.status === 'Failed' ? failedIcon : successIcon}
+                          alt="img"
+                          height="30px"
+                          width="30px"
+                        />
+                      )}
 
-                    {item.status}
-                  </TableCell>
-                  <TableCell>{item.jobId}</TableCell>
-                  <TableCell>{item.executedOn}</TableCell>
-                  <TableCell>{!runType && item.duration}</TableCell>
-                  <TableCell>{!runType && item.loadedRecords}</TableCell>
-                  <TableCell>{!runType && item.errorRecords}</TableCell>
-                  <TableCell>
-                    {runType && (
-                      <>
-                        <img src={imgStop} alt="img" height="20px" width="20px" />
-                        <span className={classes.marginLeft}>Stop</span>
-                      </>
-                    )}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                      {item.status}
+                    </TableCell>
+                    <TableCell>{item.jobId}</TableCell>
+                    <TableCell>{item.executedOn}</TableCell>
+                    <TableCell>{!runType && item.duration}</TableCell>
+                    <TableCell>{!runType && item.loadedRecords}</TableCell>
+                    <TableCell>{!runType && item.errorRecords}</TableCell>
+                    <TableCell>
+                      {runType && (
+                        <>
+                          <img src={imgStop} alt="img" height="20px" width="20px" />
+                          <span className={classes.marginLeft}>Stop</span>
+                        </>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </If>
       </div>
     </>
   );

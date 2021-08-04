@@ -118,6 +118,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       maxConcurrentRuns: 1,
     },
   });
+  const [tags, setTags] = React.useState([]);
 
   React.useEffect(() => {
     ConnectionsApi.listConnections({

@@ -138,7 +138,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
   const pickerImage = () => {
     return <img src={calendar} />;
   };
-  const { draftObj } = useContext(ingestionContext);
+  const { draftObj }: any = useContext(ingestionContext);
   const [selectedTime, setSelectedTime] = React.useState<Date | null>(new Date());
   const [selectedDate, setSelectedDate] = React.useState<Date | null>(new Date());
   const initialSheduleObj = {
@@ -467,7 +467,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
       case 'Daily':
         {
           return (
-            <span>
+            <span className={classes.sheduleString}>
               {string + (sheduleObj.days == 1 ? ' day at ' : sheduleObj.days + ' days at ')}
               {formatAMPM(selectedTime)}
             </span>
@@ -477,7 +477,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
       case 'Weekly':
         {
           return (
-            <span>
+            <span className={classes.sheduleString}>
               {string}
               {Object.keys(sheduleObj.weekDays).map((ele) => {
                 if (sheduleObj.weekDays[ele]) {
@@ -492,7 +492,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
       case 'Monthly':
         {
           return (
-            <span>
+            <span className={classes.sheduleString}>
               {string + sheduleObj.days}
               {/* {' on ' + formatDateSuffix(selectedDate)} */}
               {' day of the month, at ' + formatAMPM(selectedTime)}
@@ -502,7 +502,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
         break;
       case 'Quarterly': {
         return (
-          <span>
+          <span className={classes.sheduleString}>
             {string + (sheduleObj.quarters == 1 ? ' quarter ' : sheduleObj.quarters + ' quarters ')}
             {' on ' + formatDateSuffix(selectedDate)}
             {' at ' + formatAMPM(selectedTime)}

@@ -21,6 +21,7 @@ import TableRow from 'components/Table/TableRow';
 import Table from 'components/Table';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
+import { humanReadableDate, humanReadableDuration } from 'services/helpers';
 
 const styles = (theme): StyleRules => {
   return {
@@ -82,10 +83,6 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, onTaskClick
   const successIcon = '/cdap_assets/img/success-status.svg';
   const failedIcon = '/cdap_assets/img/error-status.svg';
 
-  // const [jobsList, setJobsList] = React.useState([]);
-  // React.useEffect(() => {
-  //   runType ? setJobsList(runningList) : setJobsList(successList);
-  // }, [runType]);
   return (
     <>
       <div className={classes.root}>
@@ -95,7 +92,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, onTaskClick
               <TableCell>Status</TableCell>
               <TableCell>Job ID</TableCell>
               <TableCell>Executed on</TableCell>
-              <TableCell>Executed on</TableCell>
+              <TableCell>Duration</TableCell>
               <TableCell>Records Loaded</TableCell>
               <TableCell>Error Records</TableCell>
               <TableCell></TableCell>
@@ -108,15 +105,15 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, onTaskClick
                   key={index}
                   className={classes.tableRow}
                   data-cy={`table-row-${item.runid}`}
-                  onClick={() => onTaskClick(item.runid)}
+                  onClick={() => onTaskClick(item.runId)}
                 >
                   <TableCell>
                     <img
                       className={classes.statusIcon}
                       src={
-                        (item.status === 'RUNNING' && progressIcon) ||
                         (item.status === 'SUCCESS' && successIcon) ||
-                        (item.status === 'FAILED' && failedIcon)
+                        (item.status === 'FAILED' && failedIcon) ||
+                        progressIcon
                       }
                       alt="img"
                       height="30px"
@@ -124,9 +121,12 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, onTaskClick
                     />
                     {item.status}
                   </TableCell>
-                  <TableCell>{item.jobId}</TableCell>
-                  <TableCell>{item.executedOn}</TableCell>
-                  <TableCell>{item.status !== 'RUNNING' && item.duration}</TableCell>
+                  <TableCell>{item.runId}</TableCell>
+                  <TableCell>{humanReadableDate(item.start, false)}</TableCell>
+                  <TableCell>
+                    {item.status !== 'RUNNING' &&
+                      humanReadableDuration(item.end - item.start, false)}
+                  </TableCell>
                   <TableCell>{item.status !== 'RUNNING' && item.loadedRecords}</TableCell>
                   <TableCell>{item.status !== 'RUNNING' && item.errorRecords}</TableCell>
                   <TableCell>

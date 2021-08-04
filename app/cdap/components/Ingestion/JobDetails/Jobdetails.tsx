@@ -144,44 +144,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
     'Table_nine',
     'Table_ten',
   ];
-  // const jobList = [
-  //   {
-  //     status: 'Information',
-  //     timeStamp: '14 Mar 20 IST, 12:20:43',
-  //     message:
-  //       'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
-  //   },
-  //   {
-  //     status: 'Warning',
-  //     timeStamp: '14 Mar 20 IST, 12:20:43',
-  //     message:
-  //       'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
-  //   },
-  //   {
-  //     status: 'Error',
-  //     timeStamp: '14 Mar 20 IST, 12:20:43',
-  //     message:
-  //       'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
-  //   },
-  //   {
-  //     status: 'Information',
-  //     timeStamp: '14 Mar 20 IST, 12:20:43',
-  //     message:
-  //       'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
-  //   },
-  //   {
-  //     status: 'Error',
-  //     timeStamp: '14 Mar 20 IST, 12:20:43',
-  //     message:
-  //       'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
-  //   },
-  //   {
-  //     status: 'Information',
-  //     timeStamp: '14 Mar 20 IST, 12:20:43',
-  //     message:
-  //       'lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod incididunt ut labore',
-  //   },
-  // ];
+
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [logs, setLogs] = React.useState([]);
   const [jobDetails, setJobDetails] = React.useState({
@@ -202,7 +165,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
             jobConfig: {
               ...prevData.jobConfig,
               sourceConnection: res[1].id,
-              sourceDb: res[1].spec.properties.properties.connectionString.split('/')[3],
+              sourceDb: res[1].spec.properties.properties.connectionString?.split('/')[3],
               targetConnection: res[2].id,
               targetDb: res[2].spec.properties.properties.dataset,
             },
@@ -221,7 +184,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
       appId: taskName,
       programType: 'workflows',
       programId: 'DataPipelineWorkflow',
-      runId: '5ff7f4dd-f044-11eb-9c71-340286b1e1f8',
+      runId: jobId,
       format: 'json',
       filter:
         'loglevel=INFO AND .origin=plugin OR MDC:eventType=lifecycle OR MDC:eventType=userLog',

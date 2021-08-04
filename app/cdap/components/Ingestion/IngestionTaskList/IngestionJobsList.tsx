@@ -96,9 +96,12 @@ interface IngestJobsListProps extends WithStyles<typeof styles> {
   jobsList: any[];
 }
 
-
-
-const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, onTaskClick, jobsList, graph }) => {
+const IngestionJobsList: React.FC<IngestJobsListProps> = ({
+  classes,
+  onTaskClick,
+  jobsList,
+  graph,
+}) => {
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
   const imgStop = '/cdap_assets/img/stop.svg';
   const successIcon = '/cdap_assets/img/success-status.svg';

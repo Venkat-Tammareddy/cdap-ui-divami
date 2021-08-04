@@ -140,9 +140,6 @@ const styles = (theme): StyleRules => {
     sortIcon: {
       marginLeft: '13.5px',
     },
-    hide: {
-      display: 'none',
-    },
   };
 };
 
@@ -251,7 +248,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
                 src={sortNameType === 'Down' ? sortDownIcon : sortUpIcon}
                 alt="some down icon sort"
                 height="14px"
-                className={currentSortType === 'name' ? classes.hide : classes.sortIcon}
+                className={classes.sortIcon}
                 onMouseOver={changeCursor}
                 onClick={handleNameSort}
               />

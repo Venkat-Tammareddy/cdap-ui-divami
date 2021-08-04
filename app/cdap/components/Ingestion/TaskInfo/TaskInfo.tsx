@@ -237,7 +237,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
   ).toString();
   const [infoMessage, setInfoMessage] = React.useState('Enter task name');
   const [secondInfoMessage, setSecondInfoMessage] = React.useState('without spaces');
-  const [autoCompleteValue, setAutoCompleteValue] = React.useState([])
+  const [autoCompleteValue, setAutoCompleteValue] = React.useState([]);
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
     errorMsg: '',
@@ -390,9 +390,9 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
               id="tags-outlined"
               options={[]}
               freeSolo
-              value={autoCompleteValue}
-              onChange={(e, newval) => {
-                setAutoCompleteValue(newval);
+              value={tags}
+              onChange={(e, newval: any) => {
+                // setTags(newval);
               }}
               renderInput={(params) => (
                 <TextField
@@ -411,7 +411,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
                         });
                         return;
                       } else {
-                        setAutoCompleteValue(autoCompleteValue.concat(e.target.value));
+                        setTags(tags.concat(e.target.value));
                       }
                     }
                   }}

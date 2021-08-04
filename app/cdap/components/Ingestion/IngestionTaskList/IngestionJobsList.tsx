@@ -89,20 +89,16 @@ const styles = (theme): StyleRules => {
     },
   };
 };
-const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Archive'];
 
 interface IngestJobsListProps extends WithStyles<typeof styles> {
-  runType: boolean;
-  onTaskClick: () => void;
   graph?: boolean;
+  onTaskClick: (jobId: string) => void;
+  jobsList: any[];
 }
 
-const IngestionJobsList: React.FC<IngestJobsListProps> = ({
-  classes,
-  runType,
-  onTaskClick,
-  graph,
-}) => {
+
+
+const IngestionJobsList: React.FC<IngestJobsListProps> = ({ classes, onTaskClick, jobsList, graph }) => {
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
   const imgStop = '/cdap_assets/img/stop.svg';
   const successIcon = '/cdap_assets/img/success-status.svg';
@@ -145,7 +141,6 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
       errorRecords: '3131',
     },
   ];
-  const [jobsList, setJobsList] = React.useState([]);
 
   const onOptionSelect = (id: number) => {
     // setAnchorEl(null);
@@ -164,9 +159,8 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
     //   });
     // });
   };
-  React.useEffect(() => {
-    runType ? setJobsList(runningList) : setJobsList(successList);
-  }, [runType]);
+
+  const runType = false;
   return (
     <>
       <div className={classes.root}>
@@ -193,7 +187,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                     key={index}
                     className={classes.tableRow}
                     data-cy={`table-row-${item.jobId}`}
-                    onClick={onTaskClick}
+                    onClick={() => onTaskClick(item.jobId)}
                   >
                     <TableCell>
                       {runType ? (

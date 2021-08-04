@@ -38,6 +38,7 @@ import If from 'components/If';
 import ErrorBanner from 'components/ErrorBanner';
 import { MyPipelineApi } from 'api/pipeline';
 import { humanReadableDate } from 'services/helpers';
+import { MyMetadataApi } from 'api/metadata';
 
 const I18N_PREFIX = 'features.PipelineList.DeployedPipelineView';
 
@@ -102,9 +103,9 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const [displayDrafts, setDisplayDrafts] = React.useState(false);
   const [draftsList, setDraftsList] = React.useState([]);
   const [search, setSearch] = React.useState('');
+  const namespace = getCurrentNamespace();
 
   React.useEffect(() => {
-    const namespace = getCurrentNamespace();
     MyPipelineApi.getDrafts({
       context: namespace,
     }).subscribe(
@@ -122,12 +123,17 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   {
     pipelines(namespace: "${getCurrentNamespace()}") {
       name,
+      description,
       artifact {
         name
       },
       runs {
+        runid,
         status,
-        starting
+        starting,
+        start,
+        end,
+        profileId
       },
       totalRuns,
       nextRuntime {
@@ -146,6 +152,24 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   if (loading || networkStatus === 4) {
     return <LoadingSVGCentered />;
   }
+  const setIngestionTaskList = () => {
+    console.log('mytest', data.pipelines);
+    return data.pipelines.map((ele) => {
+      return {
+        runId: ele.runs.runid,
+        taskName: ele.name,
+        status: ele.runs.length === 0 ? '' : ele.runs[0].status,
+        sourceConnectionDb: '',
+        sourceConnection: '',
+        targetConnection: '',
+        targetConnectionDb: '',
+        tags: [],
+        runs: [],
+        moreBtnVisible: true,
+        stopBtn: ele.runs.length === 0 ? false : ele.runs[0].status === 'RUNNING' && true,
+      };
+    });
+  };
   let bannerMessage = '';
   if (error) {
     const errorMap = categorizeGraphQlErrors(error);
@@ -170,24 +194,6 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
       }
     }
   }
-
-  const setIngestionTaskList = (taskList) => {
-    console.log('mytest', taskList);
-    return taskList.map((ele) => {
-      return {
-        runId: 1,
-        taskName: ele.name,
-        status: 'Deployed',
-        sourceConnectionDb: 'Study_trails',
-        sourceConnection: 'Study_trails_Connection',
-        targetConnection: 'Study_execution_connection',
-        targetConnectionDb: 'Eduction_course_Analysis',
-        tags: ['study_tails', 'study_1', 'study_2'],
-        moreBtnVisible: true,
-        stopBtn: false,
-      };
-    });
-  };
 
   const mapDratsList = () => {
     return draftsList.map((ele) => {
@@ -245,7 +251,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
           {displayDrafts ? (
             <DraftsList data={mapDratsList()} searchText={search} />
           ) : (
-            <IngestionTaskList searchText={search} data={setIngestionTaskList(data.pipelines)} />
+            <IngestionTaskList searchText={search} data={setIngestionTaskList()} />
           )}
         </div>
       </div>

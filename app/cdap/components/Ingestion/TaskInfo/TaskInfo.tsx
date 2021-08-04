@@ -217,6 +217,8 @@ interface ITaskInfoProps extends WithStyles<typeof styles> {
   submitValues: (values: object) => void;
   handleCancel: () => void;
   draftConfig;
+  tags: string[];
+  setTags: (values: string[]) => void;
 }
 
 const TaskInfoView: React.FC<ITaskInfoProps> = ({
@@ -224,6 +226,8 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
   submitValues,
   handleCancel,
   draftConfig,
+  tags,
+  setTags,
 }) => {
   const [taskName, setTaskName] = React.useState(draftConfig.name);
   const [taskDescription, setTaskDescription] = React.useState(draftConfig.description);
@@ -233,7 +237,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
   ).toString();
   const [infoMessage, setInfoMessage] = React.useState('Enter task name');
   const [secondInfoMessage, setSecondInfoMessage] = React.useState('without spaces');
-  const [autoCompleteValue, setAutoCompleteValue] = React.useState([]);
+  const [autoCompleteValue, setAutoCompleteValue] = React.useState([])
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
     errorMsg: '',
@@ -253,7 +257,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
 
     formDataObject.taskName = `${taskName}`;
     formDataObject.taskDescription = `${taskDescription}`;
-    formDataObject.tags = autoCompleteValue;
+    formDataObject.tags = tags;
     submitValues(formDataObject);
   };
 
@@ -388,7 +392,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
               freeSolo
               value={autoCompleteValue}
               onChange={(e, newval) => {
-                // setAutoCompleteValue(newval);
+                setAutoCompleteValue(newval);
               }}
               renderInput={(params) => (
                 <TextField

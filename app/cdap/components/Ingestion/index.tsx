@@ -24,6 +24,7 @@ import CreateIngestion from './CreateIngestion/CreateIngestion';
 import IngestionHome from './IngestionHome/IngestionHome';
 import TaskDetails from './TaskDetails/TaskDetails';
 import JobDetails from './JobDetails/Jobdetails';
+import { AppProvider } from 'components/Ingestion/ingestionContext';
 
 const styles = (theme): StyleRules => {
   return {
@@ -43,17 +44,19 @@ const IngestionView: React.FC<IIngestionProps> = ({ classes }) => {
   return (
     <>
       <Helmet title={pageTitle} />
-      <Switch>
-        <Route exact path={`${basepath}/create`} component={CreateIngestion} />
-        <Route exact path={`${basepath}/detail`} component={TaskDetails} />
-        <Route exact path={`${basepath}/job`} component={JobDetails} />
-        <Route path={basepath} component={IngestionHome} />
-        <Route
-          render={() => {
-            return <Redirect to={`/ns/${getCurrentNamespace()}/ingestion`} />;
-          }}
-        />
-      </Switch>
+      <AppProvider>
+        <Switch>
+          <Route path={`${basepath}/create`} component={CreateIngestion} />
+          <Route exact path={`${basepath}/task/:taskName`} component={TaskDetails} />
+          <Route path={`${basepath}/task/:taskName/job/:jobId`} component={JobDetails} />
+          <Route path={basepath} component={IngestionHome} />
+          <Route
+            render={() => {
+              return <Redirect to={`/ns/${getCurrentNamespace()}/ingestion`} />;
+            }}
+          />
+        </Switch>
+      </AppProvider>
     </>
   );
 };

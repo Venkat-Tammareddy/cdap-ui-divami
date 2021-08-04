@@ -91,6 +91,8 @@ const styles = (theme): StyleRules => {
 
 interface IngestionHeaderProps extends WithStyles<typeof styles> {
   title: string;
+  taskName?: string;
+  jobName?: string;
   createBtn?: boolean;
   onCreate?: () => void;
   runBtn?: boolean;
@@ -116,6 +118,8 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   browseBtn,
   onBrowse,
   graphicalView,
+  taskName,
+  jobName,
   setGraph,
 }) => {
   const titleDesignIcon = '/cdap_assets/img/title-design-bar.svg';
@@ -141,12 +145,12 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
             <>
               <div
                 className={classes.title2}
-                onClick={() => history.push(`/ns/${currentNamespace}/ingestion/detail`)}
+                onClick={() => history.push(`/ns/${currentNamespace}/ingestion/task/${taskName}`)}
               >
                 {' '}
-                Ingest oracle studies data to bigquery
+                {taskName}
               </div>
-              <div className={classes.title2}> Job 01</div>
+              <div className={classes.title2}>{' ' + jobName}</div>
             </>
           )}
           {!taskActionsBtn && !browseBtn && (

@@ -25,6 +25,7 @@ import If from 'components/If';
 import SheduleTask from '../SheduleTask/SheduleTask';
 import { useParams } from 'react-router';
 import { MyPipelineApi } from 'api/pipeline';
+import { MyMetadataApi } from 'api/metadata';
 
 const styles = (theme): StyleRules => {
   return {
@@ -180,33 +181,6 @@ const connection = {
   },
   tags: ['Colleges', 'Exams', 'Tests'],
 };
-const testData = {
-  name: 'adda',
-  description:
-    'Data Pipeline Application daljdajlljdalj adlkljdaljlkjda dalljdalkjlkjda dljdalkjdalkjda dajdalkjkjda dallkda dalda,da da da da da ',
-  artifact: {
-    name: 'cdap-data-pipeline',
-  },
-  runs: [
-    {
-      status: 'RUNNING',
-      starting: '1627378260',
-      runid: '5ff7f4dd-f044-11eb-9c71-340286b1e1f8',
-    },
-    {
-      status: 'SUCCESS',
-      starting: '1627378260',
-      runid: '5ff7f4dd-f044-11eb-9c71-340286b1e1f8',
-    },
-    {
-      status: 'FAILED',
-      starting: '1627378260',
-      runid: '5ff7f4dd-f044-11eb-9c71-340286b1e1f8',
-    },
-  ],
-  totalRuns: 2,
-  nextRuntime: [],
-};
 const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const arrowIcon = '/cdap_assets/img/arrow.svg';
   const runTaskIcon = '/cdap_assets/img/run-task-big.svg';
@@ -215,26 +189,103 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const clock = '/cdap_assets/img/clock-black.svg';
   const calender = '/cdap_assets/img/calendar-black.svg';
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
-  const [myCase, setMyCase] = React.useState('case-1');
   const [schedule, setSchedule] = React.useState(false);
+  const [graph, setGraph] = React.useState(false);
   const params = useParams();
-
-  // React.useEffect(() => {
-  //   MyPipelineApi.get({
-  //     namespace: currentNamespace,
-  //     appId: (params as any).taskName,
-  //   }).subscribe((data) => {
-  //     return {
-  //       deployedOn: data.,
-  //     };
-  //   });
-  // }, []);
+  const taskName = (params as any).taskName;
+  const [taskDetails, setTaskDetails] = React.useState({
+    tags: [],
+    runs: [],
+    connections: {
+      sourceName: '',
+      sourceDb: '',
+      targetName: '',
+      targetDb: '',
+    },
+  });
+  React.useEffect(() => {
+    MyPipelineApi.fetchMacros({ appId: taskName, namespace: currentNamespace }).subscribe(
+      (res) => {
+        console.log('res', res);
+        setTaskDetails((prevData) => {
+          return {
+            ...prevData,
+            connections: {
+              sourceName: res[1].id,
+              sourceDb: res[1].spec.properties.properties.connectionString?.split('/')[3],
+              targetName: res[2].id,
+              targetDb: res[2].spec.properties.properties.dataset,
+            },
+          };
+        });
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    MyMetadataApi.getTags({
+      namespace: currentNamespace,
+      entityType: 'apps',
+      entityId: taskName,
+    }).subscribe((tags) => {
+      console.log(tags);
+      setTaskDetails((prev) => {
+        return {
+          ...prev,
+          tags: tags.tags.filter((tag) => tag.scope === 'USER').map((tag) => tag.name),
+        };
+      });
+    });
+    getRuns();
+  }, []);
+  const getRuns = () => {
+    MyPipelineApi.pollRuns({
+      namespace: currentNamespace,
+      appId: taskName,
+      programType: 'workflows',
+      programName: 'DataPipelineWorkflow',
+    }).subscribe((data) => {
+      console.log('runs', data);
+      setTaskDetails((prev) => {
+        return {
+          ...prev,
+          runs: data.map((run) => {
+            return {
+              runId: run.runid,
+              start: run.starting,
+              end: run.end,
+              status: run.status,
+            };
+          }),
+        };
+      });
+    });
+  };
+  const runTask = (taskName: string) => {
+    MyPipelineApi.run({
+      namespace: currentNamespace,
+      appId: taskName,
+    }).subscribe(
+      (message) => {
+        console.log(message);
+        getRuns();
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
   const toggleSchedule = () => {
     setSchedule(true);
   };
 
   const closeSchedule = () => {
     setSchedule(false);
+  };
+  const getSuccessRate = () => {
+    const successRuns = taskDetails.runs.filter((run) => run.status === 'SUCCESS').length;
+    const totalRuns = taskDetails.runs.length;
+    return (successRuns / totalRuns) * 100;
   };
   return (
     <div className={classes.root}>
@@ -244,21 +295,21 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       <IngestionHeader
         title="Ingest Tasks"
         taskActionsBtn
-        runBtn={myCase === 'case-3'}
-        onRun={() => console.log('run clicked')}
+        runBtn={taskDetails.runs.length !== 0}
+        onRun={() => runTask(taskName)}
         onTaskActions={() => console.log('task actions')}
         navToHome={() => history.push(`/ns/${currentNamespace}/ingestion`)}
       />
       <div className={classes.container}>
         <div className={classes.flexContainer}>
-          <div className={classes.taskName}>{(params as any).taskName}</div>
+          <div className={classes.taskName}>{taskName}</div>
           <div className={classes.taskDate}>- Deployed on {connection.date}</div>
         </div>
-        {myCase === 'case-3' && (
+        {taskDetails.runs.length > 1 && (
           <div className={classes.runDetails}>
             <img src={successRatePie} alt="success-rate-pie" />
             <div className={classes.runDetailsItem}>
-              <div className={classes.successPercentage}>98%</div>
+              <div className={classes.successPercentage}>{getSuccessRate()}%</div>
               <div className={classes.runDetailsBottom}>Success Rate</div>
             </div>
             <img src={calender} alt="success-rate-pie" />
@@ -276,19 +327,19 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         <div className={classes.description}>{connection.description}</div>
         <div className={classes.connectionContainer}>
           <div className={classes.taskDate}>
-            {connection.source.connName}
+            {taskDetails.connections.sourceName}
             {' | '}
-            {connection.source.connName}
+            {taskDetails.connections.sourceDb}
           </div>
           <img className={classes.arrow} src={arrowIcon} alt="arrow" />
           <div className={classes.taskDate}>
-            {connection.target.connName}
+            {taskDetails.connections.targetName}
             {' | '}
-            {connection.target.connDb}
+            {taskDetails.connections.targetDb}
           </div>
         </div>
         <div className={classes.chipContainer}>
-          {connection.tags.map((tag) => {
+          {taskDetails.tags.map((tag) => {
             return (
               <div className={classes.chip} key={tag}>
                 {tag}
@@ -297,11 +348,11 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           })}
         </div>
       </div>
-      {myCase === 'case-1' ? (
+      {taskDetails.runs.length === 0 ? (
         <>
           <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
           <div className={classes.cardsContainer}>
-            <div className={classes.card} onClick={() => setMyCase('case-2')}>
+            <div className={classes.card} onClick={() => runTask(taskName)}>
               <div className={classes.cardDescription}>
                 I would like to extract all columns from all tables without any custom selection.
               </div>
@@ -319,16 +370,14 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         </>
       ) : (
         <div className={classes.runHistoryContainer}>
-          <IngestionHeader title="Run History" />
+          <IngestionHeader title="Run History" graphicalView={true} setGraph={setGraph} />
           <IngestionJobsList
             onTaskClick={(jobId) => {
-              myCase === 'case-2' && setMyCase('case-3');
-              myCase === 'case-3' &&
-                history.push(
-                  `/ns/${currentNamespace}/ingestion/task/${(params as any).taskName}/job/${jobId}`
-                );
+              taskDetails.runs.length !== 0 &&
+                history.push(`/ns/${currentNamespace}/ingestion/task/${taskName}/job/${jobId}`);
             }}
-            jobsList={testData.runs}
+            graph={graph}
+            jobsList={taskDetails.runs}
           />
         </div>
       )}

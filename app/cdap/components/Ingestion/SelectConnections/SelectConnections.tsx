@@ -25,6 +25,7 @@ import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import { humanReadableDate } from 'services/helpers';
 import OverlaySmall from '../OverlaySmall/OverlaySmall';
+import { getPluginDisplayName, parseJdbcString } from '../helpers';
 const I18N_PREFIX = 'features.SelectConnections';
 
 const styles = (theme): StyleRules => {
@@ -161,6 +162,8 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const [search, setSearch] = React.useState('');
   const [selectedConnection, setSelectedConnection] = React.useState<any>({});
   const [sortType, setSortType] = React.useState('Down');
+  const [sortNameType, setSortNameType] = React.useState('Down');
+  const [currentSortType, setCurrentSortType] = React.useState('name');
 
   React.useEffect(() => {
     selectionType === 'source'
@@ -194,6 +197,15 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
     }
   };
 
+  const handleNameSort = (e) => {
+    sortNameType === 'Down' ? setSortNameType('Up') : setSortNameType('Down');
+    if (sortNameType === 'Down') {
+      connectionsList.sort((a, b) => (a.name > b.name ? -1 : 1));
+    } else {
+      connectionsList.sort((a, b) => (a.name > b.name ? 1 : -1));
+    }
+  };
+
   const sortDownIcon = '/cdap_assets/img/sort-down-arrow.svg';
   const sortUpIcon = '/cdap_assets/img/sort-up-arrow.svg';
   const searchIcon = '/cdap_assets/img/search.svg';
@@ -203,7 +215,6 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   };
   return (
     <div className={classes.root}>
-      {/* <OverlaySmall /> */}
       <div className={classes.headerContainer}>
         {selectionType === 'target' ? (
           <p className={classes.headerText}>{T.translate(`${I18N_PREFIX}.Headers.targetHeader`)}</p>
@@ -230,8 +241,18 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
       <Table columnTemplate="1fr 1fr 1fr">
         <TableHeader data-cy="table-header">
           <TableRow className={classes.header} data-cy="table-row">
-            <TableCell>{T.translate(`${I18N_PREFIX}.Names.database`)}</TableCell>
-            <TableCell>{T.translate(`${I18N_PREFIX}.Names.connection`)}</TableCell>
+            <TableCell>{T.translate(`${I18N_PREFIX}.Names.database`)} </TableCell>
+            <TableCell>
+              {T.translate(`${I18N_PREFIX}.Names.connection`)}{' '}
+              <img
+                src={sortNameType === 'Down' ? sortDownIcon : sortUpIcon}
+                alt="some down icon sort"
+                height="14px"
+                className={classes.sortIcon}
+                onMouseOver={changeCursor}
+                onClick={handleNameSort}
+              />
+            </TableCell>
             <TableCell>
               <div className="flexHeader">
                 {T.translate(`${I18N_PREFIX}.Names.lastUsedOn`)}
@@ -250,7 +271,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
 
         <TableBody data-cy="table-body">
           {filteredList.length === 0 ? (
-            <h3 className={classes.emptyList}>There are no connections...</h3>
+            <OverlaySmall />
           ) : (
             filteredList.map((conn, index) => {
               return (

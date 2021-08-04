@@ -125,7 +125,7 @@ const AcknowledgementView: React.FC<IAcknowledgementProps> = ({
 }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [toggleSchedule, setToggleSchedule] = React.useState(false);
-  const { draftObj } = useContext(ingestionContext);
+  const { draftObj }: any = useContext(ingestionContext);
   console.log('draftObj', draftObj);
   const handleSchedule = () => {
     setToggleSchedule(true);
@@ -165,7 +165,7 @@ const AcknowledgementView: React.FC<IAcknowledgementProps> = ({
           <div className={classes.line}> </div>
         </div>
         <div className={classes.options}>
-          <Card className={classes.optionCard} onMouseOver={toggleCursor}>
+          <Card className={classes.optionCard} onMouseOver={toggleCursor} onClick={() => runTask()}>
             <CardContent>
               <img
                 src={runTaskIcon}
@@ -176,9 +176,7 @@ const AcknowledgementView: React.FC<IAcknowledgementProps> = ({
               />
             </CardContent>
             <CardContent>
-              <p className={classes.optionText} onClick={(e) => runTask()}>
-                Run Task
-              </p>
+              <p className={classes.optionText}>Run Task</p>
             </CardContent>
           </Card>
           <Card className={classes.optionCard} onMouseOver={toggleCursor} onClick={handleSchedule}>

@@ -24,7 +24,6 @@ const styles = (): StyleRules => {
   return {
     root: {
       display: 'flex',
-      border: '1px solid red',
       flexDirection: 'column',
     },
     header: {
@@ -72,19 +71,19 @@ const OverlaySmallView: React.FC<OverlaySmallProps> = ({ classes }) => {
   const handleClose = () => {
     setOpen(false);
   };
-  const error = 'http://0.0.0.0:8888/error-status.svg';
+  const error = '/cdap_assets/img/error-status.svg';
   const ErrorIcon = () => {
     return <img src={error} alt="err icon" height="30px" width="30px" />;
   };
   return (
     <div className={classes.root}>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+      {/* <Button variant="outlined" color="primary" onClick={handleClickOpen}>
         Open dialog
-      </Button>
+      </Button> */}
       <Dialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
-        open={open}
+        open={true}
         className={classes.dialog}
       >
         <div className={classes.header}>

@@ -237,10 +237,13 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
   ).toString();
   const [infoMessage, setInfoMessage] = React.useState('Enter task name');
   const [secondInfoMessage, setSecondInfoMessage] = React.useState('without spaces');
-  const [autoCompleteValue, setAutoCompleteValue] = React.useState([]);
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
     errorMsg: '',
+  });
+  const [tagLengthError, setTagLengthError] = React.useState({
+    error: false,
+    errorMsg: 'Tags cannot be more than 64 characters',
   });
   const [taskTagError, setTaskTagError] = React.useState({
     error: false,
@@ -302,7 +305,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
 
   const checkValidation = (e) => {
     const curTag = e.target as HTMLInputElement;
-    const format = /^[a-zA-Z0-9]*$/;
+    const format = /^[a-zA-Z0-9-]*$/;
     if (!format.test(curTag.value)) {
       setTaskTagError({
         error: true,
@@ -312,6 +315,18 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
       setTaskTagError({
         error: false,
         errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
+      });
+    }
+
+    if (curTag.value.length > 64) {
+      setTagLengthError({
+        error: true,
+        errorMsg: 'Tags cannot be more than 64 characters',
+      });
+    } else {
+      setTagLengthError({
+        error: false,
+        errorMsg: 'Tags cannot be more than 64 characters',
       });
     }
   };
@@ -392,7 +407,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
               freeSolo
               value={tags}
               onChange={(e, newval: any) => {
-                if (taskTagError.error) {
+                if (taskTagError.error || newval === '') {
                   return;
                 }
                 setTags(newval);
@@ -414,7 +429,11 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
                         });
                         return;
                       } else {
-                        setTags(tags.concat(e.target.value));
+                        if (e.target.value === '') {
+                          return;
+                        } else {
+                          setTags(tags.concat(e.target.value));
+                        }
                       }
                     }
                   }}
@@ -424,6 +443,9 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
             />
             <p className={taskTagError.error ? classes.errorInputInfo : classes.inputInfo}>
               {taskTagError.errorMsg}
+            </p>
+            <p className={tagLengthError.error ? classes.errorInputInfo : classes.inputInfo}>
+              {tagLengthError.errorMsg}
             </p>
           </div>
         </div>

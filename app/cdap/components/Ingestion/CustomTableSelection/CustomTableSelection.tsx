@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Button, TextField } from '@material-ui/core';
+import { Button, Menu, MenuItem, TextField } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import Box from '@material-ui/core/Box';
@@ -171,6 +171,7 @@ const styles = (): StyleRules => {
     },
     filterIcon: {
       marginLeft: '10px',
+      cursor: 'pointer',
     },
     checkboxes: { margin: '0', padding: '0' },
     labelText: {
@@ -231,10 +232,12 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   const [items, setItems] = React.useState([]);
   const [checkedItems, setCheckedItems] = React.useState<any>({});
   const [currentChecked, setCurrentChecked] = React.useState<string[]>([]);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const filterIcon = '/cdap_assets/img/filter.svg';
   const checkBoxActiv = '/cdap_assets/img/check-box-active.svg';
   const search = '/cdap_assets/img/search.svg';
   const checkbox = '/cdap_assets/img/checkbox-normal.svg';
+  const options = ['All', 'Selected', 'Unselected'];
 
   React.useEffect(() => {
     if (Object.keys(checkedItems).length !== 0) {
@@ -264,6 +267,10 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
     return <img src={checkbox} alt="icon" height="18px" width="18px" />;
   };
 
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <form className={classes.root} onSubmit={handleSubmit}>
       <div className={classes.container}>
@@ -288,7 +295,34 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
             height="17.1px"
             width="18px"
             className={classes.filterIcon}
+            onClick={(e) => setAnchorEl(e.currentTarget)}
           />
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            {options.map((option) => (
+              <MenuItem
+                key={option}
+                onClick={(e) => {
+                  // // if (option === 'Selected') {
+                  // //   const newType = currentChecked;
+                  // // } else if (option === 'All') {
+                  // //   const newType = itemsCopy;
+                  // // } else {
+                  // //   const newType = currentChecked.filter((x) => !items.includes(x));
+                  // }
+                  // // setItemsCopy(newType);
+                  handleClose();
+                }}
+              >
+                {option}
+              </MenuItem>
+            ))}
+          </Menu>
         </div>
         <Box className={classes.box}>
           {items.length === 0 ? (

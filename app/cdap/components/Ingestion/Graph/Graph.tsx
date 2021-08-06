@@ -22,17 +22,67 @@ import {
   YAxis,
   VerticalGridLines,
   LineSeries,
+  FlexibleWidthXYPlot,
+  Hint,
   VerticalBarSeries,
   LabelSeries,
   ChartLabel,
   HorizontalGridLines,
 } from 'react-vis';
 import '../../../../../node_modules/react-vis/dist/style.css';
+import { CardContent, Typography } from '@material-ui/core';
+import Card from 'components/Card';
+import If from 'components/If';
 const styles = (): StyleRules => {
   return {
     root: {
       overflowX: 'auto',
       scrollBarWidth: 'thin',
+      height: '300px',
+      width: '1280',
+    },
+    croot: {
+      Width: '260px',
+      height: '181px',
+    },
+    title: {
+      fontSize: '18px',
+      fontFamily: 'Lato',
+      paddingLeft: '0',
+      color: '#202124',
+    },
+    up: {
+      display: 'flex',
+      borderBottom: '2px solid grey',
+      marginTop: '-10px',
+      gap: '50px',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    sukces: {
+      backgroundColor: '#0F9D58',
+      borderRadius: '16px',
+      color: 'white',
+      padding: '5px 10px',
+      fontSize: '14px',
+      marginBottom: '10px',
+    },
+    info: {
+      display: 'flex',
+      paddingTop: '15px',
+      flexDirection: 'column',
+      gap: '5px',
+      color: '#202124',
+      fontSize: '14px',
+    },
+    hnt: {
+      border: '1px solid #A5A5A5',
+      width: '261px',
+      padding: '0',
+      margin: '0',
+    },
+    hehe: {
+      border: '1px solid blue',
     },
   };
 };
@@ -64,18 +114,28 @@ const GraphsView: React.FC<GraphsProps> = ({ classes }) => {
     { x: 'job9', y: 99 },
     { x: 'job10', y: 92 },
   ];
+  const [tooltip, setTooltip] = React.useState(false);
+  const [value, setValue] = React.useState({});
+  const show = () => {
+    setTooltip(true);
+  };
 
   return (
     <div className={classes.root}>
-      <XYPlot xType="ordinal" width={1920} height={300} style={{ paddingLeft: '30px' }}>
+      <FlexibleWidthXYPlot
+        xType="ordinal"
+        width={1280}
+        height={300}
+        style={{ paddingLeft: '30px' }}
+      >
         <HorizontalGridLines />
         <XAxis />
         <ChartLabel
           text="Records"
           className="alt-y-label"
           includeMargin={false}
-          xPercent={-0.02}
-          yPercent={0}
+          xPercent={-0.017}
+          yPercent={0.5}
           style={{
             transform: 'rotate(-90)',
             textAnchor: 'end',
@@ -83,10 +143,58 @@ const GraphsView: React.FC<GraphsProps> = ({ classes }) => {
           }}
         />
         <YAxis />
-        <VerticalBarSeries barWidth={0.155} data={myData} color="#74D091" />
-        <VerticalBarSeries barWidth={0.155} data={myData2} color="transparent" />
-        <VerticalBarSeries barWidth={0.155} data={myData2} color="#DB4437" />
-      </XYPlot>
+        <VerticalBarSeries
+          barWidth={0.5}
+          data={myData}
+          color="#74D091"
+          onMouseover={() => alert('1')}
+          style={{ cursor: 'pointer' }}
+          onValueMouseOver={(d) => {
+            setValue(d);
+          }}
+        />
+        {value && (
+          <Hint
+            value={value}
+            align={{ vertical: 'bottom', horizontal: 'right' }}
+            className={classes.hnt}
+          >
+            <Card className={classes.croot}>
+              <div className={classes.up}>
+                <p className={classes.title}>Job 04</p>
+                <div className={classes.sukces}>Success</div>
+              </div>
+              <div className={classes.info}>
+                <Typography variant="body2" component="p">
+                  02 May 21, 07:30 pm
+                </Typography>
+                <Typography variant="body2" component="p">
+                  3820 Records Loaded
+                </Typography>
+                <Typography variant="body2" component="p">
+                  976 Error Records
+                </Typography>
+              </div>
+            </Card>
+          </Hint>
+        )}
+
+        <VerticalBarSeries
+          barWidth={0.1}
+          data={myData2}
+          color="transparent"
+          style={{ cursor: 'pointer' }}
+        />
+        <VerticalBarSeries
+          barWidth={0.5}
+          data={myData2}
+          color="#DB4437"
+          style={{ cursor: 'pointer' }}
+          onValueMouseOver={(d) => {
+            setValue(d);
+          }}
+        />
+      </FlexibleWidthXYPlot>
     </div>
   );
 };

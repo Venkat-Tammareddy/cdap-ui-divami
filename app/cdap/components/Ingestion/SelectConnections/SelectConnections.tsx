@@ -42,6 +42,9 @@ const styles = (theme): StyleRules => {
         },
         height: '36px',
       },
+      '& .MuiOutlinedInput-input': {
+        textIndent: '10px',
+      },
     },
     search: {
       width: '276px',
@@ -52,7 +55,6 @@ const styles = (theme): StyleRules => {
       '&::placeholder': {
         fontFamily: 'Lato',
         color: '#ADADAD',
-        paddingLeft: '11px',
         opacity: '0.5',
       },
       height: '50px',
@@ -163,7 +165,9 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const [selectedConnection, setSelectedConnection] = React.useState<any>({});
   const [sortType, setSortType] = React.useState('Down');
   const [sortNameType, setSortNameType] = React.useState('Down');
+  const [sortDbNameType, setSortDbNameType] = React.useState('Down');
   const [currentSortType, setCurrentSortType] = React.useState('name');
+  const [isOpen, setIsOpen] = React.useState(false);
 
   React.useEffect(() => {
     selectionType === 'source'
@@ -180,9 +184,16 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
         (selectionType === 'target' && item.plugin.type.includes('batchsink')))
   );
 
+  console.log(filteredList);
+
   const onCancel = (e: React.FormEvent) => {
     handleCancel();
   };
+
+  if (filteredList.length === 0) {
+    // setIsOpen(true);
+    console.log('hi');
+  }
 
   const changeCursor = (e) => {
     e.target.style.cursor = 'pointer';
@@ -206,6 +217,15 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
     }
   };
 
+  const handleDbNameSort = (e) => {
+    sortDbNameType === 'Down' ? setSortDbNameType('Up') : setSortDbNameType('Down');
+    if (sortNameType === 'Down') {
+      connectionsList.sort((a, b) => (a.name > b.name ? -1 : 1));
+    } else {
+      connectionsList.sort((a, b) => (a.name > b.name ? 1 : -1));
+    }
+  };
+
   const sortDownIcon = '/cdap_assets/img/sort-down-arrow.svg';
   const sortUpIcon = '/cdap_assets/img/sort-up-arrow.svg';
   const searchIcon = '/cdap_assets/img/search.svg';
@@ -215,6 +235,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   };
   return (
     <div className={classes.root}>
+      <OverlaySmall onCancel={() => setIsOpen(false)} open={isOpen} />
       <div className={classes.headerContainer}>
         {selectionType === 'target' ? (
           <p className={classes.headerText}>{T.translate(`${I18N_PREFIX}.Headers.targetHeader`)}</p>
@@ -241,7 +262,17 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
       <Table columnTemplate="1fr 1fr 1fr">
         <TableHeader data-cy="table-header">
           <TableRow className={classes.header} data-cy="table-row">
-            <TableCell>{T.translate(`${I18N_PREFIX}.Names.database`)} </TableCell>
+            <TableCell>
+              {T.translate(`${I18N_PREFIX}.Names.database`)}
+              <img
+                src={sortDbNameType === 'Down' ? sortDownIcon : sortUpIcon}
+                alt="some down icon sort"
+                height="14px"
+                className={classes.sortIcon}
+                onMouseOver={changeCursor}
+                onClick={handleDbNameSort}
+              />{' '}
+            </TableCell>
             <TableCell>
               {T.translate(`${I18N_PREFIX}.Names.connection`)}{' '}
               <img
@@ -270,32 +301,28 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
         </TableHeader>
 
         <TableBody data-cy="table-body">
-          {filteredList.length === 0 ? (
-            <OverlaySmall />
-          ) : (
-            filteredList.map((conn, index) => {
-              return (
-                <TableRow
-                  data-cy={`table-row-${conn.name}`}
-                  key={index}
-                  className={
-                    selectedConnection.name === conn.name
-                      ? classes.tableRowSelected
-                      : classes.tableRow
-                  }
-                  onClick={() => setSelectedConnection(conn)}
-                >
-                  <TableCell>
-                    {selectionType === 'source'
-                      ? conn.plugin.properties.connectionString.split('/')[3]
-                      : conn.plugin.properties.dataset}
-                  </TableCell>
-                  <TableCell>{conn.name}</TableCell>
-                  <TableCell>{humanReadableDate(conn.updatedTimeMillis, true)}</TableCell>
-                </TableRow>
-              );
-            })
-          )}
+          {filteredList.map((conn, index) => {
+            return (
+              <TableRow
+                data-cy={`table-row-${conn.name}`}
+                key={index}
+                className={
+                  selectedConnection.name === conn.name
+                    ? classes.tableRowSelected
+                    : classes.tableRow
+                }
+                onClick={() => setSelectedConnection(conn)}
+              >
+                <TableCell>
+                  {selectionType === 'source'
+                    ? conn.plugin.properties.connectionString.split('/')[3]
+                    : conn.plugin.properties.dataset}
+                </TableCell>
+                <TableCell>{conn.name}</TableCell>
+                <TableCell>{humanReadableDate(conn.updatedTimeMillis, true)}</TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
       <div className={classes.buttonContainer}>

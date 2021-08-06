@@ -48,6 +48,7 @@ const styles = (): StyleRules => {
     optionsMessage: {
       display: 'flex',
       marginBottom: '0',
+      color: '#202124',
     },
     options: {
       display: 'flex',
@@ -71,6 +72,7 @@ const styles = (): StyleRules => {
     },
     optionText: {
       marginTop: '12px',
+      color: '#202124',
     },
     ackMessage: {
       display: 'flex',
@@ -87,6 +89,7 @@ const styles = (): StyleRules => {
     ackText: {
       margin: '0',
       marginTop: '8px',
+      color: '#202124',
     },
     test: {
       display: 'flex',

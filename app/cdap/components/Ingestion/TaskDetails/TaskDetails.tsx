@@ -26,6 +26,8 @@ import SheduleTask from '../SheduleTask/SheduleTask';
 import { useParams } from 'react-router';
 import { MyPipelineApi } from 'api/pipeline';
 import { MyMetadataApi } from 'api/metadata';
+import LoadingSVGCentered from 'components/LoadingSVGCentered';
+import { MyMetricApi } from 'api/metric';
 
 const styles = (theme): StyleRules => {
   return {
@@ -191,6 +193,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [schedule, setSchedule] = React.useState(false);
   const [graph, setGraph] = React.useState(false);
+  const [runLoading, setRunLoading] = React.useState(false);
   const params = useParams();
   const taskName = (params as any).taskName;
   const [taskDetails, setTaskDetails] = React.useState({
@@ -202,6 +205,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       targetName: '',
       targetDb: '',
     },
+    metrics: {},
   });
   React.useEffect(() => {
     MyPipelineApi.fetchMacros({ appId: taskName, namespace: currentNamespace }).subscribe(
@@ -238,6 +242,44 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     });
     getRuns();
   }, []);
+  const getMetrics = (runs) => {
+    const postBody = {};
+    runs.forEach((run) => {
+      postBody[`qid_${run.runid}`] = {
+        tags: {
+          namespace: currentNamespace,
+          app: taskName,
+          workflow: 'DataPipelineWorkflow',
+          run: run.runid,
+        },
+        metrics: [
+          'user.Multiple Database Tables.records.in',
+          'user.Multiple Database Tables.records.error',
+          'user.Multiple Database Tables.process.time.total',
+          'user.Multiple Database Tables.process.time.avg',
+          'user.Multiple Database Tables.process.time.max',
+          'user.Multiple Database Tables.process.time.min',
+          'user.Multiple Database Tables.process.time.stddev',
+          'user.Multiple Database Tables.records.out',
+        ],
+        timeRange: {
+          aggregate: 'true',
+        },
+      };
+    });
+    MyMetricApi.query(null, postBody).subscribe(
+      (data) => {
+        console.log(data);
+        setTaskDetails((prev) => {
+          return {
+            ...prev,
+            metrics: data,
+          };
+        });
+      },
+      (err) => console.log(err)
+    );
+  };
   const getRuns = () => {
     MyPipelineApi.pollRuns({
       namespace: currentNamespace,
@@ -259,9 +301,12 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           }),
         };
       });
+      getMetrics(data);
+      setRunLoading(false);
     });
   };
   const runTask = (taskName: string) => {
+    setRunLoading(true);
     MyPipelineApi.run({
       namespace: currentNamespace,
       appId: taskName,
@@ -283,7 +328,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     setSchedule(false);
   };
   const getSuccessRate = () => {
-    const successRuns = taskDetails.runs.filter((run) => run.status === 'SUCCESS').length;
+    const successRuns = taskDetails.runs.filter((run) => run.status === 'COMPLETED').length;
     const totalRuns = taskDetails.runs.length;
     return (successRuns / totalRuns) * 100;
   };
@@ -292,6 +337,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       <If condition={schedule}>
         <SheduleTask closeSchedule={closeSchedule} />
       </If>
+      {runLoading && <LoadingSVGCentered />}
       <IngestionHeader
         title="Ingest Tasks"
         taskActionsBtn
@@ -378,6 +424,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
             }}
             graph={graph}
             jobsList={taskDetails.runs}
+            metrics={taskDetails.metrics}
           />
         </div>
       )}

@@ -254,7 +254,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
                                 <img
                                   src={
                                     (run === 'RUNNING' && runProgress) ||
-                                    (run === 'SUCCESS' && runSuccess) ||
+                                    (run === 'COMPLETED' && runSuccess) ||
                                     (run === 'FAILED' && runError)
                                   }
                                   alt="img"

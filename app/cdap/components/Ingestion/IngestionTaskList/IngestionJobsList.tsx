@@ -22,8 +22,6 @@ import Table from 'components/Table';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import { humanReadableDate, humanReadableDuration } from 'services/helpers';
-import ListAltIcon from '@material-ui/icons/ListAlt';
-import If from 'components/If';
 import Graphs from '../Graph/Graph';
 
 const styles = (theme): StyleRules => {
@@ -94,22 +92,20 @@ const styles = (theme): StyleRules => {
 interface IngestJobsListProps extends WithStyles<typeof styles> {
   graph?: boolean;
   onTaskClick: (jobId: string) => void;
-  jobsList: any[];
-  metrics: any;
+  taskDetails: any;
 }
 
 const IngestionJobsList: React.FC<IngestJobsListProps> = ({
   classes,
   onTaskClick,
-  jobsList,
   graph,
-  metrics,
+  taskDetails,
 }) => {
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
   const imgStop = '/cdap_assets/img/stop.svg';
   const successIcon = '/cdap_assets/img/success-status.svg';
   const failedIcon = '/cdap_assets/img/error-status.svg';
-
+  const stopRun = () => {};
   return (
     <>
       <div className={classes.root}>
@@ -129,7 +125,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody data-cy="table-body">
-              {jobsList.map((item, index) => {
+              {taskDetails.runs.map((item, index) => {
                 return (
                   <TableRow
                     key={index}
@@ -143,6 +139,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                         src={
                           (item.status === 'COMPLETED' && successIcon) ||
                           (item.status === 'FAILED' && failedIcon) ||
+                          (item.status === 'KILLED' && failedIcon) ||
                           progressIcon
                         }
                         alt="img"
@@ -158,30 +155,42 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                         humanReadableDuration(item.end - item.start, false)}
                     </TableCell>
                     <TableCell>
-                      {metrics[`qid_${item.runId}`]?.series?.find(
-                        (item) => item.metricName === 'user.Multiple Database Tables.records.in'
+                      {taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
+                        (item) =>
+                          item.metricName ===
+                          `user.${taskDetails.connections.sourceName}.records.in`
                       )?.data[0].value
-                        ? metrics[`qid_${item.runId}`]?.series?.find(
-                            (item) => item.metricName === 'user.Multiple Database Tables.records.in'
+                        ? taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
+                            (item) =>
+                              item.metricName ===
+                              `user.${taskDetails.connections.sourceName}.records.in`
                           )?.data[0].value
                         : '0'}
                     </TableCell>
                     <TableCell>
-                      {metrics[`qid_${item.runId}`]?.series?.find(
-                        (item) => item.metricName === 'user.Multiple Database Tables.records.out'
+                      {taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
+                        (item) =>
+                          item.metricName ===
+                          `user.${taskDetails.connections.sourceName}.records.error`
                       )?.data[0].value
-                        ? metrics[`qid_${item.runId}`]?.series?.find(
+                        ? taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
                             (item) =>
-                              item.metricName === 'user.Multiple Database Tables.records.out'
+                              item.metricName ===
+                              `user.${taskDetails.connections.sourceName}.records.error`
                           )?.data[0].value
-                        : 0}
+                        : '0'}
                     </TableCell>
                     <TableCell>
                       {item.status === 'RUNNING' && (
-                        <>
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            console.log('stop');
+                          }}
+                        >
                           <img src={imgStop} alt="img" height="20px" width="20px" />
                           <span className={classes.marginLeft}>Stop</span>
-                        </>
+                        </div>
                       )}
                     </TableCell>
                   </TableRow>

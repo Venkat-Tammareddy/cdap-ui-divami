@@ -27,6 +27,7 @@ import NamespaceStore from 'services/NamespaceStore';
 import { MyProgramApi } from 'api/program';
 import { humanReadableDate } from 'services/helpers';
 import { MyPipelineApi } from 'api/pipeline';
+import { MyMetricApi } from 'api/metric';
 
 const styles = (theme): StyleRules => {
   return {
@@ -154,6 +155,11 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
       targetConnection: '',
       targetDb: '',
     },
+    records: {
+      in: 0,
+      out: 0,
+      error: 0,
+    },
   });
   React.useEffect(() => {
     MyPipelineApi.fetchMacros({ appId: taskName, namespace: currentNamespace }).subscribe(
@@ -175,6 +181,47 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
       (err) => {
         console.log(err);
       }
+    );
+    MyMetricApi.query(null, {
+      qid: {
+        tags: {
+          namespace: currentNamespace,
+          app: taskName,
+          workflow: 'DataPipelineWorkflow',
+          run: jobId,
+        },
+        metrics: [
+          'user.Multiple Database Tables.records.in',
+          'user.Multiple Database Tables.records.error',
+          'user.Multiple Database Tables.process.time.total',
+          'user.Multiple Database Tables.process.time.avg',
+          'user.Multiple Database Tables.process.time.max',
+          'user.Multiple Database Tables.process.time.min',
+          'user.Multiple Database Tables.process.time.stddev',
+          'user.Multiple Database Tables.records.out',
+        ],
+        timeRange: {
+          aggregate: 'true',
+        },
+      },
+    }).subscribe((data) =>
+      setJobDetails((prev) => {
+        return {
+          ...prev,
+          records: {
+            ...prev.records,
+            in: data.qid.series?.find(
+              (item) => item.metricName === 'user.Multiple Database Tables.records.in'
+            )?.data[0].value,
+            out: data.qid.series?.find(
+              (item) => item.metricName === 'user.Multiple Database Tables.records.out'
+            )?.data[0].value,
+            error: data.qid.series?.find(
+              (item) => item.metricName === 'user.Multiple Database Tables.records.error'
+            )?.data[0].value,
+          },
+        };
+      })
     );
   }, []);
 
@@ -243,13 +290,13 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
             </div>
             <div className={classes.jobItem}>
               <div className={classes.jobDetailsTop} style={{ color: '#19A347' }}>
-                5675
+                {jobDetails.records.in ? jobDetails.records.in : 0}
               </div>
               <div className={classes.jobDetailsBottom}>Records Inserted</div>
             </div>
             <div className={classes.jobItem}>
               <div className={classes.jobDetailsTop} style={{ color: '#DB4437' }}>
-                305
+                {jobDetails.records.error ? jobDetails.records.error : 0}
               </div>
               <div className={classes.jobDetailsBottom}>Records with Errors </div>
             </div>
@@ -287,7 +334,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                 >
                   {tables.map((item) => {
                     return (
-                      <li style={{ marginRight: '120px' }}>
+                      <li style={{ marginRight: '120px' }} key={item}>
                         <span className={classes.jobDetailsTop}>{item}</span>
                       </li>
                     );

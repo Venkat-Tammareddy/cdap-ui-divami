@@ -95,6 +95,7 @@ interface IngestJobsListProps extends WithStyles<typeof styles> {
   graph?: boolean;
   onTaskClick: (jobId: string) => void;
   jobsList: any[];
+  metrics: any;
 }
 
 const IngestionJobsList: React.FC<IngestJobsListProps> = ({
@@ -102,49 +103,12 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
   onTaskClick,
   jobsList,
   graph,
+  metrics,
 }) => {
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
   const imgStop = '/cdap_assets/img/stop.svg';
   const successIcon = '/cdap_assets/img/success-status.svg';
   const failedIcon = '/cdap_assets/img/error-status.svg';
-  // const [Graph, setGraph] = React.useState(true);
-
-  const runningList = [
-    {
-      jobId: 'Job 01',
-      status: 'Running',
-      executedOn: '20 May 21 IST, 09:30 PM',
-      duration: '15',
-      loadedRecords: '98989',
-      errorRecords: '3131',
-    },
-  ];
-  const successList = [
-    {
-      jobId: 'Job 02',
-      status: 'Success',
-      executedOn: '20 May 21 IST, 09:30 PM',
-      duration: '25',
-      loadedRecords: '98989',
-      errorRecords: '3131',
-    },
-    {
-      jobId: 'Job 03',
-      status: 'Failed',
-      executedOn: '20 May 21 IST, 09:30 PM',
-      duration: '30',
-      loadedRecords: '--',
-      errorRecords: '--',
-    },
-    {
-      jobId: 'Job 04',
-      status: 'Success',
-      executedOn: '20 May 21 IST, 09:30 PM',
-      duration: '15',
-      loadedRecords: '98989',
-      errorRecords: '3131',
-    },
-  ];
 
   return (
     <>
@@ -177,7 +141,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                       <img
                         className={classes.statusIcon}
                         src={
-                          (item.status === 'SUCCESS' && successIcon) ||
+                          (item.status === 'COMPLETED' && successIcon) ||
                           (item.status === 'FAILED' && failedIcon) ||
                           progressIcon
                         }
@@ -193,8 +157,25 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                       {item.status !== 'RUNNING' &&
                         humanReadableDuration(item.end - item.start, false)}
                     </TableCell>
-                    <TableCell>{item.status !== 'RUNNING' && item.loadedRecords}</TableCell>
-                    <TableCell>{item.status !== 'RUNNING' && item.errorRecords}</TableCell>
+                    <TableCell>
+                      {metrics[`qid_${item.runId}`]?.series?.find(
+                        (item) => item.metricName === 'user.Multiple Database Tables.records.in'
+                      )?.data[0].value
+                        ? metrics[`qid_${item.runId}`]?.series?.find(
+                            (item) => item.metricName === 'user.Multiple Database Tables.records.in'
+                          )?.data[0].value
+                        : '0'}
+                    </TableCell>
+                    <TableCell>
+                      {metrics[`qid_${item.runId}`]?.series?.find(
+                        (item) => item.metricName === 'user.Multiple Database Tables.records.out'
+                      )?.data[0].value
+                        ? metrics[`qid_${item.runId}`]?.series?.find(
+                            (item) =>
+                              item.metricName === 'user.Multiple Database Tables.records.out'
+                          )?.data[0].value
+                        : 0}
+                    </TableCell>
                     <TableCell>
                       {item.status === 'RUNNING' && (
                         <>

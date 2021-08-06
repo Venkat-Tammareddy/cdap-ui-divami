@@ -193,7 +193,6 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [schedule, setSchedule] = React.useState(false);
   const [graph, setGraph] = React.useState(false);
-  const [runLoading, setRunLoading] = React.useState(false);
   const params = useParams();
   const taskName = (params as any).taskName;
   const [taskDetails, setTaskDetails] = React.useState({
@@ -208,7 +207,14 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     metrics: {},
   });
   React.useEffect(() => {
-    MyPipelineApi.fetchMacros({ appId: taskName, namespace: currentNamespace }).subscribe(
+    MyPipelineApi.get({ namespace: currentNamespace, appId: taskName }).subscribe((data) =>
+      console.log('get', data)
+    );
+    MyPipelineApi.fetchMacros({
+      appId: taskName,
+      namespace: currentNamespace,
+      format: 'json',
+    }).subscribe(
       (res) => {
         console.log('res', res);
         setTaskDetails((prevData) => {
@@ -222,6 +228,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
             },
           };
         });
+        getRuns(res[1].id);
       },
       (err) => {
         console.log(err);
@@ -240,9 +247,8 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         };
       });
     });
-    getRuns();
   }, []);
-  const getMetrics = (runs) => {
+  const getMetrics = (runs, connectionName) => {
     const postBody = {};
     runs.forEach((run) => {
       postBody[`qid_${run.runid}`] = {
@@ -253,14 +259,15 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           run: run.runid,
         },
         metrics: [
-          'user.Multiple Database Tables.records.in',
-          'user.Multiple Database Tables.records.error',
-          'user.Multiple Database Tables.process.time.total',
-          'user.Multiple Database Tables.process.time.avg',
-          'user.Multiple Database Tables.process.time.max',
-          'user.Multiple Database Tables.process.time.min',
-          'user.Multiple Database Tables.process.time.stddev',
-          'user.Multiple Database Tables.records.out',
+          // 'user..records.in',
+          // 'user..records.error',
+          // 'user..process.time.total',
+          // 'user..process.time.avg',
+          // 'user..process.time.max',
+          // 'user..process.time.min',
+          // 'user..process.time.stddev',
+          `user.${connectionName}.records.in`,
+          `user.${connectionName}.records.error`,
         ],
         timeRange: {
           aggregate: 'true',
@@ -280,7 +287,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       (err) => console.log(err)
     );
   };
-  const getRuns = () => {
+  const getRuns = (connectionName?: any) => {
     MyPipelineApi.pollRuns({
       namespace: currentNamespace,
       appId: taskName,
@@ -301,12 +308,10 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           }),
         };
       });
-      getMetrics(data);
-      setRunLoading(false);
+      getMetrics(data, connectionName);
     });
   };
   const runTask = (taskName: string) => {
-    setRunLoading(true);
     MyPipelineApi.run({
       namespace: currentNamespace,
       appId: taskName,
@@ -330,14 +335,13 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const getSuccessRate = () => {
     const successRuns = taskDetails.runs.filter((run) => run.status === 'COMPLETED').length;
     const totalRuns = taskDetails.runs.length;
-    return (successRuns / totalRuns) * 100;
+    return ((successRuns / totalRuns) * 100).toFixed(2);
   };
   return (
     <div className={classes.root}>
       <If condition={schedule}>
         <SheduleTask closeSchedule={closeSchedule} />
       </If>
-      {runLoading && <LoadingSVGCentered />}
       <IngestionHeader
         title="Ingest Tasks"
         taskActionsBtn
@@ -423,8 +427,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
                 history.push(`/ns/${currentNamespace}/ingestion/task/${taskName}/job/${jobId}`);
             }}
             graph={graph}
-            jobsList={taskDetails.runs}
-            metrics={taskDetails.metrics}
+            taskDetails={taskDetails}
           />
         </div>
       )}

@@ -100,35 +100,30 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, data, jobs }) => {
   };
 
   const Ins = jobs.map((item, index) => {
-    const data1 = data[`qid_${item.runId}`]?.series?.find(
-      (item) => item.metricName === 'user.Multiple Database Tables.records.in'
+    // const data1 = data[`qid_${item.runId}`]?.series?.find(
+    //   (item) => item.metricName === 'user.Multiple Database Tables.records.in'
+    // )?.data[0].value
+    //   ? data[`qid_${item.runId}`]?.series?.find(
+    //       (item) => item.metricName === 'user.Multiple Database Tables.records.in'
+    //     )?.data[0].value
+    //   : '0';
+    const data1 = data.metrics[`qid_${item.runId}`]?.series?.find(
+      (item) => item.metricName === `user.${data.connections.sourceName}.records.in`
     )?.data[0].value
-      ? data[`qid_${item.runId}`]?.series?.find(
-          (item) => item.metricName === 'user.Multiple Database Tables.records.in'
+      ? data.metrics[`qid_${item.runId}`]?.series?.find(
+          (item) => item.metricName === `user.${data.connections.sourceName}.records.in`
         )?.data[0].value
       : '0';
-    return data1;
-  });
-
-  const Out = jobs.map((item, index) => {
-    const data2 = data[`qid_${item.runId}`]?.series?.find(
-      (item) => item.metricName === 'user.Multiple Database Tables.records.out'
-    )?.data[0].value
-      ? data[`qid_${item.runId}`]?.series?.find(
-          (item) => item.metricName === 'user.Multiple Database Tables.records.out'
-        )?.data[0].value
-      : 0;
-    return data2;
+    console.log('DATAAAAA' + data1);
   });
 
   const jname = ['job1', 'job2'];
   const mydata = jname.map((item, index) => {
     return { x: item, y: Ins[index] };
   });
-  const mydata2 = jname.map((item, index) => {
-    return { x: item, y: Out[index] };
-  });
-  console.log('HAHAHA' + mydata[0].x + ' ' + mydata[0].y);
+  // const mydata2 = jname.map((item, index) => {
+  //   return { x: item, y: Out[index] };
+  // });
 
   return (
     <div className={classes.root}>
@@ -199,7 +194,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, data, jobs }) => {
             />
             <VerticalBarSeries
               barWidth={0.5}
-              data={mydata2}
+              data={mydata}
               color="#DB4437"
               style={{ cursor: 'pointer' }}
               onValueMouseOver={(d) => {

@@ -144,7 +144,7 @@ export function getPluginDisplayName(plugin) {
 
 export const parseJdbcString = (connectionString: string, databaseType: string) => {
   const type1 = [
-    'postgres',
+    'postgresql',
     'netezza',
     'mysql',
     'memsql',

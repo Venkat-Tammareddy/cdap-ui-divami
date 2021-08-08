@@ -309,7 +309,15 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
                           <span className={classes.marginLeft}>Stop</span>
                         </Paper>
                       </Grid>
-                      <Grid item xs={4}>
+                      <Grid
+                        item
+                        xs={4}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setAnchorEl(e.currentTarget);
+                          setSelectedRow(item.runId);
+                        }}
+                      >
                         <Paper
                           style={{
                             visibility: item.moreBtnVisible ? 'visible' : 'hidden',
@@ -326,8 +334,10 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
                                 setAnchorEl(e.currentTarget);
                                 setSelectedRow(item.runId);
                               }}
-                            >
-                              <img src={imgMore} />
+                            ></IconButton>
+                            <img src={imgMore} />
+                            <IconButton aria-label="more" className={classes.iconButton}>
+                              <MoreVertIcon />
                             </IconButton>
                             <Menu
                               id="long-menu"

@@ -19,6 +19,10 @@ import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/wit
 import { Typography, Button } from '@material-ui/core';
 import T from 'i18n-react';
 import ButtonComponent from '../ButtonComponent/ButtonComponent';
+import CustomTableSelection from '../CustomTableSelection/CustomTableSelection';
+import NamespaceStore from 'services/NamespaceStore';
+import { ConnectionsApi } from 'api/connections';
+import { exploreConnection } from 'components/Connections/Browser/GenericBrowser/apiHelpers';
 const I18N_PREFIX = 'features.MappingLayout';
 const styles = (): StyleRules => {
   return {
@@ -186,132 +190,207 @@ const styles = (): StyleRules => {
 };
 
 interface IIngestionProps extends WithStyles<typeof styles> {
-  submitMappingType: (values: string) => void;
-  handleCancel: () => void;
+  onSubmit: (list: string) => void;
+  onCancel: () => void;
+  connectionId: string;
   cardSelected: string;
-  setCardSelected: (value: string) => void;
+  setCardSelected: (type: string) => void;
+  selectedList: string;
+  handleNext: () => void;
 }
 const MappingView: React.FC<IIngestionProps> = ({
   classes,
-  submitMappingType,
-  handleCancel,
+  onCancel,
+  onSubmit,
+  connectionId,
   cardSelected,
   setCardSelected,
+  selectedList,
+  handleNext,
 }) => {
-  const submitMapping = () => {
-    submitMappingType(cardSelected);
-  };
-
   const allTables = '/cdap_assets/img/data-base-big.svg';
   const customTable = '/cdap_assets/img/custom-selection.svg';
   const successCardTick = '/cdap_assets/img/card-section-tick.svg';
-
+  const [customTablesSelection, setCustomTablesSelection] = React.useState(false);
+  React.useEffect(() => {
+    getTablesList();
+  }, []);
+  const currentNamespace = NamespaceStore.getState().selectedNamespace;
+  const [items, setItems] = React.useState([]);
+  const getTablesList = () => {
+    ConnectionsApi.exploreConnection(
+      {
+        context: currentNamespace,
+        connectionid: connectionId,
+      },
+      {
+        path: '/public',
+        limit: 1000,
+      }
+    ).subscribe(
+      (message) => {
+        setItems(
+          message.entities.map((item) => {
+            if (selectedList.split(',').includes(item.name)) {
+              return {
+                tableName: item.name,
+                selected: true,
+              };
+            } else {
+              return {
+                tableName: item.name,
+                selected: false,
+              };
+            }
+          })
+        );
+      },
+      (err) => {
+        console.log('TablesList-err', err);
+      }
+    );
+  };
+  const handleSubmit = () => {
+    const submitList = items
+      .filter((item) => item.selected)
+      .map((item) => item.tableName)
+      .join();
+    if (cardSelected === 'custom') {
+      setCustomTablesSelection(true);
+      if (submitList !== '' && customTablesSelection) {
+        onSubmit(submitList);
+        handleNext();
+      }
+      return;
+    }
+    onSubmit('');
+    handleNext();
+  };
+  const handleCancel = () => {
+    customTablesSelection ? setCustomTablesSelection(false) : onCancel();
+  };
   return (
     <div className={classes.root}>
-      <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
-      <div className={classes.cardsContainer}>
-        <div
-          className={cardSelected === 'all' ? classes.selectedCard : classes.card}
-          onClick={() => {
-            setCardSelected('all');
-            console.log(cardSelected);
+      {customTablesSelection ? (
+        <CustomTableSelection
+          tablesList={items}
+          handleChange={(tableName) => {
+            setItems((prev) => {
+              const index = prev.findIndex((item) => item.tableName === tableName);
+              return [
+                ...prev.slice(0, index),
+                {
+                  ...prev[index],
+                  tableName,
+                  selected: !prev[index].selected,
+                },
+                ...prev.slice(index + 1),
+              ];
+            });
+            console.log(items);
           }}
-        >
-          <div className={classes.cardDescription}>
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              component="p"
-              className={classes.mappingDescription}
-              data-cy="b1"
-            >
-              {T.translate(`${I18N_PREFIX}.AllTables.description`)}
-            </Typography>
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              component="p"
-              className={classes.mappingDescription}
-              data-cy="b1"
-            >
-              {T.translate(`${I18N_PREFIX}.AllTables.description2`)}
-            </Typography>
-          </div>
-          <div className={classes.cardTitle}>{T.translate(`${I18N_PREFIX}.AllTables.title`)}</div>
-          <img
-            className={classes.cardRunIcon}
-            src={allTables}
-            alt="run-task"
-            height="66px"
-            width="75px"
-          />
-          {cardSelected === 'all' && (
-            <img
-              className={classes.cardRunIcon}
-              src={successCardTick}
-              alt="card-selected"
-              style={{
-                position: 'absolute',
-                right: '20px',
-                top: '20px',
+        />
+      ) : (
+        <>
+          <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
+          <div className={classes.cardsContainer}>
+            <div
+              className={cardSelected === 'all' ? classes.selectedCard : classes.card}
+              onClick={() => {
+                setCardSelected('all');
+                console.log(cardSelected);
               }}
-            />
-          )}
-        </div>
-        <div
-          className={cardSelected === 'custom' ? classes.selectedCard : classes.card}
-          onClick={() => {
-            setCardSelected('custom');
-          }}
-        >
-          <div className={classes.cardDescription}>
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              component="p"
-              className={classes.mappingDescription}
-              data-cy="desc2"
             >
-              {T.translate(`${I18N_PREFIX}.CustomTables.description`)}
-            </Typography>
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              component="p"
-              className={classes.mappingDescription}
-              data-cy="desc2"
-            >
-              {T.translate(`${I18N_PREFIX}.CustomTables.description2`)}
-            </Typography>
-          </div>
-          <div className={classes.cardTitle}>
-            {T.translate(`${I18N_PREFIX}.CustomTables.title`)}
-          </div>
-          <img
-            className={classes.cardScheduleIcon}
-            src={customTable}
-            alt="run-task"
-            height="66px"
-            width="88px"
-          />
-          {cardSelected === 'custom' && (
-            <img
-              className={classes.cardRunIcon}
-              src={successCardTick}
-              alt="card-selected"
-              style={{
-                position: 'absolute',
-                right: '20px',
-                top: '20px',
+              <div className={classes.cardDescription}>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  className={classes.mappingDescription}
+                  data-cy="b1"
+                >
+                  {T.translate(`${I18N_PREFIX}.AllTables.description`)}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  className={classes.mappingDescription}
+                  data-cy="b1"
+                >
+                  {T.translate(`${I18N_PREFIX}.AllTables.description2`)}
+                </Typography>
+              </div>
+              <div className={classes.cardTitle}>
+                {T.translate(`${I18N_PREFIX}.AllTables.title`)}
+              </div>
+              <img className={classes.cardRunIcon} src={allTables} alt="run-task" />
+              {cardSelected === 'all' && (
+                <img
+                  className={classes.cardRunIcon}
+                  src={successCardTick}
+                  alt="card-selected"
+                  style={{
+                    position: 'absolute',
+                    right: '20px',
+                    top: '20px',
+                  }}
+                />
+              )}
+            </div>
+            <div
+              className={cardSelected === 'custom' ? classes.selectedCard : classes.card}
+              onClick={() => {
+                setCardSelected('custom');
               }}
-            />
-          )}
-        </div>
-      </div>
+            >
+              <div className={classes.cardDescription}>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  className={classes.mappingDescription}
+                  data-cy="desc2"
+                >
+                  {T.translate(`${I18N_PREFIX}.CustomTables.description`)}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  className={classes.mappingDescription}
+                  data-cy="desc2"
+                >
+                  {T.translate(`${I18N_PREFIX}.CustomTables.description2`)}
+                </Typography>
+              </div>
+              <div className={classes.cardTitle}>
+                {T.translate(`${I18N_PREFIX}.CustomTables.title`)}
+              </div>
+              <img className={classes.cardScheduleIcon} src={customTable} alt="run-task" />
+              {cardSelected === 'custom' && (
+                <img
+                  className={classes.cardRunIcon}
+                  src={successCardTick}
+                  alt="card-selected"
+                  style={{
+                    position: 'absolute',
+                    right: '20px',
+                    top: '20px',
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </>
+      )}
       <ButtonComponent
         onCancel={handleCancel}
-        onSubmit={submitMapping}
-        disableSubmit={cardSelected === 'none'}
+        onSubmit={handleSubmit}
+        disableSubmit={
+          (customTablesSelection ? items.every((a) => a.selected === false) : false) ||
+          cardSelected === 'none'
+        }
         submitText="CONTINUE"
       />
     </div>

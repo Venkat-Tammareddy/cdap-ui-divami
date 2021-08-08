@@ -39,6 +39,7 @@ import { MyArtifactApi } from 'api/artifact';
 import { ingestionContext } from 'components/Ingestion/ingestionContext';
 import { MyMetadataApi } from 'api/metadata';
 import { MyProgramApi } from 'api/program';
+import produce from 'immer';
 
 const styles = (theme): StyleRules => {
   return {
@@ -239,7 +240,6 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   ];
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepProgress, setStepProgress] = React.useState(0);
-  const [customTablesSelection, setCustomTablesSelection] = React.useState(false);
   const [cardSelected, setCardSelected] = React.useState('none');
 
   const handleNext = () => {
@@ -374,8 +374,24 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       case 3:
         return (
           <>
-            {customTablesSelection ? (
+            <MappingLayout
+              onSubmit={(list) => {
+                setDraftConfig(
+                  produce((state) => {
+                    state.config.stages[0].plugin.properties.whitelist = list;
+                  })
+                );
+              }}
+              handleNext={handleNext}
+              selectedList={draftConfig.config.stages[0].plugin.properties.whitelist}
+              onCancel={() => goToIngestionHome()}
+              connectionId={draftConfig.config.stages[0].name}
+              cardSelected={cardSelected}
+              setCardSelected={setCardSelected}
+            />
+            {/* {customTablesSelection ? (
               <CustomTablesSelection
+              isCustomTableSelection
                 submitValues={(list) => {
                   setCustomTablesSelection(false);
                   setDraftConfig(
@@ -418,7 +434,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                 }}
                 handleCancel={() => goToIngestionHome()}
               />
-            )}
+            )} */}
           </>
         );
       case 4:

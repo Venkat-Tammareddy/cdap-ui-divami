@@ -16,12 +16,10 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Button, Menu, MenuItem, TextField } from '@material-ui/core';
+import { Menu, MenuItem, TextField } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import Box from '@material-ui/core/Box';
-import { ConnectionsApi } from 'api/connections';
-import NamespaceStore from 'services/NamespaceStore';
 
 const styles = (): StyleRules => {
   return {
@@ -30,18 +28,6 @@ const styles = (): StyleRules => {
       height: 'calc(100% - 100px)', // margin
       margin: '23px 28px 20px 40px',
       flexDirection: 'column',
-      '& .MuiTypography-body1': {
-        fontSize: '14px',
-        color: '#202124',
-        lineHeight: '24px',
-        fontFamily: 'Lato',
-      },
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderRadius: '23px',
-        },
-        height: '36px',
-      },
     },
     selectAndTextfield: {
       display: 'flex',
@@ -131,6 +117,18 @@ const styles = (): StyleRules => {
     },
     container: {
       flex: '1 1 0%',
+      '& .MuiTypography-body1': {
+        fontSize: '14px',
+        color: '#202124',
+        lineHeight: '24px',
+        fontFamily: 'Lato',
+      },
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderRadius: '23px',
+        },
+        height: '36px',
+      },
     },
     search: {
       width: '276px',
@@ -192,69 +190,26 @@ const styles = (): StyleRules => {
     },
   };
 };
-
+interface ITableItem {
+  tableName: string;
+  selected: boolean;
+}
 interface IIngestionProps extends WithStyles<typeof styles> {
-  submitValues: (list: string) => void;
-  handleCancel: () => void;
-  connectionId: string;
+  tablesList: ITableItem[];
+  handleChange: (tableName: string) => void;
 }
 
 const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   classes,
-  submitValues,
-  handleCancel,
-  connectionId,
+  tablesList = [],
+  handleChange,
 }) => {
-  React.useEffect(() => {
-    getTablesList();
-  }, []);
-  const currentNamespace = NamespaceStore.getState().selectedNamespace;
-  const getTablesList = () => {
-    ConnectionsApi.exploreConnection(
-      {
-        context: currentNamespace,
-        connectionid: `${connectionId}`,
-      },
-      {
-        path: '/public',
-        limit: 1000,
-      }
-    ).subscribe(
-      (message) => {
-        const list = message.entities.map((item) => item.name);
-        setItems(list);
-      },
-      (err) => {
-        console.log('TablesList-err', err);
-      }
-    );
-  };
-  const [items, setItems] = React.useState([]);
-  const [checkedItems, setCheckedItems] = React.useState<any>({});
-  const [currentChecked, setCurrentChecked] = React.useState<string[]>([]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const filterIcon = '/cdap_assets/img/filter.svg';
   const checkBoxActiv = '/cdap_assets/img/check-box-active.svg';
   const search = '/cdap_assets/img/search.svg';
   const checkbox = '/cdap_assets/img/checkbox-normal.svg';
   const options = ['All', 'Selected', 'Unselected'];
-
-  React.useEffect(() => {
-    if (Object.keys(checkedItems).length !== 0) {
-      const result = Object.keys(checkedItems).filter((item) => checkedItems[item] === true);
-      setCurrentChecked(result);
-    }
-  }, [checkedItems]);
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    submitValues(currentChecked.join());
-  };
-  const handleOnChange = (e: any) => {
-    setCheckedItems({
-      ...checkedItems,
-      [e.target.name]: e.target.checked,
-    });
-  };
 
   const CheckedIcon = () => {
     return <img src={checkBoxActiv} alt="icon" height="18px" width="18px" />;
@@ -272,96 +227,72 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   };
 
   return (
-    <form className={classes.root} onSubmit={handleSubmit}>
-      <div className={classes.container}>
-        <div className={classes.headerContainer}>
-          <p className={classes.headerText}>Select Tables to Ingest</p>
-          <TextField
-            variant="outlined"
-            placeholder="Search tables"
-            className={classes.search}
-            InputProps={{
-              startAdornment: <SearchIconn />,
-              classes: {
-                input: classes.resize,
-              },
-            }}
-            autoFocus={false}
-            data-cy="connections-search"
-          />
-          <img
-            src={filterIcon}
-            alt="filter icon"
-            height="17.1px"
-            width="18px"
-            className={classes.filterIcon}
-            onClick={(e) => setAnchorEl(e.currentTarget)}
-          />
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            {options.map((option) => (
-              <MenuItem
-                key={option}
-                onClick={(e) => {
-                  // // if (option === 'Selected') {
-                  // //   const newType = currentChecked;
-                  // // } else if (option === 'All') {
-                  // //   const newType = itemsCopy;
-                  // // } else {
-                  // //   const newType = currentChecked.filter((x) => !items.includes(x));
-                  // }
-                  // // setItemsCopy(newType);
-                  handleClose();
-                }}
-              >
-                {option}
-              </MenuItem>
-            ))}
-          </Menu>
-        </div>
-        <Box className={classes.box}>
-          {items.length === 0 ? (
-            <h3 className={classes.emptyList}>There are no connections...</h3>
-          ) : (
-            <Grid container spacing={2}>
-              {items.map((item) => (
-                <Grid item xs={4} className={classes.gridbox} key={item}>
-                  <Checkbox
-                    checked={checkedItems[item]}
-                    onChange={handleOnChange}
-                    name={item}
-                    className={classes.checkboxes}
-                    icon={<CheckboxNormal />}
-                    checkedIcon={<CheckedIcon />}
-                    color="primary"
-                  />
-                  <label className={classes.labelText}>{item}</label>
-                </Grid>
-              ))}
-            </Grid>
-          )}
-        </Box>
-      </div>
-      <div className={classes.buttonContainer}>
-        <Button className={classes.cancelButton} onClick={handleCancel}>
-          CANCEL
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.submitButton}
-          type="submit"
-          disabled={currentChecked.length === 0}
+    <div className={classes.container}>
+      <div className={classes.headerContainer}>
+        <p className={classes.headerText}>Select Tables to Ingest</p>
+        <TextField
+          variant="outlined"
+          placeholder="Search tables"
+          className={classes.search}
+          InputProps={{
+            startAdornment: <SearchIconn />,
+            classes: {
+              input: classes.resize,
+            },
+          }}
+          autoFocus={false}
+          data-cy="connections-search"
+        />
+        <img
+          src={filterIcon}
+          alt="filter icon"
+          height="17.1px"
+          width="18px"
+          className={classes.filterIcon}
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+        />
+        <Menu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
         >
-          CONTINUE
-        </Button>
+          {options.map((option) => (
+            <MenuItem
+              key={option}
+              onClick={(e) => {
+                handleClose();
+              }}
+            >
+              {option}
+            </MenuItem>
+          ))}
+        </Menu>
       </div>
-    </form>
+      <Box className={classes.box}>
+        {tablesList.length === 0 ? (
+          <h3 className={classes.emptyList}>There are no connections...</h3>
+        ) : (
+          <Grid container spacing={2}>
+            {tablesList.map((item) => (
+              <Grid item xs={4} className={classes.gridbox} key={item.tableName}>
+                <Checkbox
+                  checked={item.selected}
+                  onChange={() => handleChange(item.tableName)}
+                  name={item.tableName}
+                  className={classes.checkboxes}
+                  icon={<CheckboxNormal />}
+                  checkedIcon={<CheckedIcon />}
+                  color="primary"
+                />
+                <label className={classes.labelText}>{item.tableName}</label>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Box>
+    </div>
   );
 };
 

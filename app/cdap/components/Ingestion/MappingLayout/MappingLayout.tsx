@@ -257,7 +257,7 @@ const MappingView: React.FC<IIngestionProps> = ({
       }
       return;
     }
-    onSubmit(submitList);
+    onSubmit('');
     handleNext();
   };
   const handleCancel = () => {

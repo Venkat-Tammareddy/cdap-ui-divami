@@ -100,6 +100,7 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       flexDirection: 'row-reverse',
       gap: '30px',
+      paddingTop: '50px',
     },
     cancelButton: {
       textDecoration: 'none',
@@ -109,6 +110,7 @@ const styles = (theme): StyleRules => {
       letterSpacing: '1.25px',
       lineHeight: '24px',
       fontFamily: 'Lato',
+      paddingRight: '0px',
     },
     submitButton: {
       backgroundColor: '#4285F4',

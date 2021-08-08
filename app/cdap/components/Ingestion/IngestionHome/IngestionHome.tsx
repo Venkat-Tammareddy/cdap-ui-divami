@@ -80,19 +80,25 @@ const styles = (theme): StyleRules => {
       // },
     },
     search: {
-      width: '256px',
+      width: '276px',
+      height: '36px',
       '& .MuiOutlinedInput-root': {
         '& fieldset': {
-          borderRadius: `25px`,
-          height: '36px',
+          borderRadius: '23px',
         },
+        height: '36px',
       },
       '& .MuiOutlinedInput-adornedStart ': {
-        padding: '7px',
+        padding: '8px',
       },
       '& .MuiOutlinedInput-input': {
         padding: '0px',
+        textIndent: '10px',
       },
+    },
+    homeHeaders: {
+      display: 'flex',
+      gap: '500px',
     },
   };
 };
@@ -222,7 +228,10 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
               <span
                 className={classes.tabs}
                 onClick={() => setDisplayDrafts(false)}
-                style={{ borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none' }}
+                style={{
+                  borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none',
+                  opacity: displayDrafts ? '0.7' : '',
+                }}
               >
                 TASKS ({data.pipelines.length})
               </span>
@@ -231,7 +240,10 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
               <span
                 className={classes.tabs}
                 onClick={() => setDisplayDrafts(true)}
-                style={{ borderBottom: displayDrafts ? '4px solid #4285F4' : 'none' }}
+                style={{
+                  borderBottom: displayDrafts ? '4px solid #4285F4' : 'none',
+                  opacity: !displayDrafts ? '0.7' : '',
+                }}
               >
                 DRAFTS ({draftsList.length})
               </span>

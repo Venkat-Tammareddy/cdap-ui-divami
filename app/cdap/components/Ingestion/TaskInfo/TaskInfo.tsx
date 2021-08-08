@@ -51,6 +51,14 @@ const styles = (): StyleRules => {
       '& .MuiAutocomplete-input': {
         fontSize: '16px',
       },
+      '& .MuiFormHelperText-root.Mui-error': {
+        color: '#DB4437',
+        fontSize: '12px',
+        fontFamily: 'Lato',
+        marginRight: '0px',
+        display: 'flex',
+        justifyContent: 'flex-end',
+      },
     },
     label: {
       fontSize: '16px',
@@ -200,7 +208,9 @@ const styles = (): StyleRules => {
       fontSize: '18px',
       letterSpacing: '0.28px',
       lineHeight: '30px',
-      color: '#4c4d4f',
+      // color: '#4c4d4f',
+      color: '#202124',
+      opacity: '0.8',
       marginBottom: '0px',
     },
     infoContainer: {
@@ -344,7 +354,6 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
               value={taskName}
               className={classes.taskName}
               InputProps={{ classes: { input: classes.input1 } }}
-              color={taskNameError.error ? 'secondary' : 'primary'}
               variant="outlined"
               autoFocus={true}
               onChange={handleTaskNameChange}
@@ -380,25 +389,6 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
               className={classes.taskDescription}
               variant="outlined"
             />
-            {/* <TextField
-              name="Tags"
-              label={T.translate(`${I18N_PREFIX}.Labels.tags`)}
-              value={taskTags}
-              variant="outlined"
-              InputProps={{ classes: { input: classes.input3 } }}
-              className={classes.taskTags}
-              onChange={handleTagsChange}
-              onFocus={handleFocus}
-              error={taskTagError.error}
-              InputLabelProps={{
-                classes: {
-                  root: classes.label,
-                },
-              }}
-            />
-            <p className={taskTagError.error ? classes.tagErrorInfo : classes.tagInfo}>
-              {taskTagError.errorMsg}
-            </p> */}
             <Autocomplete
               className={classes.taskTags}
               multiple
@@ -407,7 +397,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
               freeSolo
               value={tags}
               onChange={(e, newval: any) => {
-                if (taskTagError.error || newval === '') {
+                if (taskTagError.error || tagLengthError.error) {
                   return;
                 }
                 setTags(newval);
@@ -416,8 +406,15 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
                 <TextField
                   {...params}
                   variant="outlined"
-                  error={taskTagError.error}
+                  error={tagLengthError.error || taskTagError.error}
                   onFocus={handleFocus}
+                  helperText={
+                    taskTagError.error
+                      ? taskTagError.errorMsg
+                      : tagLengthError.error
+                      ? tagLengthError.errorMsg
+                      : ''
+                  }
                   label={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
                   name={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
                   onKeyDown={(e: any) => {
@@ -428,6 +425,12 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
                           errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
                         });
                         return;
+                      }
+                      if (tagLengthError.error) {
+                        setTagLengthError({
+                          error: false,
+                          errorMsg: 'Tags cannot be more than 64 characters',
+                        });
                       } else {
                         if (e.target.value === '') {
                           return;
@@ -441,12 +444,12 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
                 />
               )}
             />
-            <p className={taskTagError.error ? classes.errorInputInfo : classes.inputInfo}>
+            {/* <p className={taskTagError.error ? classes.errorInputInfo : classes.inputInfo}>
               {taskTagError.errorMsg}
             </p>
             <p className={tagLengthError.error ? classes.errorInputInfo : classes.inputInfo}>
               {tagLengthError.errorMsg}
-            </p>
+            </p> */}
           </div>
         </div>
         <div className={classes.info}>

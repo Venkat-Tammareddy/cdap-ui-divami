@@ -17,7 +17,7 @@
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import history from 'services/history';
-import { Typography } from '@material-ui/core';
+import { Divider, Typography } from '@material-ui/core';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import IngestionJobsList from '../IngestionTaskList/IngestionJobsList';
 import NamespaceStore from 'services/NamespaceStore';
@@ -26,8 +26,10 @@ import SheduleTask from '../SheduleTask/SheduleTask';
 import { useParams } from 'react-router';
 import { MyPipelineApi } from 'api/pipeline';
 import { MyMetadataApi } from 'api/metadata';
+import ArrowDropDownSharpIcon from '@material-ui/icons/ArrowDropDownSharp';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
 import { MyMetricApi } from 'api/metric';
+import ArrowDropUpSharpIcon from '@material-ui/icons/ArrowDropUpSharp';
 
 const styles = (theme): StyleRules => {
   return {
@@ -139,7 +141,6 @@ const styles = (theme): StyleRules => {
       marginTop: '28px',
       marginBottom: '20px',
       paddingBottom: '20px',
-      borderBottom: '1px solid #A5A5A5',
     },
     runDetailsItem: {
       marginLeft: '12px',
@@ -161,6 +162,32 @@ const styles = (theme): StyleRules => {
       color: '#202124',
       opacity: '0.8',
       marginTop: '2px',
+    },
+    detailHeader: {
+      cursor: 'pointer',
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#4285F4 ',
+      display: 'flex',
+      gap: '10px',
+      alignItems: 'center',
+    },
+    detailContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+    },
+    arrowIcons: {
+      fill: '#4285F4 ',
+      alignItems: 'center',
+      cursor: 'pointer',
+    },
+    horizontalLine: {
+      borderTop: '1px solid #A5A5A5',
+      width: '1173px',
+    },
+    detailHeaderText: {
+      marginBottom: '0px',
     },
   };
 };
@@ -190,6 +217,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const successRatePie = '/cdap_assets/img/success-rate-pie.svg';
   const clock = '/cdap_assets/img/clock-black.svg';
   const calender = '/cdap_assets/img/calendar-black.svg';
+  const [detailView, setDetailView] = React.useState(false);
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [schedule, setSchedule] = React.useState(false);
   const [graph, setGraph] = React.useState(false);
@@ -374,29 +402,49 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
             </div>
           </div>
         )}
-        <div className={classes.description}>{connection.description}</div>
-        <div className={classes.connectionContainer}>
-          <div className={classes.taskDate}>
-            {taskDetails.connections.sourceName}
-            {' | '}
-            {taskDetails.connections.sourceDb}
+        <div className={classes.detailContainer}>
+          <div className={classes.detailHeader} onClick={() => setDetailView(!detailView)}>
+            <p className={classes.detailHeaderText}>
+              {detailView ? 'Hide details' : 'View more details'}
+            </p>
+            {detailView ? (
+              <ArrowDropUpSharpIcon className={classes.arrowIcons} />
+            ) : (
+              <ArrowDropDownSharpIcon className={classes.arrowIcons} />
+            )}
           </div>
-          <img className={classes.arrow} src={arrowIcon} alt="arrow" />
-          <div className={classes.taskDate}>
-            {taskDetails.connections.targetName}
-            {' | '}
-            {taskDetails.connections.targetDb}
-          </div>
+          <div className={classes.horizontalLine}></div>
         </div>
-        <div className={classes.chipContainer}>
-          {taskDetails.tags.map((tag) => {
-            return (
-              <div className={classes.chip} key={tag}>
-                {tag}
+        {detailView ? (
+          <div>
+            {' '}
+            <div className={classes.description}>{connection.description}</div>
+            <div className={classes.connectionContainer}>
+              <div className={classes.taskDate}>
+                {taskDetails.connections.sourceName}
+                {' | '}
+                {taskDetails.connections.sourceDb}
               </div>
-            );
-          })}
-        </div>
+              <img className={classes.arrow} src={arrowIcon} alt="arrow" />
+              <div className={classes.taskDate}>
+                {taskDetails.connections.targetName}
+                {' | '}
+                {taskDetails.connections.targetDb}
+              </div>
+            </div>
+            <div className={classes.chipContainer}>
+              {taskDetails.tags.map((tag) => {
+                return (
+                  <div className={classes.chip} key={tag}>
+                    {tag}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          ''
+        )}
       </div>
       {taskDetails.runs.length === 0 ? (
         <>
@@ -411,7 +459,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
             </div>
             <div className={classes.card} onClick={toggleSchedule}>
               <div className={classes.cardDescription}>
-                I would like to extract all columns from all tables without any custom selection.
+                I would like to extract the tables and columns I am interested in.
               </div>
               <div className={classes.cardTitle}>Schedule Task</div>
               <img className={classes.cardScheduleIcon} src={scheduleTaskIcon} alt="run-task" />

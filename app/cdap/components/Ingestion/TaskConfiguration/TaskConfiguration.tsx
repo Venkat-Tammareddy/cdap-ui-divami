@@ -74,14 +74,14 @@ const styles = (): StyleRules => {
     },
     headerText: {
       fontFamily: 'Lato',
-      fontSize: '20px',
+      fontSize: '18px',
       color: '#202124',
       letterSpacing: '0px',
       margin: '0',
     },
     labelText: {
       fontFamily: 'Lato',
-      fontSize: '16px',
+      fontSize: '14px',
       color: '#202124',
       letterSpacing: '0.15px',
       lineHeight: '24px',

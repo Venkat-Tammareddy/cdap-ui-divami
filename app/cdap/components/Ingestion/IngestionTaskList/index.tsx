@@ -35,6 +35,14 @@ const styles = (theme): StyleRules => {
   return {
     root: {
       height: 'calc(100% - 66px)', // margin
+      '& .MuiMenuItem-root': {
+        marginTop: '10px',
+        color: 'red',
+      },
+      '& .MuiMenu-list': {
+        color: 'red',
+        backgroundColor: 'orange',
+      },
     },
     header: {
       paddingBottom: '16px',
@@ -43,7 +51,8 @@ const styles = (theme): StyleRules => {
       color: '#19A347',
       lineHeight: '24px',
       backgroundColor: 'white',
-      letterSpacing: 0,
+      fontWeight: 'normal',
+      letterSpacing: '0',
     },
     tableRow: {
       cursor: 'pointer',
@@ -59,6 +68,9 @@ const styles = (theme): StyleRules => {
     paper: {
       boxShadow: 'none',
       backgroundColor: 'rgb(255 255 255 / 0%)',
+      fontSize: '14px',
+      color: '#202124',
+      textOverflow: 'ellipsis',
     },
     paperCount: {
       boxShadow: 'none',
@@ -73,6 +85,17 @@ const styles = (theme): StyleRules => {
       ' & button:focus': {
         outline: 'none',
       },
+    },
+    menuContainer: {
+      border: '1px solid orange',
+      color: 'red',
+    },
+    menuText: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#202124',
+      lineHeight: '24px',
+      padding: '5px 20px',
     },
   };
 };
@@ -207,7 +230,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
                     <Grid container spacing={0}>
                       <Grid className={classes.gridItem} item xs={1}>
                         <Paper className={classes.paper}>
-                          <img src={myimg} alt="img" height="30px" width="30px" />
+                          <img src={myimg} alt="img" height="27.2px" width="23px" />
                         </Paper>
                       </Grid>
                       <Grid item xs={11}>
@@ -235,6 +258,11 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
                   <TableCell>
                     <Grid container spacing={0}>
                       <Grid item xs={12}>
+                        {item.tags.length === 0 && (
+                          <p style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}>
+                            - -
+                          </p>
+                        )}
                         <Paper className={classes.paper}>{item.tags[0]}</Paper>
                         {item.tags.length > 1 ? (
                           <Paper className={classes.paperCount}>+{item.tags.length - 1} more</Paper>
@@ -293,23 +321,26 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
                               aria-label="more"
                               className={classes.iconButton}
                               onClick={(e) => {
+                                e.preventDefault();
                                 e.stopPropagation();
                                 setAnchorEl(e.currentTarget);
                                 setSelectedRow(item.runId);
                               }}
                             >
-                              <MoreVertIcon />
+                              <img src={imgMore} />
                             </IconButton>
                             <Menu
                               id="long-menu"
                               anchorEl={anchorEl}
                               keepMounted
+                              elevation={0}
                               open={open}
                               onClose={(e) => setAnchorEl(null)}
                               PaperProps={{
                                 style: {
-                                  maxHeight: 48 * 4.5,
-                                  width: '20ch',
+                                  height: '220px',
+                                  width: '157px',
+                                  border: '1px solid #A5A5A5',
                                 },
                               }}
                             >
@@ -320,6 +351,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
                                   onClick={(e) => {
                                     onOptionSelect(selectedRow);
                                   }}
+                                  className={classes.menuText}
                                 >
                                   {option}
                                 </MenuItem>

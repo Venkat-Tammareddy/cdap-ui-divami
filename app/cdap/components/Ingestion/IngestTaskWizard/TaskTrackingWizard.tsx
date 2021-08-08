@@ -16,12 +16,13 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Step, StepContent, StepLabel, Stepper, Typography } from '@material-ui/core';
+import { Step, StepContent, StepLabel, Stepper, Tooltip, Typography } from '@material-ui/core';
 import { StepConnector } from '@material-ui/core';
 
 const styles = (theme): StyleRules => {
   return {
     root: {
+      boxShadow: '-2px 0 16px 0 rgba(0,0,0,0.15);',
       height: '100%',
       '& .MuiStepContent-root': {
         marginLeft: '15px',
@@ -34,6 +35,7 @@ const styles = (theme): StyleRules => {
         color: '#202124',
         letterSpacing: '0',
         lineHeight: '24px',
+        marginLeft: '8px',
       },
       overflowY: 'auto',
       '& .MuiStepper-root': {
@@ -44,6 +46,12 @@ const styles = (theme): StyleRules => {
       },
       '& .MuiStepConnector-lineVertical': {
         minHeight: '0px',
+      },
+      '& .MuiStepLabel-completed': {
+        cursor: 'pointer',
+      },
+      '& .MuiTooltip-tooltip': {
+        fontSize: '20px',
       },
     },
     label: {
@@ -99,9 +107,12 @@ const styles = (theme): StyleRules => {
     activeIcon: {},
     completedIcon: {
       // margin: '4px',
+      cursor: 'pointer',
     },
     stepContent: {
       fontFamily: 'Lato',
+      marginTop: '-7px',
+      marginLeft: '1px',
       fontSize: '16px',
       color: '#666666',
       letterSpacing: '0',
@@ -115,6 +126,8 @@ const styles = (theme): StyleRules => {
     },
     stepContentInfo: {
       display: '-webkit-box',
+      marginTop: '-7px',
+      marginLeft: '2px',
       wordBreak: 'break-word',
       height: '48px',
       fontFamily: 'Lato',
@@ -128,6 +141,11 @@ const styles = (theme): StyleRules => {
     },
     '& .MuiTypography-body': {
       fontSize: '14px',
+    },
+    tooltip: {
+      fontsize: '4em',
+      color: 'red',
+      backgroundColor: '#A5A5A5',
     },
   };
 };
@@ -150,23 +168,37 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
   function getStepContent(step: number) {
     switch (step) {
       case 0:
-        return <div className={classes.stepContentInfo}>{draftConfig.name}</div>;
+        return (
+          <div title={draftConfig.name} className={classes.stepContentInfo}>
+            {draftConfig.name}
+          </div>
+        );
       case 1:
         return (
           <div className={classes.stepContentWrapper}>
-            <div className={classes.stepContent}>
+            <div
+              title={draftConfig.config.stages[0]?.connectionType}
+              className={classes.stepContent}
+            >
               {draftConfig.config.stages[0]?.connectionType}
             </div>
-            <div className={classes.stepContent}>{draftConfig.config.stages[0]?.name}</div>
+            <div title={draftConfig.config.stages[0]?.name} className={classes.stepContent}>
+              {draftConfig.config.stages[0]?.name}
+            </div>
           </div>
         );
       case 2:
         return (
           <div className={classes.stepContentWrapper}>
-            <div className={classes.stepContent}>
+            <div
+              title={draftConfig.config.stages[1]?.connectionType}
+              className={classes.stepContent}
+            >
               {draftConfig.config.stages[1]?.connectionType}
             </div>
-            <div className={classes.stepContent}>{draftConfig.config.stages[1]?.name}</div>
+            <div title={draftConfig.config.stages[1]?.name} className={classes.stepContent}>
+              {draftConfig.config.stages[1]?.name}
+            </div>
           </div>
         );
       case 4:
@@ -181,6 +213,8 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
       <img className={classes.completedIcon} src={myimg} alt="img" height="30px" width="30px" />
     );
   };
+
+  const [tooltip, setTooltip] = React.useState(false);
 
   const Connector = withStyles({
     alternativeLabel: {
@@ -202,6 +236,13 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
       borderLeft: '1px solid #A5A5A5',
     },
   })(StepConnector);
+
+  const BlueOnGreenTooltip = withStyles({
+    tooltip: {
+      color: '#A5A5A5',
+      fontSize: '20px',
+    },
+  })(Tooltip);
   return (
     <div className={classes.root}>
       <Stepper activeStep={activeStep} orientation="vertical" connector={<Connector />}>
@@ -223,7 +264,15 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
             >
               {label}
             </StepLabel>
-            <StepContent>{getStepContent(index)}</StepContent>
+
+            <StepContent
+              onMouseOver={() => {
+                setTooltip(true);
+              }}
+              onMouseLeave={() => setTooltip(false)}
+            >
+              {getStepContent(index)}
+            </StepContent>
           </Step>
         ))}
       </Stepper>

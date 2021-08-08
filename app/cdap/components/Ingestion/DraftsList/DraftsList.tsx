@@ -50,6 +50,7 @@ const styles = (theme): StyleRules => {
       letterSpacing: '0',
       lineHeight: '24px',
       height: '78px',
+      color: '#202124',
     },
     gridItem: {
       margin: 'auto',

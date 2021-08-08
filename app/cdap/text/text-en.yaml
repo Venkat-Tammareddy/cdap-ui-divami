@@ -2768,9 +2768,9 @@ features:
       sourceHeader: Select Source Database Connection
     placeholders: Search Databases & Connections
     Names:
-      database: Database Name
-      connection: Connection Name
-      lastUsedOn: Last Used On
+      database: Database name
+      connection: Connection name
+      lastUsedOn: Last used on
 
   SpotlightSearch:
     SpotlightModal:

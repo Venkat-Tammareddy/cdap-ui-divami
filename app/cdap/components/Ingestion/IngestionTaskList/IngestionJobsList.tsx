@@ -23,6 +23,8 @@ import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import { humanReadableDate, humanReadableDuration } from 'services/helpers';
 import Graphs from '../Graph/Graph';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { Tooltip } from '@material-ui/core';
 
 const styles = (theme): StyleRules => {
   return {
@@ -86,9 +88,23 @@ const styles = (theme): StyleRules => {
     graphIcn: {
       cursor: 'pointer',
     },
+    failedTooltipIcon: {
+      fill: '#4285F4',
+      height: '20px',
+      width: '20px',
+    },
+    failedTooltipInfo: {},
   };
 };
-
+const TextOnlyTooltip = withStyles({
+  tooltip: {
+    borderRadius: '15.5px',
+    color: '#DB4437',
+    backgroundColor: 'FDF5F5',
+    fontSize: '14px',
+    height: '32px',
+  },
+})(Tooltip);
 interface IngestJobsListProps extends WithStyles<typeof styles> {
   graph?: boolean;
   onTaskClick: (jobId: string) => void;
@@ -106,13 +122,14 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
   const successIcon = '/cdap_assets/img/success-status.svg';
   const failedIcon = '/cdap_assets/img/error-status.svg';
   const stopRun = () => {};
+
   return (
     <>
       <div className={classes.root}>
         {graph ? (
           <Graphs data={taskDetails.metrics} jobs={taskDetails.runs} />
         ) : (
-          <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr 2fr">
+          <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr 2fr 1fr">
             <TableHeader data-cy="table-header">
               <TableRow className={classes.header} data-cy="table-row">
                 <TableCell>Status</TableCell>
@@ -122,6 +139,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                 <TableCell>Records Loaded</TableCell>
                 <TableCell>Error Records</TableCell>
                 <TableCell></TableCell>
+                <TableCell>Tooltip</TableCell>
               </TableRow>
             </TableHeader>
             <TableBody data-cy="table-body">
@@ -191,6 +209,19 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                           <img src={imgStop} alt="img" height="20px" width="20px" />
                           <span className={classes.marginLeft}>Stop</span>
                         </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {item.status === 'FAILED' ? (
+                        <TextOnlyTooltip
+                          placement="left"
+                          title="Looks like server is doooownnnn...."
+                          className={classes.failedTooltipInfo}
+                        >
+                          <InfoOutlinedIcon className={classes.failedTooltipIcon} />
+                        </TextOnlyTooltip>
+                      ) : (
+                        ''
                       )}
                     </TableCell>
                   </TableRow>

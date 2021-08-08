@@ -107,6 +107,12 @@ const styles = (): StyleRules => {
     mappingDescription: {
       fontFamily: 'Lato',
       fontSize: '14px',
+      color: '#666666',
+    },
+    mappingDescription2: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#666666',
     },
     labelText: {
       fontSize: '20px',
@@ -232,7 +238,13 @@ const MappingView: React.FC<IIngestionProps> = ({
             </Typography>
           </div>
           <div className={classes.cardTitle}>{T.translate(`${I18N_PREFIX}.AllTables.title`)}</div>
-          <img className={classes.cardRunIcon} src={allTables} alt="run-task" />
+          <img
+            className={classes.cardRunIcon}
+            src={allTables}
+            alt="run-task"
+            height="66px"
+            width="75px"
+          />
           {cardSelected === 'all' && (
             <img
               className={classes.cardRunIcon}
@@ -275,7 +287,13 @@ const MappingView: React.FC<IIngestionProps> = ({
           <div className={classes.cardTitle}>
             {T.translate(`${I18N_PREFIX}.CustomTables.title`)}
           </div>
-          <img className={classes.cardScheduleIcon} src={customTable} alt="run-task" />
+          <img
+            className={classes.cardScheduleIcon}
+            src={customTable}
+            alt="run-task"
+            height="66px"
+            width="88px"
+          />
           {cardSelected === 'custom' && (
             <img
               className={classes.cardRunIcon}

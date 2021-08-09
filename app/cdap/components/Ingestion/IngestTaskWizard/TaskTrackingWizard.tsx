@@ -18,6 +18,7 @@ import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import { Step, StepContent, StepLabel, Stepper, Tooltip, Typography } from '@material-ui/core';
 import { StepConnector } from '@material-ui/core';
+import { parseJdbcString } from '../helpers';
 
 const styles = (theme): StyleRules => {
   return {
@@ -177,10 +178,16 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
         return (
           <div className={classes.stepContentWrapper}>
             <div
-              title={draftConfig.config.stages[0]?.connectionType}
+              title={parseJdbcString(
+                draftConfig.config.stages[0]?.plugin?.properties.connectionString,
+                draftConfig.config.stages[0]?.plugin?.properties.jdbcPluginName
+              )}
               className={classes.stepContent}
             >
-              {draftConfig.config.stages[0]?.connectionType}
+              {parseJdbcString(
+                draftConfig.config.stages[0]?.plugin?.properties.connectionString,
+                draftConfig.config.stages[0]?.plugin?.properties.jdbcPluginName
+              )}
             </div>
             <div title={draftConfig.config.stages[0]?.name} className={classes.stepContent}>
               {draftConfig.config.stages[0]?.name}
@@ -191,10 +198,10 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
         return (
           <div className={classes.stepContentWrapper}>
             <div
-              title={draftConfig.config.stages[1]?.connectionType}
+              title={draftConfig.config.stages[1]?.plugin?.properties.dataset}
               className={classes.stepContent}
             >
-              {draftConfig.config.stages[1]?.connectionType}
+              {draftConfig.config.stages[1]?.plugin?.properties.dataset}
             </div>
             <div title={draftConfig.config.stages[1]?.name} className={classes.stepContent}>
               {draftConfig.config.stages[1]?.name}
@@ -213,8 +220,6 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
       <img className={classes.completedIcon} src={myimg} alt="img" height="30px" width="30px" />
     );
   };
-
-  const [tooltip, setTooltip] = React.useState(false);
 
   const Connector = withStyles({
     alternativeLabel: {
@@ -265,14 +270,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
               {label}
             </StepLabel>
 
-            <StepContent
-              onMouseOver={() => {
-                setTooltip(true);
-              }}
-              onMouseLeave={() => setTooltip(false)}
-            >
-              {getStepContent(index)}
-            </StepContent>
+            <StepContent>{getStepContent(index)}</StepContent>
           </Step>
         ))}
       </Stepper>

@@ -25,6 +25,8 @@ import { humanReadableDate, humanReadableDuration } from 'services/helpers';
 import Graphs from '../Graph/Graph';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { Tooltip } from '@material-ui/core';
+import { MyPipelineApi } from 'api/pipeline';
+import NamespaceStore from 'services/NamespaceStore';
 
 const styles = (theme): StyleRules => {
   return {
@@ -121,13 +123,25 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
   const imgStop = '/cdap_assets/img/stop.svg';
   const successIcon = '/cdap_assets/img/success-status.svg';
   const failedIcon = '/cdap_assets/img/error-status.svg';
-  const stopRun = () => {};
+  const namespace = NamespaceStore.getState().selectedNamespace;
+  const stopRun = (runId: string) => {
+    console.log(runId, 'stopped...');
+    MyPipelineApi.stopRun({
+      namespace,
+      appId: taskDetails?.taskName,
+      programType: 'workflows',
+      programName: 'DataPipelineWorkflow',
+      runId,
+    }).subscribe((msg) => {
+      console.log('run stopped successfully');
+    });
+  };
 
   return (
     <>
       <div className={classes.root}>
         {graph ? (
-          <Graphs data={taskDetails.metrics} jobs={taskDetails.runs} />
+          <Graphs />
         ) : (
           <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr 2fr 1fr">
             <TableHeader data-cy="table-header">
@@ -203,6 +217,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                         <div
                           onClick={(e) => {
                             e.stopPropagation();
+                            stopRun(item.runId);
                             console.log('stop');
                           }}
                         >
@@ -215,7 +230,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                       {item.status === 'FAILED' ? (
                         <TextOnlyTooltip
                           placement="left"
-                          title="Looks like server is doooownnnn...."
+                          title="Looks like server is down...."
                           className={classes.failedTooltipInfo}
                         >
                           <InfoOutlinedIcon className={classes.failedTooltipIcon} />

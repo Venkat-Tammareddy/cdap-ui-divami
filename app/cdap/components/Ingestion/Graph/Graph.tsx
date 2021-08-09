@@ -87,123 +87,114 @@ const styles = (): StyleRules => {
   };
 };
 
-interface GraphsProps extends WithStyles<typeof styles> {
-  data: any;
-  jobs: any[];
-}
+interface GraphsProps extends WithStyles<typeof styles> {}
+const GraphsView: React.FC<GraphsProps> = ({ classes }) => {
+  const myData = [
+    { x: 'job1', y: 45 },
+    { x: 'job2', y: 77 },
+    { x: 'job3', y: 15 },
+    { x: 'job4', y: 20 },
+    { x: 'job5', y: 25 },
+    { x: 'job6', y: 30 },
+    { x: 'job7', y: 80 },
+    { x: 'job8', y: 42 },
+    { x: 'job9', y: 99 },
+    { x: 'job10', y: 90 },
+  ];
 
-const GraphsView: React.FC<GraphsProps> = ({ classes, data, jobs }) => {
+  const myData2 = [
+    { x: 'job1', y: 29 },
+    { x: 'job2', y: 56 },
+    { x: 'job3', y: 20 },
+    { x: 'job4', y: 35 },
+    { x: 'job5', y: 40 },
+    { x: 'job6', y: 45 },
+    { x: 'job7', y: 60 },
+    { x: 'job8', y: 47 },
+    { x: 'job9', y: 99 },
+    { x: 'job10', y: 92 },
+  ];
   const [tooltip, setTooltip] = React.useState(false);
   const [value, setValue] = React.useState({});
   const show = () => {
     setTooltip(true);
   };
 
-  const Ins = jobs.map((item, index) => {
-    // const data1 = data[`qid_${item.runId}`]?.series?.find(
-    //   (item) => item.metricName === 'user.Multiple Database Tables.records.in'
-    // )?.data[0].value
-    //   ? data[`qid_${item.runId}`]?.series?.find(
-    //       (item) => item.metricName === 'user.Multiple Database Tables.records.in'
-    //     )?.data[0].value
-    //   : '0';
-    const data1 = data.metrics[`qid_${item.runId}`]?.series?.find(
-      (item) => item.metricName === `user.${data.connections.sourceName}.records.in`
-    )?.data[0].value
-      ? data.metrics[`qid_${item.runId}`]?.series?.find(
-          (item) => item.metricName === `user.${data.connections.sourceName}.records.in`
-        )?.data[0].value
-      : '0';
-    console.log('DATAAAAA' + data1);
-  });
-
-  const jname = ['job1', 'job2'];
-  const mydata = jname.map((item, index) => {
-    return { x: item, y: Ins[index] };
-  });
-  // const mydata2 = jname.map((item, index) => {
-  //   return { x: item, y: Out[index] };
-  // });
-
   return (
     <div className={classes.root}>
-      {jobs.map((item, index) => {
-        return (
-          <FlexibleWidthXYPlot
-            xType="ordinal"
-            width={1280}
-            height={300}
-            style={{ paddingLeft: '30px' }}
+      <FlexibleWidthXYPlot
+        xType="ordinal"
+        width={1280}
+        height={300}
+        style={{ paddingLeft: '30px' }}
+      >
+        <HorizontalGridLines />
+        <XAxis />
+        <ChartLabel
+          text="Records"
+          className="alt-y-label"
+          includeMargin={false}
+          xPercent={-0.017}
+          yPercent={0.5}
+          style={{
+            transform: 'rotate(-90)',
+            textAnchor: 'end',
+            marginLeft: '10px',
+          }}
+        />
+        <YAxis />
+        <VerticalBarSeries
+          barWidth={0.5}
+          data={myData}
+          color="#74D091"
+          onMouseover={() => alert('1')}
+          style={{ cursor: 'pointer' }}
+          onValueMouseOver={(d) => {
+            setValue(d);
+          }}
+        />
+        {value && (
+          <Hint
+            value={value}
+            align={{ vertical: 'bottom', horizontal: 'right' }}
+            className={classes.hnt}
           >
-            <HorizontalGridLines />
-            <XAxis />
-            <ChartLabel
-              text="Records"
-              className="alt-y-label"
-              includeMargin={false}
-              xPercent={-0.017}
-              yPercent={0.5}
-              style={{
-                transform: 'rotate(-90)',
-                textAnchor: 'end',
-                marginLeft: '10px',
-              }}
-            />
-            <YAxis />
-            <VerticalBarSeries
-              barWidth={0.5}
-              data={mydata}
-              color="#74D091"
-              onMouseover={() => alert('1')}
-              style={{ cursor: 'pointer' }}
-              onValueMouseOver={(d) => {
-                setValue(d);
-              }}
-            />
-            {value && (
-              <Hint
-                value={value}
-                align={{ vertical: 'bottom', horizontal: 'right' }}
-                className={classes.hnt}
-              >
-                <Card className={classes.croot}>
-                  <div className={classes.up}>
-                    <p className={classes.title}>Job 04</p>
-                    <div className={classes.sukces}>Success</div>
-                  </div>
-                  <div className={classes.info}>
-                    <Typography variant="body2" component="p">
-                      02 May 21, 07:30 pm
-                    </Typography>
-                    <Typography variant="body2" component="p">
-                      3820 Records Loaded
-                    </Typography>
-                    <Typography variant="body2" component="p">
-                      976 Error Records
-                    </Typography>
-                  </div>
-                </Card>
-              </Hint>
-            )}
+            <Card className={classes.croot}>
+              <div className={classes.up}>
+                <p className={classes.title}>Job 04</p>
+                <div className={classes.sukces}>Success</div>
+              </div>
+              <div className={classes.info}>
+                <Typography variant="body2" component="p">
+                  02 May 21, 07:30 pm
+                </Typography>
+                <Typography variant="body2" component="p">
+                  3820 Records Loaded
+                </Typography>
+                <Typography variant="body2" component="p">
+                  976 Error Records
+                </Typography>
+              </div>
+            </Card>
+          </Hint>
+        )}
 
-            <VerticalBarSeries
-              barWidth={0.1}
-              data={mydata}
-              color="transparent"
-              style={{ cursor: 'pointer' }}
-            />
-            <VerticalBarSeries
-              barWidth={0.5}
-              data={mydata}
-              color="#DB4437"
-              style={{ cursor: 'pointer' }}
-              onValueMouseOver={(d) => {
-                setValue(d);
-              }}
-            />
-          </FlexibleWidthXYPlot>
-        );
-      })}
+        <VerticalBarSeries
+          barWidth={0.1}
+          data={myData2}
+          color="transparent"
+          style={{ cursor: 'pointer' }}
+        />
+        <VerticalBarSeries
+          barWidth={0.5}
+          data={myData2}
+          color="#DB4437"
+          style={{ cursor: 'pointer' }}
+          onValueMouseOver={(d) => {
+            setValue(d);
+          }}
+        />
+      </FlexibleWidthXYPlot>
     </div>
   );
 };

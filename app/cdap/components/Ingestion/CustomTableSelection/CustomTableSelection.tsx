@@ -207,15 +207,18 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const filterIcon = '/cdap_assets/img/filter.svg';
   const checkBoxActiv = '/cdap_assets/img/check-box-active.svg';
-  const search = '/cdap_assets/img/search.svg';
+  const searchIcon = '/cdap_assets/img/search.svg';
   const checkbox = '/cdap_assets/img/checkbox-normal.svg';
   const options = ['All', 'Selected', 'Unselected'];
-
+  const [search, setSearch] = React.useState('');
+  const filteredList = tablesList.filter((item) =>
+    item.tableName?.toLowerCase().includes(search.toLowerCase())
+  );
   const CheckedIcon = () => {
     return <img src={checkBoxActiv} alt="icon" height="18px" width="18px" />;
   };
   const SearchIconn = () => {
-    return <img src={search} alt="icon" height="18px" width="18px" />;
+    return <img src={searchIcon} alt="icon" height="18px" width="18px" />;
   };
 
   const CheckboxNormal = () => {
@@ -234,6 +237,8 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
           variant="outlined"
           placeholder="Search tables"
           className={classes.search}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           InputProps={{
             startAdornment: <SearchIconn />,
             classes: {
@@ -275,20 +280,26 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
           <h3 className={classes.emptyList}>There are no connections...</h3>
         ) : (
           <Grid container spacing={2}>
-            {tablesList.map((item) => (
-              <Grid item xs={4} className={classes.gridbox} key={item.tableName}>
-                <Checkbox
-                  checked={item.selected}
-                  onChange={() => handleChange(item.tableName)}
-                  name={item.tableName}
-                  className={classes.checkboxes}
-                  icon={<CheckboxNormal />}
-                  checkedIcon={<CheckedIcon />}
-                  color="primary"
-                />
-                <label className={classes.labelText}>{item.tableName}</label>
-              </Grid>
-            ))}
+            {filteredList.length === 0 ? (
+              <h3 className={classes.emptyList}>
+                {search.length === 0 ? '' : `There are no tables matching your search '${search}'`}
+              </h3>
+            ) : (
+              filteredList.map((item) => (
+                <Grid item xs={4} className={classes.gridbox} key={item.tableName}>
+                  <Checkbox
+                    checked={item.selected}
+                    onChange={() => handleChange(item.tableName)}
+                    name={item.tableName}
+                    className={classes.checkboxes}
+                    icon={<CheckboxNormal />}
+                    checkedIcon={<CheckedIcon />}
+                    color="primary"
+                  />
+                  <label className={classes.labelText}>{item.tableName}</label>
+                </Grid>
+              ))
+            )}
           </Grid>
         )}
       </Box>

@@ -179,14 +179,14 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
           <div className={classes.stepContentWrapper}>
             <div
               title={parseJdbcString(
-                draftConfig.config.stages[0]?.plugin.properties.connectionString,
-                draftConfig.config.stages[0]?.plugin.properties.jdbcPluginName
+                draftConfig.config.stages[0]?.plugin?.properties.connectionString,
+                draftConfig.config.stages[0]?.plugin?.properties.jdbcPluginName
               )}
               className={classes.stepContent}
             >
               {parseJdbcString(
-                draftConfig.config.stages[0]?.plugin.properties.connectionString,
-                draftConfig.config.stages[0]?.plugin.properties.jdbcPluginName
+                draftConfig.config.stages[0]?.plugin?.properties.connectionString,
+                draftConfig.config.stages[0]?.plugin?.properties.jdbcPluginName
               )}
             </div>
             <div title={draftConfig.config.stages[0]?.name} className={classes.stepContent}>
@@ -198,10 +198,10 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
         return (
           <div className={classes.stepContentWrapper}>
             <div
-              title={draftConfig.config.stages[1]?.plugin.properties.dataset}
+              title={draftConfig.config.stages[1]?.plugin?.properties.dataset}
               className={classes.stepContent}
             >
-              {draftConfig.config.stages[1]?.plugin.properties.dataset}
+              {draftConfig.config.stages[1]?.plugin?.properties.dataset}
             </div>
             <div title={draftConfig.config.stages[1]?.name} className={classes.stepContent}>
               {draftConfig.config.stages[1]?.name}
@@ -220,8 +220,6 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
       <img className={classes.completedIcon} src={myimg} alt="img" height="30px" width="30px" />
     );
   };
-
-  const [tooltip, setTooltip] = React.useState(false);
 
   const Connector = withStyles({
     alternativeLabel: {
@@ -272,14 +270,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
               {label}
             </StepLabel>
 
-            <StepContent
-              onMouseOver={() => {
-                setTooltip(true);
-              }}
-              onMouseLeave={() => setTooltip(false)}
-            >
-              {getStepContent(index)}
-            </StepContent>
+            <StepContent>{getStepContent(index)}</StepContent>
           </Step>
         ))}
       </Stepper>

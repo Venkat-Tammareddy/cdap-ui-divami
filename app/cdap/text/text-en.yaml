@@ -1916,11 +1916,11 @@ features:
     title: How Would You Like to Proceed?
     altText: Image
     AllTables:
-      title: Select all tables & columns
+      title: Select all tables
       description: I would like to extract all tables without any
       description2: custom selection
     CustomTables:
-      title: Custom selection of table & columns
+      title: Custom selection of tables
       description: I would like to extract tables
       description2: I am interested in
   Navbar:

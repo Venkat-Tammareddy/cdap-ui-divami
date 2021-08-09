@@ -166,7 +166,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                       />
                       {item.status}
                     </TableCell>
-                    <TableCell>{item.runId}</TableCell>
+                    <TableCell style={{ color: '#202124' }}>{item.runId}</TableCell>
                     <TableCell>{humanReadableDate(item.start, false)}</TableCell>
                     <TableCell>
                       {item.status !== 'RUNNING' &&

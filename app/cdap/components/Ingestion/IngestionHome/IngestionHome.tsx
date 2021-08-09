@@ -162,7 +162,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     console.log('mytest', data.pipelines);
     return data.pipelines.map((ele) => {
       return {
-        runId: ele.runs.runid,
+        runId: ele.runs[0]?.runid,
         taskName: ele.name,
         status: ele.runs.length === 0 ? '' : ele.runs[0].status,
         sourceConnectionDb: '',
@@ -263,7 +263,11 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
           {displayDrafts ? (
             <DraftsList data={mapDratsList()} searchText={search} />
           ) : (
-            <IngestionTaskList searchText={search} data={setIngestionTaskList()} />
+            <IngestionTaskList
+              searchText={search}
+              data={setIngestionTaskList()}
+              refetch={refetch}
+            />
           )}
         </div>
       </div>

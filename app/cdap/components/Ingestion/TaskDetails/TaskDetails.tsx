@@ -224,6 +224,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const params = useParams();
   const taskName = (params as any).taskName;
   const [taskDetails, setTaskDetails] = React.useState({
+    taskName,
     tags: [],
     runs: [],
     connections: {

@@ -230,7 +230,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                       {item.status === 'FAILED' ? (
                         <TextOnlyTooltip
                           placement="left"
-                          title="Looks like server is doooownnnn...."
+                          title="Looks like server is down...."
                           className={classes.failedTooltipInfo}
                         >
                           <InfoOutlinedIcon className={classes.failedTooltipIcon} />

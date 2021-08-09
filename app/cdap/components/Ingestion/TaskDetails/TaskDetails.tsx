@@ -141,6 +141,7 @@ const styles = (theme): StyleRules => {
       marginTop: '28px',
       marginBottom: '20px',
       paddingBottom: '20px',
+      borderBottom: '1px solid #A5A5A5',
     },
     runDetailsItem: {
       marginLeft: '12px',
@@ -217,7 +218,6 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const successRatePie = '/cdap_assets/img/success-rate-pie.svg';
   const clock = '/cdap_assets/img/clock-black.svg';
   const calender = '/cdap_assets/img/calendar-black.svg';
-  const [detailView, setDetailView] = React.useState(false);
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [schedule, setSchedule] = React.useState(false);
   const [graph, setGraph] = React.useState(false);
@@ -403,49 +403,32 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
             </div>
           </div>
         )}
-        <div className={classes.detailContainer}>
-          <div className={classes.detailHeader} onClick={() => setDetailView(!detailView)}>
-            <p className={classes.detailHeaderText}>
-              {detailView ? 'Hide details' : 'View more details'}
-            </p>
-            {detailView ? (
-              <ArrowDropUpSharpIcon className={classes.arrowIcons} />
-            ) : (
-              <ArrowDropDownSharpIcon className={classes.arrowIcons} />
-            )}
+        <div>
+          {' '}
+          <div className={classes.description}>{connection.description}</div>
+          <div className={classes.connectionContainer}>
+            <div className={classes.taskDate}>
+              {taskDetails.connections.sourceName}
+              {' | '}
+              {taskDetails.connections.sourceDb}
+            </div>
+            <img className={classes.arrow} src={arrowIcon} alt="arrow" />
+            <div className={classes.taskDate}>
+              {taskDetails.connections.targetName}
+              {' | '}
+              {taskDetails.connections.targetDb}
+            </div>
           </div>
-          <div className={classes.horizontalLine}></div>
+          <div className={classes.chipContainer}>
+            {taskDetails.tags.map((tag) => {
+              return (
+                <div className={classes.chip} key={tag}>
+                  {tag}
+                </div>
+              );
+            })}
+          </div>
         </div>
-        {detailView ? (
-          <div>
-            {' '}
-            <div className={classes.description}>{connection.description}</div>
-            <div className={classes.connectionContainer}>
-              <div className={classes.taskDate}>
-                {taskDetails.connections.sourceName}
-                {' | '}
-                {taskDetails.connections.sourceDb}
-              </div>
-              <img className={classes.arrow} src={arrowIcon} alt="arrow" />
-              <div className={classes.taskDate}>
-                {taskDetails.connections.targetName}
-                {' | '}
-                {taskDetails.connections.targetDb}
-              </div>
-            </div>
-            <div className={classes.chipContainer}>
-              {taskDetails.tags.map((tag) => {
-                return (
-                  <div className={classes.chip} key={tag}>
-                    {tag}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ) : (
-          ''
-        )}
       </div>
       {taskDetails.runs.length === 0 ? (
         <>

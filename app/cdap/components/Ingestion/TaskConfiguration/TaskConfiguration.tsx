@@ -59,7 +59,7 @@ const styles = (): StyleRules => {
       // display: 'flex',
       // gap: '50px',
       display: 'flex',
-      gap: '50px',
+      gap: '30px',
       alignItems: 'end',
       justifyContent: 'flex-end',
     },

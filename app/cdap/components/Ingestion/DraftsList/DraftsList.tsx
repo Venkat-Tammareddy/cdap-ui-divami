@@ -58,6 +58,9 @@ const styles = (theme): StyleRules => {
     paper: {
       boxShadow: 'none',
       backgroundColor: 'rgb(255 255 255 / 0%)',
+      fontSize: '14px',
+      color: '#202124',
+      textOverflow: 'ellipsis',
     },
     paperCount: {
       boxShadow: 'none',
@@ -73,6 +76,22 @@ const styles = (theme): StyleRules => {
         outline: 'none',
       },
     },
+    optionsIcon: {
+      //   border: '2px solid blue',
+      padding: '6px 12px',
+      borderRadius: '99px',
+      '&:hover': {
+        backgroundColor: '#A5A5A5',
+      },
+    },
+    menuItem: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#202124',
+      boxShadow: 'none',
+      lineHeight: '24px',
+      padding: '5px 20px',
+    },
   };
 };
 
@@ -83,20 +102,26 @@ interface DraftsListProps extends WithStyles<typeof styles> {
 
 const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data }) => {
   const [draftsList, setDraftsList] = React.useState(data);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   const filteredList = draftsList.filter((item) =>
     item.pipeLineName.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  const options = ['Edit', 'Delete'];
+  const moreImg = '/cdap_assets/img/more.svg';
+
   return (
     <>
       <div className={classes.root}>
-        <Table columnTemplate="2fr 1fr 1fr">
+        <Table columnTemplate="2fr 1fr 1fr 1fr">
           <TableHeader data-cy="table-header">
             <TableRow className={classes.header} data-cy="table-row">
               <TableCell>{'Pipleline name'}</TableCell>
               <TableCell>{'Type'}</TableCell>
               <TableCell>{'Last saved'}</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHeader>
           <TableBody data-cy="table-body">
@@ -110,6 +135,57 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data }) =>
                   <TableCell>{item.pipeLineName}</TableCell>
                   <TableCell>{item.type}</TableCell>
                   <TableCell>{item.lastSaved}</TableCell>
+                  <TableCell>
+                    <Paper className={classes.paper}>
+                      <img
+                        src={moreImg}
+                        // style={{ cursor: 'pointer' }}
+                        className={classes.optionsIcon}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setAnchorEl(e.currentTarget);
+                        }}
+                      />
+                      <Menu
+                        id="long-menu"
+                        keepMounted
+                        anchorEl={anchorEl}
+                        open={open}
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right',
+                        }}
+                        onClose={(e) => setAnchorEl(null)}
+                        PaperProps={{
+                          style: {
+                            maxHeight: 48 * 4.5,
+                            width: '20ch',
+                            marginTop: '40px',
+                          },
+                        }}
+                      >
+                        {options.map((option) => (
+                          <MenuItem
+                            key={option}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              e.nativeEvent.stopImmediatePropagation();
+                              // optionSelect(option);
+                              setAnchorEl(null);
+                            }}
+                            className={classes.menuItem}
+                          >
+                            {option}
+                          </MenuItem>
+                        ))}
+                      </Menu>
+                    </Paper>
+                  </TableCell>
                 </TableRow>
               );
             })}

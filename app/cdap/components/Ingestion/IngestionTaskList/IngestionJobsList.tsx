@@ -153,7 +153,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                 <TableCell>Records Loaded</TableCell>
                 <TableCell>Error Records</TableCell>
                 <TableCell></TableCell>
-                <TableCell>Tooltip</TableCell>
+                <TableCell></TableCell>
               </TableRow>
             </TableHeader>
             <TableBody data-cy="table-body">

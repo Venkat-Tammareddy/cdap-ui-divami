@@ -54,6 +54,11 @@ const styles = (theme): StyleRules => {
       '& .MuiTooltip-tooltip': {
         fontSize: '20px',
       },
+      '& .MuiStepper-vertical': {
+        backgroundColor: '#FBFBFB',
+      },
+      backgroundColor: '#FBFBFB',
+      borderRight: '2px solid white',
     },
     label: {
       cursor: 'pointer',
@@ -72,6 +77,9 @@ const styles = (theme): StyleRules => {
     },
     resetContainer: {
       padding: theme.spacing(3),
+    },
+    stepContainer: {
+      backgroundColor: '#FBFBFB',
     },
     icon: {
       '& .MuiStepIcon-text': {
@@ -250,7 +258,12 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
   })(Tooltip);
   return (
     <div className={classes.root}>
-      <Stepper activeStep={activeStep} orientation="vertical" connector={<Connector />}>
+      <Stepper
+        activeStep={activeStep}
+        orientation="vertical"
+        connector={<Connector />}
+        className={classes.stepContainer}
+      >
         {steps.map((label, index) => (
           <Step key={label} expanded={index < steps.length - 1}>
             <StepLabel

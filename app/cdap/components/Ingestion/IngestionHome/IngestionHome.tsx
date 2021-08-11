@@ -58,7 +58,7 @@ const styles = (theme): StyleRules => {
     },
     tabsWrapper: {
       padding: '18px 0px',
-      display: 'grid',
+      display: 'flex',
       gridTemplateColumns: '0.1fr 1fr 0fr',
     },
     tabContainer: {
@@ -66,14 +66,28 @@ const styles = (theme): StyleRules => {
       // display: 'grid',
       // gridTemplateColumns: '0fr 1fr 0fr',
     },
-    tabs: {
+    taskTabs: {
+      minWidth: '30px',
+      maxWidth: '70px',
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: ' #202124;',
+      letterSpacing: '0.13px',
+      paddingBottom: '10px',
+      // marginRight: '22.5px',
+      cursor: 'pointer',
+      // '&:active': {
+      //   textDecoration: 'underline',
+      // },
+    },
+    draftTabs: {
       minWidth: '30px',
       fontFamily: 'Lato',
       fontSize: '14px',
       color: ' #202124;',
       letterSpacing: '0.13px',
-      padding: '7.5px',
-      marginRight: '22.5px',
+      paddingBottom: '10px',
+      // marginRight: '22.5px',
       cursor: 'pointer',
       // '&:active': {
       //   textDecoration: 'underline',
@@ -99,6 +113,19 @@ const styles = (theme): StyleRules => {
     homeHeaders: {
       display: 'flex',
       gap: '500px',
+    },
+    taskDivs: {
+      border: '1px solid red',
+      maxWidth: '70px',
+    },
+    draftDivs: {
+      border: '1px solid red',
+      paddingLeft: '0px',
+      marginLeft: '35px',
+    },
+    newWrapper: {
+      display: 'flex',
+      flex: '1',
     },
   };
 };
@@ -224,30 +251,33 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
         />
         <div className={classes.tabbleViewWrpr}>
           <div className={classes.tabsWrapper}>
-            <div>
-              <span
-                className={classes.tabs}
-                onClick={() => setDisplayDrafts(false)}
-                style={{
-                  borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none',
-                  opacity: displayDrafts ? '0.7' : '',
-                }}
-              >
-                TASKS ({data.pipelines.length})
-              </span>
+            <div className={classes.newWrapper}>
+              <div className={classes.taskDivs}>
+                <span
+                  className={classes.taskTabs}
+                  onClick={() => setDisplayDrafts(false)}
+                  style={{
+                    borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none',
+                    opacity: displayDrafts ? '0.7' : '',
+                  }}
+                >
+                  TASKS ({data.pipelines.length})
+                </span>
+              </div>
+              <div className={classes.draftDivs}>
+                <span
+                  className={classes.draftTabs}
+                  onClick={() => setDisplayDrafts(true)}
+                  style={{
+                    borderBottom: displayDrafts ? '4px solid #4285F4' : 'none',
+                    opacity: !displayDrafts ? '0.7' : '',
+                  }}
+                >
+                  DRAFTS ({draftsList.length})
+                </span>
+              </div>
             </div>
-            <div>
-              <span
-                className={classes.tabs}
-                onClick={() => setDisplayDrafts(true)}
-                style={{
-                  borderBottom: displayDrafts ? '4px solid #4285F4' : 'none',
-                  opacity: !displayDrafts ? '0.7' : '',
-                }}
-              >
-                DRAFTS ({draftsList.length})
-              </span>
-            </div>
+
             <TextField
               variant="outlined"
               placeholder={'search tasks'}

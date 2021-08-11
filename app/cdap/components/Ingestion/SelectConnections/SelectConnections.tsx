@@ -143,6 +143,7 @@ const styles = (theme): StyleRules => {
     },
     sortIcon: {
       marginLeft: '13.5px',
+      cursor: 'pointer',
     },
     errorContainer: {
       display: 'flex',
@@ -219,10 +220,6 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
 
   const onCancel = (e: React.FormEvent) => {
     handleCancel();
-  };
-
-  const changeCursor = (e) => {
-    e.target.style.cursor = 'pointer';
   };
 
   const handleSortToggle = (e) => {
@@ -302,9 +299,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
                 <img
                   src={sortDbNameType === 'Down' ? sortDownIcon : sortUpIcon}
                   alt="some down icon sort"
-                  height="14px"
                   className={classes.sortIcon}
-                  onMouseOver={changeCursor}
                   onClick={handleDbNameSort}
                 />{' '}
               </TableCell>
@@ -313,9 +308,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
                 <img
                   src={sortNameType === 'Down' ? sortDownIcon : sortUpIcon}
                   alt="some down icon sort"
-                  height="14px"
                   className={classes.sortIcon}
-                  onMouseOver={changeCursor}
                   onClick={handleNameSort}
                 />
               </TableCell>
@@ -327,7 +320,6 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
                     alt="some down icon sort"
                     height="14px"
                     className={classes.sortIcon}
-                    onMouseOver={changeCursor}
                     onClick={handleSortToggle}
                   />
                 </div>

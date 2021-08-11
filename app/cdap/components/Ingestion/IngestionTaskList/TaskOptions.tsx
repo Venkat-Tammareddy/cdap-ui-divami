@@ -137,6 +137,14 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
             keepMounted
             anchorEl={anchorEl}
             open={open}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
             onClose={(e) => setAnchorEl(null)}
             PaperProps={{
               style: {

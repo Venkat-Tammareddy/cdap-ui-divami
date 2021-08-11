@@ -239,8 +239,8 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
   tags,
   setTags,
 }) => {
-  const [taskName, setTaskName] = React.useState(draftConfig.name);
-  const [taskDescription, setTaskDescription] = React.useState(draftConfig.description);
+  const [taskName, setTaskName] = React.useState(draftConfig?.name);
+  const [taskDescription, setTaskDescription] = React.useState(draftConfig?.description);
   const taskSpaceError = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`).toString();
   const taskLengthErrorMessage = T.translate(
     `${I18N_PREFIX}.Errors.taskNameLengthError`

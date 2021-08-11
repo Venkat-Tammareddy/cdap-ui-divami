@@ -40,6 +40,7 @@ import { ingestionContext } from 'components/Ingestion/ingestionContext';
 import { MyMetadataApi } from 'api/metadata';
 import { MyProgramApi } from 'api/program';
 import produce from 'immer';
+import { useParams } from 'react-router';
 
 const styles = (theme): StyleRules => {
   return {
@@ -81,12 +82,12 @@ export interface IStagesInterface {
 interface ICreateIngestionProps extends WithStyles<typeof styles> {}
 const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
-  const { draftObj } = useContext(ingestionContext);
   const { setDraftObjfn } = useContext(ingestionContext);
-  const [deployLoader, setDeployLoader] = React.useState(false);
+  const [deployLoader, setDeployLoader] = React.useState(true);
   const [ack, setAck] = React.useState(false);
   const [connections, setConnections] = React.useState([]);
-  const [draftId] = React.useState(uuidV4());
+  const { id } = useParams<{ id: string }>();
+  const [draftId, setDraftId] = React.useState(uuidV4());
   const [artifactsList, setArtifactsList] = React.useState([]);
   const [tags, setTags] = React.useState([]);
   const [draftConfig, setDraftConfig] = React.useState({
@@ -127,8 +128,18 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       maxConcurrentRuns: 1,
     },
   });
-
   React.useEffect(() => {
+    if (id) {
+      MyPipelineApi.getDraftDetails({ context: currentNamespace, draftId: id }).subscribe(
+        (data) => {
+          setDraftId(id);
+          setDraftConfig(data);
+          setDeployLoader(false);
+        }
+      );
+    } else {
+      setDeployLoader(false);
+    }
     ConnectionsApi.listConnections({
       context: currentNamespace,
     }).subscribe(
@@ -450,27 +461,31 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         return;
     }
   };
+  console.log(id);
   return (
     <div className={classes.root}>
       <IngestionHeader title={T.translate(`${I18N_PREFIX}.createIngest`).toString()} />
-      <If condition={deployLoader}>
+      {deployLoader ? (
         <LoadingSVGCentered />
-      </If>
-      {ack ? (
-        <Acknowledgement gotoTasks={() => goToIngestionHome()} />
       ) : (
-        <div className={classes.wizardAndContentWrapper}>
-          <div className={classes.wizard}>
-            <TaskTrackingWizard
-              steps={steps}
-              activeStep={activeStep}
-              draftConfig={draftConfig}
-              stepProgress={stepProgress}
-              stepperNav={(step) => step <= stepProgress && setActiveStep(step)}
-            />
-          </div>
-          <div className={classes.content}>{Content()}</div>
-        </div>
+        <>
+          {ack ? (
+            <Acknowledgement gotoTasks={() => goToIngestionHome()} />
+          ) : (
+            <div className={classes.wizardAndContentWrapper}>
+              <div className={classes.wizard}>
+                <TaskTrackingWizard
+                  steps={steps}
+                  activeStep={activeStep}
+                  draftConfig={draftConfig}
+                  stepProgress={stepProgress}
+                  stepperNav={(step) => step <= stepProgress && setActiveStep(step)}
+                />
+              </div>
+              <div className={classes.content}>{Content()}</div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

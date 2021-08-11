@@ -123,9 +123,6 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
   const filteredList = taskList.filter((item) =>
     item.taskName?.toLowerCase().includes(searchText?.toLowerCase())
   );
-  const goToIngestionHome = () => {
-    alert('Going to home');
-  };
 
   React.useEffect(() => {
     taskList.map((item, index) => {

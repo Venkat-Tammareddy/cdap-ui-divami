@@ -21,13 +21,8 @@ import TableRow from 'components/Table/TableRow';
 import Table from 'components/Table';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import { IconButton } from '@material-ui/core';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { getCurrentNamespace } from 'services/NamespaceStore';
+import { Paper, Menu, MenuItem } from '@material-ui/core';
 
 const styles = (theme): StyleRules => {
   return {
@@ -105,7 +100,7 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data }) =>
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const filteredList = draftsList.filter((item) =>
+  const filteredList = data.filter((item) =>
     item.pipeLineName.toLowerCase().includes(searchText.toLowerCase())
   );
 
@@ -131,6 +126,7 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data }) =>
                   key={index}
                   className={classes.tableRow}
                   data-cy={`table-row-${item.pipeLineName}`}
+                  to={`/ns/${getCurrentNamespace()}/ingestion/create/${item.id}`}
                 >
                   <TableCell>{item.pipeLineName}</TableCell>
                   <TableCell>{item.type}</TableCell>

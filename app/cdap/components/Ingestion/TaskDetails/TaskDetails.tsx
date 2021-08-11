@@ -87,7 +87,6 @@ const styles = (theme): StyleRules => {
       alignItems: 'flex-end',
       marginTop: '16px',
       paddingBottom: '21px',
-      border: '1px solid red',
       borderBottom: '1px solid #A5A5A5',
     },
     title: {
@@ -190,7 +189,7 @@ const styles = (theme): StyleRules => {
       marginBottom: '0px',
     },
     wrapper: {
-      border: '1px solid red',
+      // border: '1px solid red',
       marginTop: '0px',
       padding: '0px',
     },
@@ -400,7 +399,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
               {taskDetails.connections.targetDb}
             </div>
           </div>
-          <div className={taskDetails.tags.length === 0 ? classes.hide : classes.chipContainer}>
+          <div className={classes.chipContainer}>
             {taskDetails.tags.map((tag) => {
               return (
                 <div className={classes.chip} key={tag}>

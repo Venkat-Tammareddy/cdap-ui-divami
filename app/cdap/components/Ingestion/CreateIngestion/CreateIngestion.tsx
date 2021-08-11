@@ -251,7 +251,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   ];
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepProgress, setStepProgress] = React.useState(0);
-  const [cardSelected, setCardSelected] = React.useState('none');
+  const [cardSelected, setCardSelected] = React.useState('all');
 
   const handleNext = () => {
     activeStep === stepProgress && setStepProgress((prev) => prev + 1);

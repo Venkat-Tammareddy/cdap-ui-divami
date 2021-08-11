@@ -41,7 +41,6 @@ const styles = (): StyleRules => {
         letterSpacing: '0.25px',
       },
       '& .MuiInputLabel-outlined': {
-        fontSize: '12px',
         color: '#202124',
       },
       '& .MuiFormLabel-root.Mui-error': {
@@ -59,10 +58,16 @@ const styles = (): StyleRules => {
         display: 'flex',
         justifyContent: 'flex-end',
       },
+      '& .MuiOutlinedInput-input': {
+        fontSize: '20px',
+      },
+      '& .MuiInputLabel-shrink': {
+        fontSize: '14px',
+      },
     },
     label: {
-      fontSize: '16px',
       color: '#202124 ',
+      fontSize: '16px',
       letterSpacing: '0.25px',
     },
     headerText: {
@@ -118,28 +123,6 @@ const styles = (): StyleRules => {
     },
     resize: {
       height: '113px',
-    },
-    buttonContainer: {
-      display: 'flex',
-      gap: '50px',
-      alignItems: 'end',
-      justifyContent: 'flex-end',
-    },
-    cancelButton: {
-      textDecoration: 'none',
-      color: '#4285F4;',
-      outline: 'none',
-      fontSize: '14px',
-      letterSpacing: '1.25px',
-      lineHeight: '24px',
-      fontFamily: 'Lato',
-    },
-    submitButton: {
-      backgroundColor: '#4285F4',
-      letterSpacing: '1.25px',
-      lineHeight: '24px',
-      fontSize: '14px',
-      fontFamily: 'Lato',
     },
     inputInfo: {
       color: '#666666',
@@ -416,6 +399,11 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
                       : ''
                   }
                   label={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
+                  InputLabelProps={{
+                    classes: {
+                      root: classes.label,
+                    },
+                  }}
                   name={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
                   onKeyDown={(e: any) => {
                     if (e.keyCode === 13) {

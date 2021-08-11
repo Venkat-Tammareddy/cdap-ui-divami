@@ -20,7 +20,6 @@ import history from 'services/history';
 import IngestionTaskList from 'components/Ingestion/IngestionTaskList/index';
 import DraftsList from 'components/Ingestion/DraftsList/DraftsList';
 import T from 'i18n-react';
-import SearchIcon from '@material-ui/icons/Search';
 import { TextField } from '@material-ui/core';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import { getCurrentNamespace } from 'services/NamespaceStore';
@@ -61,6 +60,7 @@ const styles = (theme): StyleRules => {
     },
     tabs: {
       minWidth: '30px',
+      maxWidth: '70px',
       fontFamily: 'Lato',
       fontSize: '14px',
       color: ' #202124;',
@@ -208,6 +208,11 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     }
   }
 
+  const searchIcon = '/cdap_assets/img/search.svg';
+
+  const SearchIcon = () => {
+    return <img src={searchIcon} alt="icon" />;
+  };
   const mapDratsList = () => {
     return draftsList.map((ele) => {
       return {
@@ -259,7 +264,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
 
             <TextField
               variant="outlined"
-              placeholder={'search tasks'}
+              placeholder={'Search drafts'}
               className={classes.search}
               onChange={(e) => setSearch(e.target.value)}
               InputProps={{

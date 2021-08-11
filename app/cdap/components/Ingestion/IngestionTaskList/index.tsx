@@ -44,7 +44,7 @@ const styles = (theme): StyleRules => {
       },
     },
     header: {
-      paddingBottom: '16px',
+      paddingBottom: '10.5px',
       fontFamily: 'Lato',
       fontSize: '16px',
       color: '#19A347',
@@ -116,7 +116,6 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
 
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [taskList, setTaskList] = React.useState(data);
-
   const filteredList = taskList.filter((item) =>
     item.taskName?.toLowerCase().includes(searchText?.toLowerCase())
   );

@@ -196,6 +196,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const [sortDbNameType, setSortDbNameType] = React.useState('Down');
   const [currentSortType, setCurrentSortType] = React.useState('name');
   const [isOpen, setIsOpen] = React.useState(false);
+  const [header, setHeader] = React.useState('lastUsed');
 
   React.useEffect(() => {
     selectionType === 'source'
@@ -291,37 +292,43 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
           <div className={classes.errorTitle2}>Please check with the IT team</div>
         </div>
       ) : (
-        <Table columnTemplate="1fr 1fr 1fr">
+        <Table columnTemplate="1fr 1fr 2fr">
           <TableHeader data-cy="table-header">
             <TableRow className={classes.header} data-cy="table-row">
-              <TableCell>
+              <TableCell onClick={() => setHeader('dbName')}>
                 {T.translate(`${I18N_PREFIX}.Names.database`)}
-                <img
-                  src={sortDbNameType === 'Down' ? sortDownIcon : sortUpIcon}
-                  alt="some down icon sort"
-                  className={classes.sortIcon}
-                  onClick={handleDbNameSort}
-                />{' '}
+                {header === 'dbName' && (
+                  <img
+                    src={sortDbNameType === 'Down' ? sortDownIcon : sortUpIcon}
+                    alt="some down icon sort"
+                    className={classes.sortIcon}
+                    onClick={handleDbNameSort}
+                  />
+                )}
               </TableCell>
-              <TableCell>
+              <TableCell onClick={() => setHeader('connName')}>
                 {T.translate(`${I18N_PREFIX}.Names.connection`)}{' '}
-                <img
-                  src={sortNameType === 'Down' ? sortDownIcon : sortUpIcon}
-                  alt="some down icon sort"
-                  className={classes.sortIcon}
-                  onClick={handleNameSort}
-                />
+                {header === 'connName' && (
+                  <img
+                    src={sortNameType === 'Down' ? sortDownIcon : sortUpIcon}
+                    alt="some down icon sort"
+                    className={classes.sortIcon}
+                    onClick={handleNameSort}
+                  />
+                )}
               </TableCell>
-              <TableCell>
+              <TableCell onClick={() => setHeader('lastUsed')}>
                 <div className="flexHeader">
                   {T.translate(`${I18N_PREFIX}.Names.lastUsedOn`)}
-                  <img
-                    src={sortType === 'Down' ? sortDownIcon : sortUpIcon}
-                    alt="some down icon sort"
-                    height="14px"
-                    className={classes.sortIcon}
-                    onClick={handleSortToggle}
-                  />
+                  {header === 'lastUsed' && (
+                    <img
+                      src={sortType === 'Down' ? sortDownIcon : sortUpIcon}
+                      alt="some down icon sort"
+                      height="14px"
+                      className={classes.sortIcon}
+                      onClick={handleSortToggle}
+                    />
+                  )}
                 </div>
               </TableCell>
             </TableRow>

@@ -30,7 +30,7 @@ const styles = (theme): StyleRules => {
       height: 'calc(100% - 66px)', // margin
     },
     header: {
-      paddingBottom: '16px',
+      paddingBottom: '0px',
       fontFamily: 'Lato',
       fontSize: '16px',
       color: '#19A347',

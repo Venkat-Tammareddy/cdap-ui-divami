@@ -37,7 +37,7 @@ const styles = (theme): StyleRules => {
       height: '100%',
     },
     container: {
-      padding: '16px 28px',
+      padding: '16px 28px 0px 28px',
       borderTop: '1px solid #A5A5A5',
     },
     flexContainer: {
@@ -70,6 +70,7 @@ const styles = (theme): StyleRules => {
     },
     arrow: {
       margin: '0px 12px',
+      paddingTop: '2px',
     },
     chip: {
       border: '1px solid #E0E0E0',
@@ -86,6 +87,7 @@ const styles = (theme): StyleRules => {
       alignItems: 'flex-end',
       marginTop: '16px',
       paddingBottom: '21px',
+      border: '1px solid red',
       borderBottom: '1px solid #A5A5A5',
     },
     title: {
@@ -141,6 +143,7 @@ const styles = (theme): StyleRules => {
       marginTop: '28px',
       marginBottom: '20px',
       paddingBottom: '20px',
+      width: '100%',
       borderBottom: '1px solid #A5A5A5',
     },
     runDetailsItem: {
@@ -183,12 +186,16 @@ const styles = (theme): StyleRules => {
       alignItems: 'center',
       cursor: 'pointer',
     },
-    horizontalLine: {
-      borderTop: '1px solid #A5A5A5',
-      width: '1173px',
-    },
     detailHeaderText: {
       marginBottom: '0px',
+    },
+    wrapper: {
+      border: '1px solid red',
+      marginTop: '0px',
+      padding: '0px',
+    },
+    hide: {
+      display: 'none',
     },
   };
 };
@@ -393,7 +400,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
               {taskDetails.connections.targetDb}
             </div>
           </div>
-          <div className={classes.chipContainer}>
+          <div className={taskDetails.tags.length === 0 ? classes.hide : classes.chipContainer}>
             {taskDetails.tags.map((tag) => {
               return (
                 <div className={classes.chip} key={tag}>
@@ -405,7 +412,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         </div>
       </div>
       {taskDetails.runs.length === 0 ? (
-        <>
+        <div className={classes.wrapper}>
           <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
           <div className={classes.cardsContainer}>
             <div className={classes.card} onClick={() => runTask(taskName)}>
@@ -423,7 +430,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
               <img className={classes.cardScheduleIcon} src={scheduleTaskIcon} alt="run-task" />
             </div>
           </div>
-        </>
+        </div>
       ) : (
         <div className={classes.runHistoryContainer}>
           <IngestionHeader title="Run History" graphicalView={true} setGraph={setGraph} />

@@ -19,6 +19,8 @@ import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/wit
 import { Grid, Menu, MenuItem, Paper } from '@material-ui/core';
 import { MyPipelineApi } from 'api/pipeline';
 import NamespaceStore from 'services/NamespaceStore';
+import LoadingSVG from 'components/LoadingSVG';
+import TableCell from 'components/Table/TableCell';
 
 const styles = (theme): StyleRules => {
   return {
@@ -53,26 +55,32 @@ const styles = (theme): StyleRules => {
     },
   };
 };
-
+interface IRunsProps {
+  status: string;
+  runId: string;
+}
 interface ITaskOptionsProps extends WithStyles<typeof styles> {
   taskName: string;
-  latestRun: {
-    status: string;
-    runId: string;
-  };
   refetch: () => void;
+  runs: IRunsProps[];
+  setRuns: (data: any) => void;
 }
 const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   classes,
   taskName,
-  latestRun,
+  runs,
   refetch,
+  setRuns,
 }) => {
   const namespace = NamespaceStore.getState().selectedNamespace;
-
+  const latestRun = runs[0];
   const imgStop = '/cdap_assets/img/stop.svg';
   const imgMore = '/cdap_assets/img/more.svg';
+  const runSuccess = '/cdap_assets/img/last-run-tick.svg';
+  const runError = '/cdap_assets/img/lastrun-error.svg';
+  const runProgress = '/cdap_assets/img/lastrun-inprogress.svg';
   const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Delete'];
+  const [loading, setLoading] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const optionSelect = (type: string) => {
@@ -87,97 +95,150 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
         appId: taskName,
       }).subscribe((message) => {
         console.log(taskName + 'started running....');
-        refetch();
       });
   };
-  const stopRun = () => {
+  const stopRun = (runId: string) => {
     console.log(latestRun);
+    setLoading(true);
     MyPipelineApi.stopRun({
       namespace,
       appId: taskName,
       programType: 'workflows',
       programName: 'DataPipelineWorkflow',
-      runId: latestRun?.runId,
+      runid: runId,
     }).subscribe((msg) => {
       console.log('run stopped successfully');
-      refetch();
     });
   };
+  React.useEffect(() => {
+    MyPipelineApi.pollRuns({
+      namespace,
+      appId: taskName,
+      programType: 'workflows',
+      programName: 'DataPipelineWorkflow',
+    }).subscribe(
+      (runs) => {
+        setRuns(
+          runs.map((run) => {
+            return {
+              status: run.status,
+              runId: run.runid,
+            };
+          })
+        );
+      },
+      (err) => console.log(err)
+    );
+  }, []);
+  React.useEffect(() => setLoading(false), [runs]);
   return (
-    <Grid container spacing={0} className={classes.root}>
-      <Grid item xs={8}>
-        <Paper
-          className={classes.paper}
-          hidden={!(latestRun?.status === 'RUNNING')}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            e.nativeEvent.stopImmediatePropagation();
-            stopRun();
-          }}
-        >
-          <img src={imgStop} alt="img" height="20px" width="20px" />
-          <span className={classes.marginLeft}>Stop</span>
-        </Paper>
-      </Grid>
-      <Grid item xs={4}>
-        <Paper className={classes.paper}>
-          <img
-            src={imgMore}
-            className={classes.optionsIcon}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              e.nativeEvent.stopImmediatePropagation();
-              setAnchorEl(e.currentTarget);
-            }}
-          />
-          <Menu
-            id="long-menu"
-            keepMounted
-            anchorEl={anchorEl}
-            open={open}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            onClose={(e: React.MouseEvent<HTMLButtonElement>) => {
-              e.preventDefault();
-              e.stopPropagation();
-              e.nativeEvent.stopImmediatePropagation();
-              setAnchorEl(null);
-            }}
-            PaperProps={{
-              style: {
-                maxHeight: 48 * 4.5,
-                width: '20ch',
-                marginTop: '40px',
-              },
-            }}
-          >
-            {options.map((option) => (
-              <MenuItem
-                key={option}
+    <>
+      <TableCell>
+        <Grid container spacing={0}>
+          {runs.map(
+            (run, i) =>
+              i < 3 && (
+                <Grid item xs={2} key={i}>
+                  <Paper className={classes.paper}>
+                    <img
+                      src={
+                        (run.status === 'RUNNING' && runProgress) ||
+                        (run.status === 'COMPLETED' && runSuccess) ||
+                        (run.status === 'FAILED' && runError) ||
+                        (run.status === 'KILLED' && runError) ||
+                        runProgress
+                      }
+                      alt="img"
+                      height="20px"
+                      width="20px"
+                    />
+                  </Paper>
+                </Grid>
+              )
+          )}
+        </Grid>
+      </TableCell>
+      <TableCell>
+        <Grid container spacing={0} className={classes.root}>
+          <Grid item xs={8}>
+            {loading ? (
+              <LoadingSVG />
+            ) : (
+              <Paper
+                className={classes.paper}
+                hidden={!(latestRun?.status === 'RUNNING')}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   e.nativeEvent.stopImmediatePropagation();
-                  optionSelect(option);
+                  stopRun(latestRun?.runId);
+                }}
+              >
+                <img src={imgStop} alt="img" height="20px" width="20px" />
+                <span className={classes.marginLeft}>Stop</span>
+              </Paper>
+            )}
+          </Grid>
+          <Grid item xs={4}>
+            <Paper className={classes.paper}>
+              <img
+                src={imgMore}
+                className={classes.optionsIcon}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.nativeEvent.stopImmediatePropagation();
+                  setAnchorEl(e.currentTarget);
+                }}
+              />
+              <Menu
+                id="long-menu"
+                keepMounted
+                anchorEl={anchorEl}
+                open={open}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                onClose={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.nativeEvent.stopImmediatePropagation();
                   setAnchorEl(null);
                 }}
-                className={classes.menuItem}
+                PaperProps={{
+                  style: {
+                    maxHeight: 48 * 4.5,
+                    width: '20ch',
+                    marginTop: '40px',
+                  },
+                }}
               >
-                {option}
-              </MenuItem>
-            ))}
-          </Menu>
-        </Paper>
-      </Grid>
-    </Grid>
+                {options.map((option) => (
+                  <MenuItem
+                    key={option}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.nativeEvent.stopImmediatePropagation();
+                      optionSelect(option);
+                      setAnchorEl(null);
+                    }}
+                    className={classes.menuItem}
+                  >
+                    {option}
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Paper>
+          </Grid>
+        </Grid>
+      </TableCell>
+    </>
   );
 };
 

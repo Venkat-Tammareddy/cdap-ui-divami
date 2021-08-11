@@ -52,7 +52,7 @@ export const MyPipelineApi = {
   pollRuns: apiCreator(dataSrc, 'GET', 'POLL', `${programPath}/runs`),
   getRunsCount: apiCreator(dataSrc, 'POST', 'REQUEST', `${runsCountPath}`),
   pollRunsCount: apiCreator(dataSrc, 'POST', 'POLL', `${runsCountPath}`),
-  stopRun: apiCreator(dataSrc, 'GET', 'REQUEST', `${programPath}/runs/:runid/stop`),
+  stopRun: apiCreator(dataSrc, 'POST', 'REQUEST', `${programPath}/runs/:runid/stop`),
   getNextRunTime: apiCreator(dataSrc, 'GET', 'REQUEST', `${programPath}/nextruntime)`),
   batchGetNextRunTime: apiCreator(dataSrc, 'POST', 'REQUEST', batchNextRuntimePath),
   fetchMacros: apiCreator(dataSrc, 'GET', 'REQUEST', `${basepath}/plugins`),

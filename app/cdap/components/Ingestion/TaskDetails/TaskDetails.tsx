@@ -29,6 +29,7 @@ import { MyMetadataApi } from 'api/metadata';
 import { MyMetricApi } from 'api/metric';
 import produce from 'immer';
 import { parseJdbcString } from '../helpers';
+import LoadingSVGCentered from 'components/LoadingSVGCentered';
 
 const styles = (theme): StyleRules => {
   return {
@@ -41,7 +42,7 @@ const styles = (theme): StyleRules => {
     },
     flexContainer: {
       display: 'flex',
-      alignItems: 'flex-end',
+      alignItems: 'center',
     },
     taskName: {
       fontFamily: 'Lato',
@@ -199,12 +200,13 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const arrowIcon = '/cdap_assets/img/arrow.svg';
   const runTaskIcon = '/cdap_assets/img/run-task-big.svg';
   const scheduleTaskIcon = '/cdap_assets/img/schedule-task-big.svg';
-  const successRatePie = '/cdap_assets/img/success-rate-pie.svg';
-  const clock = '/cdap_assets/img/clock-black.svg';
-  const calender = '/cdap_assets/img/calendar-black.svg';
+  const successRatePie = '/cdap_assets/img/Success Rate.svg';
+  const clock = '/cdap_assets/img/Time.svg';
+  const calender = '/cdap_assets/img/Schedule.svg';
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [schedule, setSchedule] = React.useState(false);
   const [graph, setGraph] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const params = useParams();
   const taskName = (params as any).taskName;
   const [taskDetails, setTaskDetails] = React.useState({
@@ -221,7 +223,6 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     metrics: {},
   });
   React.useEffect(() => {
-    getRuns(taskName);
     MyPipelineApi.get({ namespace: currentNamespace, appId: taskName }).subscribe((data) => {
       console.log('get', data);
       const draftObj = JSON.parse(data.configuration);
@@ -237,6 +238,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           prev.connections.targetDb = draftObj.stages[1].plugin.properties.dataset;
         })
       );
+      getRuns(draftObj.stages[0].name);
     });
     MyMetadataApi.getTags({
       namespace: currentNamespace,
@@ -262,25 +264,16 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           workflow: 'DataPipelineWorkflow',
           run: run.runid,
         },
-        metrics: [
-          // 'user..records.in',
-          // 'user..records.error',
-          // 'user..process.time.total',
-          // 'user..process.time.avg',
-          // 'user..process.time.max',
-          // 'user..process.time.min',
-          // 'user..process.time.stddev',
-          `user.${connectionName}.records.in`,
-          `user.${connectionName}.records.error`,
-        ],
+        metrics: [`user.${connectionName}.records.in`, `user.${connectionName}.records.error`],
         timeRange: {
           aggregate: 'true',
         },
       };
     });
+    console.log('bbb', postBody);
     MyMetricApi.query(null, postBody).subscribe(
       (data) => {
-        console.log(data);
+        console.log('mmm', data);
         setTaskDetails((prev) => {
           return {
             ...prev,
@@ -315,14 +308,17 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       getMetrics(data, connectionName);
     });
   };
+  React.useEffect(() => {
+    setLoading(false);
+  }, [taskDetails.runs]);
   const runTask = (taskName: string) => {
+    setLoading(true);
     MyPipelineApi.run({
       namespace: currentNamespace,
       appId: taskName,
     }).subscribe(
       (message) => {
         console.log(message);
-        getRuns();
       },
       (err) => {
         console.log(err);
@@ -345,6 +341,9 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     <div className={classes.root}>
       <If condition={schedule}>
         <SheduleTask closeSchedule={closeSchedule} />
+      </If>
+      <If condition={loading}>
+        <LoadingSVGCentered />
       </If>
       <IngestionHeader
         title="Ingest Tasks"
@@ -435,6 +434,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
             }}
             graph={graph}
             taskDetails={taskDetails}
+            setLoading={() => setLoading(true)}
           />
         </div>
       )}

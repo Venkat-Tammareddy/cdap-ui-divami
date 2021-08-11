@@ -23,6 +23,7 @@ import CustomTableSelection from '../CustomTableSelection/CustomTableSelection';
 import NamespaceStore from 'services/NamespaceStore';
 import { ConnectionsApi } from 'api/connections';
 import { exploreConnection } from 'components/Connections/Browser/GenericBrowser/apiHelpers';
+import LoadingSVGCentered from 'components/LoadingSVGCentered';
 const I18N_PREFIX = 'features.MappingLayout';
 const styles = (): StyleRules => {
   return {
@@ -186,6 +187,10 @@ const styles = (): StyleRules => {
       lineHeight: '20px',
       marginBottom: '33px',
     },
+    emptyList: {
+      textAlign: 'center',
+      margin: '30px 30px',
+    },
   };
 };
 
@@ -214,9 +219,11 @@ const MappingView: React.FC<IIngestionProps> = ({
   const [customTablesSelection, setCustomTablesSelection] = React.useState(false);
   React.useEffect(() => {
     getTablesList();
+    setLoading(true);
   }, []);
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [items, setItems] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
   const getTablesList = () => {
     ConnectionsApi.exploreConnection(
       {
@@ -244,6 +251,7 @@ const MappingView: React.FC<IIngestionProps> = ({
             }
           })
         );
+        setLoading(false);
       },
       (err) => {
         console.log('TablesList-err', err);
@@ -271,7 +279,13 @@ const MappingView: React.FC<IIngestionProps> = ({
   };
   return (
     <div className={classes.root}>
-      {customTablesSelection ? (
+      {items.length === 0 ? (
+        loading ? (
+          <LoadingSVGCentered />
+        ) : (
+          <h3 className={classes.emptyList}>There are no tables available ...</h3>
+        )
+      ) : customTablesSelection ? (
         <CustomTableSelection
           tablesList={items}
           handleChange={(tableName) => {
@@ -384,15 +398,17 @@ const MappingView: React.FC<IIngestionProps> = ({
           </div>
         </>
       )}
-      <ButtonComponent
-        onCancel={handleCancel}
-        onSubmit={handleSubmit}
-        disableSubmit={
-          (customTablesSelection ? items.every((a) => a.selected === false) : false) ||
-          cardSelected === 'none'
-        }
-        submitText="CONTINUE"
-      />
+      {!loading && (
+        <ButtonComponent
+          onCancel={handleCancel}
+          onSubmit={handleSubmit}
+          disableSubmit={
+            (customTablesSelection ? items.every((a) => a.selected === false) : false) ||
+            cardSelected === 'none'
+          }
+          submitText="CONTINUE"
+        />
+      )}
     </div>
   );
 };

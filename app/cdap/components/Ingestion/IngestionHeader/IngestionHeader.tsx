@@ -180,7 +180,7 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
     <>
       <div className={classes.root}>
         <div className={classes.title}>
-          <div onClick={() => taskActionsBtn && navToHome()}>{title}</div>
+          <div onClick={() => (taskActionsBtn || browseBtn) && navToHome()}>{title}</div>
           {taskActionsBtn && <div className={classes.title2}>Task Details</div>}
           {browseBtn && (
             <>

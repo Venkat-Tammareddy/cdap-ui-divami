@@ -30,6 +30,7 @@ import { MyPipelineApi } from 'api/pipeline';
 import { MyMetricApi } from 'api/metric';
 import produce from 'immer';
 import { parseJdbcString } from '../helpers';
+import history from 'services/history';
 
 const styles = (theme): StyleRules => {
   return {
@@ -219,60 +220,22 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
             aggregate: 'true',
           },
         },
-      }).subscribe(
-        (data) =>
-          setJobDetails(
-            produce((prev) => {
-              prev.records.in = data.qid.series?.find(
-                (item) => item.metricName === `user.${draftObj.stages[0].name}.records.in`
-              )?.data[0].value;
-              prev.records.error = data.qid.series?.find(
-                (item) => item.metricName === `user.${draftObj.stages[0].name}.records.error`
-              )?.data[0].value;
-              prev.records.out = data.qid.series?.find(
-                (item) => item.metricName === `user.${draftObj.stages[0].name}.records.out`
-              )?.data[0].value;
-            })
-          )
-        // setJobDetails((prev) => {
-        //   return {
-        //     ...prev,
-        //     records: {
-        //       ...prev.records,
-        //       in: data.qid.series?.find(
-        //         (item) => item.metricName === 'user.Multiple Database Tables.records.in'inin
-        //       )?.data[0].value,
-        //       out: data.qid.series?.find(
-        //         (item) => item.metricName === 'user.Multiple Database Tables.records.out'
-        //       )?.data[0].value,
-        //       error: data.qid.series?.find(
-        //         (item) => item.metricName === 'user.Multiple Database Tables.records.error'
-        //       )?.data[0].value,
-        //     },
-        //   };
-        // })
+      }).subscribe((data) =>
+        setJobDetails(
+          produce((prev) => {
+            prev.records.in = data.qid.series?.find(
+              (item) => item.metricName === `user.${draftObj.stages[0].name}.records.in`
+            )?.data[0].value;
+            prev.records.error = data.qid.series?.find(
+              (item) => item.metricName === `user.${draftObj.stages[0].name}.records.error`
+            )?.data[0].value;
+            prev.records.out = data.qid.series?.find(
+              (item) => item.metricName === `user.${draftObj.stages[0].name}.records.out`
+            )?.data[0].value;
+          })
+        )
       );
     });
-    // MyPipelineApi.fetchMacros({ appId: taskName, namespace: currentNamespace }).subscribe(
-    //   (res) => {
-    //     console.log('res', res);
-    //     setJobDetails((prevData) => {
-    //       return {
-    //         ...prevData,
-    //         jobConfig: {
-    //           ...prevData.jobConfig,
-    //           sourceConnection: res[1].id,
-    //           sourceDb: res[1].spec.properties.properties.connectionString?.split('/')[3],
-    //           targetConnection: res[2].id,
-    //           targetDb: res[2].spec.properties.properties.dataset,
-    //         },
-    //       };
-    //     });
-    //   },
-    //   (err) => {
-    //     console.log(err);
-    //   }
-    // );
   }, []);
 
   function mylogs() {
@@ -304,6 +267,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
         jobName={jobId}
         browseBtn
         onBrowse={() => console.log('browse data')}
+        navToHome={() => history.push(`/ns/${currentNamespace}/ingestion`)}
       />
       <div className={classes.container}>
         <div className={classes.tabsWrapper}>

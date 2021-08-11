@@ -16,15 +16,9 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { EntityTopPanel } from 'components/EntityTopPanel';
-import { Button } from '@material-ui/core';
 import history from 'services/history';
-import ErrorBoundary from 'components/ErrorBoundary';
-import DeployedPipelineView from 'components/PipelineList/DeployedPipelineView';
-import DraftPipelineView from 'components/PipelineList/DraftPipelineView';
 import IngestionTaskList from 'components/Ingestion/IngestionTaskList/index';
 import DraftsList from 'components/Ingestion/DraftsList/DraftsList';
-import SheduleTask from 'components/Ingestion/SheduleTask/SheduleTask';
 import T from 'i18n-react';
 import SearchIcon from '@material-ui/icons/Search';
 import { TextField } from '@material-ui/core';
@@ -38,7 +32,6 @@ import If from 'components/If';
 import ErrorBanner from 'components/ErrorBanner';
 import { MyPipelineApi } from 'api/pipeline';
 import { humanReadableDate } from 'services/helpers';
-import { MyMetadataApi } from 'api/metadata';
 
 const I18N_PREFIX = 'features.PipelineList.DeployedPipelineView';
 
@@ -75,6 +68,7 @@ const styles = (theme): StyleRules => {
       padding: '7.5px',
       marginRight: '22.5px',
       cursor: 'pointer',
+      whiteSpace: 'nowrap',
       // '&:active': {
       //   textDecoration: 'underline',
       // },
@@ -104,7 +98,6 @@ const styles = (theme): StyleRules => {
 };
 
 interface IIngestionHomeProps extends WithStyles<typeof styles> {}
-const PREFIX = 'features.PipelineList';
 const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const [displayDrafts, setDisplayDrafts] = React.useState(false);
   const [draftsList, setDraftsList] = React.useState([]);
@@ -204,6 +197,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const mapDratsList = () => {
     return draftsList.map((ele) => {
       return {
+        id: ele.id,
         pipeLineName: ele.name,
         type: 'Batch',
         lastSaved: humanReadableDate(ele.updatedTimeMillis),

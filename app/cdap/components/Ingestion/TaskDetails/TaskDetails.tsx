@@ -17,7 +17,7 @@
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import history from 'services/history';
-import { Divider, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import IngestionJobsList from '../IngestionTaskList/IngestionJobsList';
 import NamespaceStore from 'services/NamespaceStore';
@@ -26,10 +26,9 @@ import SheduleTask from '../SheduleTask/SheduleTask';
 import { useParams } from 'react-router';
 import { MyPipelineApi } from 'api/pipeline';
 import { MyMetadataApi } from 'api/metadata';
-import ArrowDropDownSharpIcon from '@material-ui/icons/ArrowDropDownSharp';
-import LoadingSVGCentered from 'components/LoadingSVGCentered';
 import { MyMetricApi } from 'api/metric';
-import ArrowDropUpSharpIcon from '@material-ui/icons/ArrowDropUpSharp';
+import produce from 'immer';
+import { parseJdbcString } from '../helpers';
 
 const styles = (theme): StyleRules => {
   return {
@@ -196,21 +195,6 @@ const styles = (theme): StyleRules => {
 interface ITaskDetailsProps extends WithStyles<typeof styles> {
   test: string;
 }
-const connection = {
-  name: 'Ingest oracle studies data to bigquery',
-  date: '04 May 21, 07:30 pm',
-  description:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam scelerisque neque odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  source: {
-    connName: 'Oracle-global-server Connection',
-    connDb: 'Studies',
-  },
-  target: {
-    connName: 'BigQuery-global-server',
-    connDb: 'StudyPerformance',
-  },
-  tags: ['Colleges', 'Exams', 'Tests'],
-};
 const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const arrowIcon = '/cdap_assets/img/arrow.svg';
   const runTaskIcon = '/cdap_assets/img/run-task-big.svg';
@@ -225,6 +209,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const taskName = (params as any).taskName;
   const [taskDetails, setTaskDetails] = React.useState({
     taskName,
+    description: '',
     tags: [],
     runs: [],
     connections: {
@@ -236,33 +221,23 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     metrics: {},
   });
   React.useEffect(() => {
-    MyPipelineApi.get({ namespace: currentNamespace, appId: taskName }).subscribe((data) =>
-      console.log('get', data)
-    );
-    MyPipelineApi.fetchMacros({
-      appId: taskName,
-      namespace: currentNamespace,
-      format: 'json',
-    }).subscribe(
-      (res) => {
-        console.log('res', res);
-        setTaskDetails((prevData) => {
-          return {
-            ...prevData,
-            connections: {
-              sourceName: res[1].id,
-              sourceDb: res[1].spec.properties.properties.connectionString?.split('/')[3],
-              targetName: res[2].id,
-              targetDb: res[2].spec.properties.properties.dataset,
-            },
-          };
-        });
-        getRuns(res[1].id);
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+    getRuns(taskName);
+    MyPipelineApi.get({ namespace: currentNamespace, appId: taskName }).subscribe((data) => {
+      console.log('get', data);
+      const draftObj = JSON.parse(data.configuration);
+      setTaskDetails(
+        produce((prev) => {
+          prev.description = data.description;
+          prev.connections.sourceName = draftObj.stages[0].name;
+          prev.connections.sourceDb = parseJdbcString(
+            draftObj.stages[0].plugin.properties.connectionString,
+            draftObj.stages[0].plugin.properties.jdbcPluginName
+          );
+          prev.connections.targetName = draftObj.stages[1].name;
+          prev.connections.targetDb = draftObj.stages[1].plugin.properties.dataset;
+        })
+      );
+    });
     MyMetadataApi.getTags({
       namespace: currentNamespace,
       entityType: 'apps',
@@ -382,7 +357,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       <div className={classes.container}>
         <div className={classes.flexContainer}>
           <div className={classes.taskName}>{taskName}</div>
-          <div className={classes.taskDate}>- Deployed on {connection.date}</div>
+          <div className={classes.taskDate}>- Deployed on 04 May 21, 07:30 pm</div>
         </div>
         {taskDetails.runs.length > 1 && (
           <div className={classes.runDetails}>
@@ -405,7 +380,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         )}
         <div>
           {' '}
-          <div className={classes.description}>{connection.description}</div>
+          <div className={classes.description}>{taskDetails.description}</div>
           <div className={classes.connectionContainer}>
             <div className={classes.taskDate}>
               {taskDetails.connections.sourceName}

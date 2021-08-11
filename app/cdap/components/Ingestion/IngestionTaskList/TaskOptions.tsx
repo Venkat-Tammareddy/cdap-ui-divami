@@ -137,7 +137,12 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
             keepMounted
             anchorEl={anchorEl}
             open={open}
-            onClose={(e) => setAnchorEl(null)}
+            onClose={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.preventDefault();
+              e.stopPropagation();
+              e.nativeEvent.stopImmediatePropagation();
+              setAnchorEl(null);
+            }}
             PaperProps={{
               style: {
                 maxHeight: 48 * 4.5,

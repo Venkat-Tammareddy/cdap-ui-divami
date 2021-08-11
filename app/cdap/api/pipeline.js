@@ -67,6 +67,12 @@ export const MyPipelineApi = {
   getExtensions: apiCreator(dataSrc, 'GET', 'REQUEST', extensionsPath),
 
   getDrafts: apiCreator(dataSrc, 'GET', 'REQUEST', `${pipelineV1AppContextPath}/drafts`),
+  getDraftDetails: apiCreator(
+    dataSrc,
+    'GET',
+    'REQUEST',
+    `${pipelineV1AppContextPath}/drafts/:draftId`
+  ),
   saveDraft: apiCreator(dataSrc, 'PUT', 'REQUEST', `${pipelineV1AppContextPath}/drafts/:draftId`),
   deleteDraft: apiCreator(
     dataSrc,

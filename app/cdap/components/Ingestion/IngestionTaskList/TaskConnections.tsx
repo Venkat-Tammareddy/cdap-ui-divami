@@ -20,6 +20,8 @@ import TableCell from 'components/Table/TableCell';
 import { Grid, Paper } from '@material-ui/core';
 import { MyPipelineApi } from 'api/pipeline';
 import NamespaceStore from 'services/NamespaceStore';
+import produce from 'immer';
+import { parseJdbcString } from '../helpers';
 
 const styles = (theme): StyleRules => {
   return {
@@ -32,6 +34,7 @@ const styles = (theme): StyleRules => {
       fontSize: '14px',
       color: '#202124',
       textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
     },
   };
 };
@@ -48,22 +51,21 @@ const TaskConnectionsView: React.FC<ITaskConnectionsProps> = ({ classes, taskNam
     targetDb: '',
   });
   React.useEffect(() => {
-    MyPipelineApi.fetchMacros({
-      appId: taskName,
-      namespace,
-    }).subscribe(
-      (res) => {
-        setConnections({
-          sourceName: res[1].id,
-          sourceDb: res[1].spec.properties.properties.connectionString?.split('/')[3],
-          targetName: res[2].id,
-          targetDb: res[2].spec.properties.properties.dataset,
-        });
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+    MyPipelineApi.get({ namespace, appId: taskName }).subscribe((data) => {
+      console.log('get', data);
+      const draftObj = JSON.parse(data.configuration);
+      setConnections(
+        produce((prev) => {
+          prev.sourceName = draftObj.stages[0].name;
+          prev.sourceDb = parseJdbcString(
+            draftObj.stages[0].plugin.properties.connectionString,
+            draftObj.stages[0].plugin.properties.jdbcPluginName
+          );
+          prev.targetName = draftObj.stages[1].name;
+          prev.targetDb = draftObj.stages[1].plugin.properties.dataset;
+        })
+      );
+    });
   }, []);
   return (
     <>

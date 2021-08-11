@@ -23,16 +23,21 @@ import NamespaceStore from 'services/NamespaceStore';
 const styles = (theme): StyleRules => {
   return {
     paper: {
-      boxShadow: 'none',
-      backgroundColor: 'rgb(255 255 255 / 0%)',
+      fontFamily: 'Lato',
       fontSize: '14px',
       color: '#202124',
+      lineHeight: '24px',
+      boxShadow: 'none',
+      backgroundColor: 'rgb(255 255 255 / 0%)',
       textOverflow: 'ellipsis',
     },
     paperCount: {
       boxShadow: 'none',
       backgroundColor: 'rgb(255 255 255 / 0%)',
       color: '#4285F4',
+    },
+    flex: {
+      display: 'flex',
     },
   };
 };
@@ -43,7 +48,7 @@ interface ITaskTagsProps extends WithStyles<typeof styles> {
 const TaskTagsView: React.FC<ITaskTagsProps> = ({ classes, taskName }) => {
   const namespace = NamespaceStore.getState().selectedNamespace;
   const [tags, setTags] = React.useState([]);
-
+  const [viewMore, setViewMore] = React.useState(true);
   React.useEffect(() => {
     MyMetadataApi.getTags({
       namespace,
@@ -52,6 +57,9 @@ const TaskTagsView: React.FC<ITaskTagsProps> = ({ classes, taskName }) => {
     }).subscribe((tags) => {
       console.log(tags);
       setTags(tags.tags.filter((tag) => tag.scope === 'USER').map((tag) => tag.name));
+      {
+        tags.tags.length < 1 && setViewMore(false);
+      }
     });
   }, []);
 
@@ -61,12 +69,39 @@ const TaskTagsView: React.FC<ITaskTagsProps> = ({ classes, taskName }) => {
         {tags.length === 0 && (
           <p style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}>- -</p>
         )}
-        <Paper className={classes.paper}>{tags[0]}</Paper>
+        {viewMore ? (
+          <>
+            <Paper className={classes.paper}>{tags[0]}</Paper>
+            {tags.length > 1 ? (
+              <Paper
+                className={classes.paperCount}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setViewMore(false);
+                }}
+              >
+                +{tags.length - 1} more
+              </Paper>
+            ) : (
+              ''
+            )}
+          </>
+        ) : (
+          <div className={classes.flex}>
+            {tags.map((tag, index) => (
+              <Paper key={tag} className={classes.paper}>
+                {(index ? ', ' : '') + tag}
+              </Paper>
+            ))}
+          </div>
+        )}
+
+        {/* <Paper className={classes.paper}>{tags[0]}</Paper>
         {tags.length > 1 ? (
           <Paper className={classes.paperCount}>+{tags.length - 1} more</Paper>
         ) : (
           ''
-        )}
+        )} */}
       </Grid>
     </Grid>
   );

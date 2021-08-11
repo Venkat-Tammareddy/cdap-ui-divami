@@ -148,7 +148,10 @@ const styles = (theme): StyleRules => {
       flexDirection: 'column',
     },
     foorm: {
-      marginBottom: '100px',
+      marginBottom: '80px',
+    },
+    shedulemsg: {
+      paddingLeft: '20px',
     },
   };
 };
@@ -649,7 +652,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
             className={classes.msgName}
           >
             <img src={timer} />
-            {sheduleString()}
+            <span className={classes.shedulemsg}>{sheduleString()}</span>
           </Box>
           <Box className={classes.btnFooter}>
             <Grid container spacing={0}>

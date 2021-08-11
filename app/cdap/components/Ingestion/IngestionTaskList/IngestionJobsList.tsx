@@ -35,7 +35,7 @@ const styles = (theme): StyleRules => {
       margin: '0px 28px',
     },
     header: {
-      paddingBottom: '16px',
+      paddingBottom: '0px',
       fontFamily: 'Lato',
       fontSize: '16px',
       color: '#19A347',

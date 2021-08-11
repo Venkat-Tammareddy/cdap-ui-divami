@@ -126,6 +126,17 @@ const styles = (theme): StyleRules => {
       alignItems: 'center',
     },
     selected: {},
+    active: {
+      backgroundColor: '#ECF2FD',
+      padding: '6px 12px 6px 12px',
+      borderRight: '1px solid #A5A5A5',
+      cursor: 'pointer',
+    },
+    activeChart: {
+      backgroundColor: '#ECF2FD',
+      padding: '6px 12px 6px 12px',
+      cursor: 'pointer',
+    },
   };
 };
 
@@ -175,6 +186,7 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   const open = Boolean(anchorEl);
   const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Archive'];
   const [showRecords, setShowRecords] = React.useState(false);
+  const [activIcon, setActivIcon] = React.useState('chart');
 
   return (
     <>
@@ -247,8 +259,9 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
             </div>
             <div className={classes.buttons}>
               <div
-                className={classes.listIcons}
+                className={activIcon === 'chart' ? classes.active : classes.listIcons}
                 onClick={() => {
+                  setActivIcon('chart');
                   setGraph(false);
                   setShowRecords(false);
                 }}
@@ -256,8 +269,9 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
                 <img src={listView} height="18px" width="18px" />
               </div>
               <div
-                className={classes.graphIcons}
+                className={activIcon === 'graph' ? classes.activeChart : classes.graphIcons}
                 onClick={() => {
+                  setActivIcon('graph');
                   setGraph(true);
                   setShowRecords(true);
                 }}

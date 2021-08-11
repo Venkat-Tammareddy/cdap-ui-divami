@@ -20,7 +20,6 @@ import history from 'services/history';
 import IngestionTaskList from 'components/Ingestion/IngestionTaskList/index';
 import DraftsList from 'components/Ingestion/DraftsList/DraftsList';
 import T from 'i18n-react';
-import SearchIcon from '@material-ui/icons/Search';
 import { TextField } from '@material-ui/core';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import { getCurrentNamespace } from 'services/NamespaceStore';
@@ -51,7 +50,7 @@ const styles = (theme): StyleRules => {
     },
     tabsWrapper: {
       padding: '18px 0px',
-      display: 'flex',
+      display: 'grid',
       gridTemplateColumns: '0.1fr 1fr 0fr',
     },
     tabContainer: {
@@ -61,6 +60,7 @@ const styles = (theme): StyleRules => {
     },
     taskTabs: {
       minWidth: '30px',
+      maxWidth: '70px',
       fontFamily: 'Lato',
       fontSize: '14px',
       color: ' #202124;',
@@ -106,7 +106,13 @@ const styles = (theme): StyleRules => {
     homeHeaders: {
       display: 'flex',
       gap: '500px',
-    }
+    },
+    // tasksDiv: {
+    //   maxWidth: 'fit-content',
+    // },
+    // draftsDiv: {
+
+    // },
   };
 };
 
@@ -207,6 +213,11 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     }
   }
 
+  const searchIcon = '/cdap_assets/img/search.svg';
+
+  const SearchIcon = () => {
+    return <img src={searchIcon} alt="icon" />;
+  };
   const mapDratsList = () => {
     return draftsList.map((ele) => {
       return {
@@ -231,34 +242,34 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
         />
         <div className={classes.tabbleViewWrpr}>
           <div className={classes.tabsWrapper}>
-              <div>
-                <span
-                  className={classes.taskTabs}
-                  onClick={() => setDisplayDrafts(false)}
-                  style={{
-                    borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none',
-                    opacity: displayDrafts ? '0.7' : '',
-                  }}
-                >
-                  TASKS ({data.pipelines.length})
-                </span>
-              </div>
-              <div>
-                <span
-                  className={classes.draftTabs}
-                  onClick={() => setDisplayDrafts(true)}
-                  style={{
-                    borderBottom: displayDrafts ? '4px solid #4285F4' : 'none',
-                    opacity: !displayDrafts ? '0.7' : '',
-                  }}
-                >
-                  DRAFTS ({draftsList.length})
-                </span>
-              </div>
+            <div className={classes.tasksDiv}>
+              <span
+                className={classes.taskTabs}
+                onClick={() => setDisplayDrafts(false)}
+                style={{
+                  borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none',
+                  opacity: displayDrafts ? '0.7' : '',
+                }}
+              >
+                TASKS ({data.pipelines.length})
+              </span>
+            </div>
+            <div className={classes.draftsDiv}>
+              <span
+                className={classes.draftTabs}
+                onClick={() => setDisplayDrafts(true)}
+                style={{
+                  borderBottom: displayDrafts ? '4px solid #4285F4' : 'none',
+                  opacity: !displayDrafts ? '0.7' : '',
+                }}
+              >
+                DRAFTS ({draftsList.length})
+              </span>
+            </div>
 
             <TextField
               variant="outlined"
-              placeholder={'search tasks'}
+              placeholder={'Search drafts'}
               className={classes.search}
               onChange={(e) => setSearch(e.target.value)}
               InputProps={{

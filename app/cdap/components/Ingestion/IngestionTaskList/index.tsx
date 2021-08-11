@@ -45,7 +45,7 @@ const styles = (theme): StyleRules => {
       },
     },
     header: {
-      paddingBottom: '16px',
+      paddingBottom: '10.5px',
       fontFamily: 'Lato',
       fontSize: '16px',
       color: '#19A347',
@@ -119,6 +119,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
 
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [taskList, setTaskList] = React.useState(data);
+  const [more, setMore] = React.useState(false);
 
   const filteredList = taskList.filter((item) =>
     item.taskName?.toLowerCase().includes(searchText?.toLowerCase())
@@ -176,6 +177,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                     history.push(`/ns/${currentNamespace}/ingestion/task/${item.taskName}`);
                   }}
                   // to={`/ns/${currentNamespace}/ingestion/task/${item.taskName}`}
+                  onMouseOver={() => setMore(true)}
                 >
                   <TableCell>
                     <Grid container spacing={0}>

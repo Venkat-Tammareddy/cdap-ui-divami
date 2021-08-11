@@ -49,6 +49,9 @@ const styles = (theme): StyleRules => {
       width: '100%',
       zIndex: 10,
       top: '48px',
+      '& .MuiInputBase-input': {
+        fontSize: '16px',
+      },
     },
     sdleTskWrapper: {
       width: '524px',
@@ -84,12 +87,14 @@ const styles = (theme): StyleRules => {
       minHeight: '32px',
       background: '#dcedf5',
       borderRadius: '15.5px',
+      marginTop: 'auto',
     },
     timePicker: {
       border: '1px solid #c8ccd0',
+      margin: '0',
       width: 320,
       padding: '12px 10px',
-
+      borderRadius: '4px',
       '& ::before': {
         borderBottom: 'none',
         content: 'none',
@@ -127,6 +132,23 @@ const styles = (theme): StyleRules => {
       color: '#202124',
       lineHeight: '24px',
       letterSpacing: '0.13px',
+    },
+    optionsLabel2: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#202124',
+      lineHeight: '24px',
+      letterSpacing: '0.13px',
+      marginBottom: '0px',
+    },
+    container: {
+      display: 'flex',
+      marginTop: '30px',
+      gap: '10px',
+      flexDirection: 'column',
+    },
+    foorm: {
+      marginBottom: '100px',
     },
   };
 };
@@ -197,6 +219,11 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
     setSheduleObj(initialSheduleObj);
   }, [checkedItem]);
 
+  const calenderIcon = '/cdap_assets/img/calendar.svg';
+
+  const Calender = () => {
+    return <img src={calenderIcon} alt="calenderIcon" />;
+  };
   const formatAMPM = (date: Date) => {
     let hours = date.getHours();
     const minutes = date.getMinutes();
@@ -331,20 +358,23 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
               handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
               type={'hours'}
             />
-            <Box mb={1} className={classes.optionsLabel}>
-              When do you want to start this event?{' '}
-            </Box>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardTimePicker
-                className={classes.timePicker}
-                margin="normal"
-                value={selectedTime}
-                onChange={handleTimeChange}
-                KeyboardButtonProps={{
-                  'aria-label': 'change time',
-                }}
-              />
-            </MuiPickersUtilsProvider>
+            <div className={classes.container}>
+              <Box mb={1} className={classes.optionsLabel2}>
+                When do you want to start this event?{' '}
+              </Box>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardTimePicker
+                  className={classes.timePicker}
+                  margin="normal"
+                  value={selectedTime}
+                  onChange={handleTimeChange}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change time',
+                  }}
+                  keyboardIcon={<Calender />}
+                />
+              </MuiPickersUtilsProvider>
+            </div>
           </Box>
         );
       }
@@ -517,7 +547,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
   };
 
   const sheduleString = () => {
-    const string = `The task is sheduled to run every  `;
+    const string = `The task is scheduled to run every  `;
     switch (checkedItem) {
       case 'Hourly':
         {
@@ -586,7 +616,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
         <div className={classes.sdleTskWrapper}>
           <div className={classes.heading}>
             <Box component="span" mr={2}>
-              Shedule Task
+              Schedule Task
             </Box>
             <img src={tileDesignBar}></img>
           </div>
@@ -610,8 +640,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
               ))}
             </Grid>
           </Box>
-          {renderForm()}
-
+          <div className={classes.foorm}>{renderForm()}</div>
           <Box
             mt={2}
             display="flex"

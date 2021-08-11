@@ -56,12 +56,11 @@ const styles = (theme): StyleRules => {
     },
     tabContainer: {
       height: '80px',
-      // display: 'grid',
-      // gridTemplateColumns: '0fr 1fr 0fr',
+      display: 'grid',
+      gridTemplateColumns: '0fr 1fr 0fr',
     },
     taskTabs: {
       minWidth: '30px',
-      maxWidth: '70px',
       fontFamily: 'Lato',
       fontSize: '14px',
       color: ' #202124;',
@@ -107,20 +106,7 @@ const styles = (theme): StyleRules => {
     homeHeaders: {
       display: 'flex',
       gap: '500px',
-    },
-    taskDivs: {
-      border: '1px solid red',
-      maxWidth: '70px',
-    },
-    draftDivs: {
-      border: '1px solid red',
-      paddingLeft: '0px',
-      marginLeft: '35px',
-    },
-    newWrapper: {
-      display: 'flex',
-      flex: '1',
-    },
+    }
   };
 };
 
@@ -245,8 +231,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
         />
         <div className={classes.tabbleViewWrpr}>
           <div className={classes.tabsWrapper}>
-            <div className={classes.newWrapper}>
-              <div className={classes.taskDivs}>
+              <div>
                 <span
                   className={classes.taskTabs}
                   onClick={() => setDisplayDrafts(false)}
@@ -258,7 +243,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
                   TASKS ({data.pipelines.length})
                 </span>
               </div>
-              <div className={classes.draftDivs}>
+              <div>
                 <span
                   className={classes.draftTabs}
                   onClick={() => setDisplayDrafts(true)}
@@ -270,7 +255,6 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
                   DRAFTS ({draftsList.length})
                 </span>
               </div>
-            </div>
 
             <TextField
               variant="outlined"

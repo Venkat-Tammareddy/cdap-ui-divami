@@ -31,6 +31,7 @@ import NamespaceStore from 'services/NamespaceStore';
 import { MyMetadataApi } from 'api/metadata';
 import produce from 'immer';
 import { MyPipelineApi } from 'api/pipeline';
+import history from 'services/history';
 const styles = (theme): StyleRules => {
   return {
     root: {
@@ -201,7 +202,10 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, searchText,
                   key={index}
                   className={classes.tableRow}
                   data-cy={`table-row-${item.taskName}`}
-                  to={`/ns/${currentNamespace}/ingestion/task/${item.taskName}`}
+                  onClick={(e) =>
+                    history.push(`/ns/${currentNamespace}/ingestion/task/${item.taskName}`)
+                  }
+                  // to={`/ns/${currentNamespace}/ingestion/task/${item.taskName}`}
                 >
                   <TableCell>
                     <Grid container spacing={0}>

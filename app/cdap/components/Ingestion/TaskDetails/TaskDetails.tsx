@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react';
+import { useContext } from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import history from 'services/history';
 import { Typography } from '@material-ui/core';
@@ -26,7 +27,9 @@ import SheduleTask from '../SheduleTask/SheduleTask';
 import { useParams } from 'react-router';
 import { MyPipelineApi } from 'api/pipeline';
 import { MyMetadataApi } from 'api/metadata';
-
+import { ingestionContext } from 'components/Ingestion/ingestionContext';
+import { any } from 'prop-types';
+import { humanReadableDate } from 'services/helpers';
 const styles = (theme): StyleRules => {
   return {
     root: {
@@ -191,8 +194,10 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [schedule, setSchedule] = React.useState(false);
   const [graph, setGraph] = React.useState(false);
+  const { ingestionTasklList } = useContext(ingestionContext);
   const params = useParams();
   const taskName = (params as any).taskName;
+
   const [taskDetails, setTaskDetails] = React.useState({
     tags: [],
     runs: [],
@@ -202,8 +207,10 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       targetName: '',
       targetDb: '',
     },
+    sheduleDetails: { nextRuntime: [] },
   });
   React.useEffect(() => {
+    console.log('hhhh', ingestionTasklList);
     MyPipelineApi.fetchMacros({ appId: taskName, namespace: currentNamespace }).subscribe(
       (res) => {
         console.log('res', res);
@@ -216,6 +223,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
               targetName: res[2].id,
               targetDb: res[2].spec.properties.properties.dataset,
             },
+            sheduleDetails: ingestionTasklList.find((ele) => ele.name == taskName),
           };
         });
       },

@@ -17,17 +17,10 @@
 import * as React from 'react';
 import { useContext } from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { EntityTopPanel } from 'components/EntityTopPanel';
-import { Button } from '@material-ui/core';
 import history from 'services/history';
-import ErrorBoundary from 'components/ErrorBoundary';
-import DeployedPipelineView from 'components/PipelineList/DeployedPipelineView';
-import DraftPipelineView from 'components/PipelineList/DraftPipelineView';
 import IngestionTaskList from 'components/Ingestion/IngestionTaskList/index';
 import DraftsList from 'components/Ingestion/DraftsList/DraftsList';
-import SheduleTask from 'components/Ingestion/SheduleTask/SheduleTask';
 import T from 'i18n-react';
-import SearchIcon from '@material-ui/icons/Search';
 import { TextField } from '@material-ui/core';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import { getCurrentNamespace } from 'services/NamespaceStore';
@@ -65,42 +58,68 @@ const styles = (theme): StyleRules => {
     },
     tabContainer: {
       height: '80px',
-      // display: 'grid',
-      // gridTemplateColumns: '0fr 1fr 0fr',
+      display: 'grid',
+      gridTemplateColumns: '0fr 1fr 0fr',
     },
-    tabs: {
+    taskTabs: {
       minWidth: '30px',
+      maxWidth: '70px',
       fontFamily: 'Lato',
       fontSize: '14px',
       color: ' #202124;',
       letterSpacing: '0.13px',
-      padding: '7.5px',
-      marginRight: '22.5px',
+      paddingBottom: '10px',
+      // marginRight: '22.5px',
       cursor: 'pointer',
       // '&:active': {
       //   textDecoration: 'underline',
       // },
     },
+    draftTabs: {
+      minWidth: '30px',
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: ' #202124;',
+      letterSpacing: '0.13px',
+      paddingBottom: '10px',
+      // marginRight: '22.5px',
+      cursor: 'pointer',
+      whiteSpace: 'nowrap',
+      // '&:active': {
+      //   textDecoration: 'underline',
+      // },
+    },
     search: {
-      width: '256px',
+      width: '276px',
+      height: '36px',
       '& .MuiOutlinedInput-root': {
         '& fieldset': {
-          borderRadius: `25px`,
-          height: '36px',
+          borderRadius: '23px',
         },
+        height: '36px',
       },
       '& .MuiOutlinedInput-adornedStart ': {
-        padding: '7px',
+        padding: '8px',
       },
       '& .MuiOutlinedInput-input': {
         padding: '0px',
+        textIndent: '10px',
       },
     },
+    homeHeaders: {
+      display: 'flex',
+      gap: '500px',
+    },
+    // tasksDiv: {
+    //   maxWidth: 'fit-content',
+    // },
+    // draftsDiv: {
+
+    // },
   };
 };
 
 interface IIngestionHomeProps extends WithStyles<typeof styles> {}
-const PREFIX = 'features.PipelineList';
 const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const { setIngestionListfn } = useContext(ingestionContext);
   const [displayDrafts, setDisplayDrafts] = React.useState(false);
@@ -160,7 +179,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     setIngestionListfn(data.pipelines);
     return data.pipelines.map((ele) => {
       return {
-        runId: ele.runs.runid,
+        runId: ele.runs[0]?.runid,
         taskName: ele.name,
         status: ele.runs.length === 0 ? '' : ele.runs[0].status,
         sourceConnectionDb: '',
@@ -199,9 +218,15 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     }
   }
 
+  const searchIcon = '/cdap_assets/img/search.svg';
+
+  const SearchIcon = () => {
+    return <img src={searchIcon} alt="icon" />;
+  };
   const mapDratsList = () => {
     return draftsList.map((ele) => {
       return {
+        id: ele.id,
         pipeLineName: ele.name,
         type: 'Batch',
         lastSaved: humanReadableDate(ele.updatedTimeMillis),
@@ -222,27 +247,34 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
         />
         <div className={classes.tabbleViewWrpr}>
           <div className={classes.tabsWrapper}>
-            <div>
+            <div className={classes.tasksDiv}>
               <span
-                className={classes.tabs}
+                className={classes.taskTabs}
                 onClick={() => setDisplayDrafts(false)}
-                style={{ borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none' }}
+                style={{
+                  borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none',
+                  opacity: displayDrafts ? '0.7' : '',
+                }}
               >
                 TASKS ({data.pipelines.length})
               </span>
             </div>
-            <div>
+            <div className={classes.draftsDiv}>
               <span
-                className={classes.tabs}
+                className={classes.draftTabs}
                 onClick={() => setDisplayDrafts(true)}
-                style={{ borderBottom: displayDrafts ? '4px solid #4285F4' : 'none' }}
+                style={{
+                  borderBottom: displayDrafts ? '4px solid #4285F4' : 'none',
+                  opacity: !displayDrafts ? '0.7' : '',
+                }}
               >
                 DRAFTS ({draftsList.length})
               </span>
             </div>
+
             <TextField
               variant="outlined"
-              placeholder={'search tasks'}
+              placeholder={'Search drafts'}
               className={classes.search}
               onChange={(e) => setSearch(e.target.value)}
               InputProps={{
@@ -255,7 +287,11 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
           {displayDrafts ? (
             <DraftsList data={mapDratsList()} searchText={search} />
           ) : (
-            <IngestionTaskList searchText={search} data={setIngestionTaskList()} />
+            <IngestionTaskList
+              searchText={search}
+              data={setIngestionTaskList()}
+              refetch={refetch}
+            />
           )}
         </div>
       </div>

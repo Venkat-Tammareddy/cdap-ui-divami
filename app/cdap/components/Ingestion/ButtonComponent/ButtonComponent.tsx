@@ -27,7 +27,7 @@ const styles = (): StyleRules => {
   return {
     root: {
       display: 'flex',
-      gap: '50px',
+      gap: '30px',
       alignItems: 'end',
       justifyContent: 'flex-end',
     },
@@ -39,6 +39,7 @@ const styles = (): StyleRules => {
       letterSpacing: '1.25px',
       lineHeight: '24px',
       fontFamily: 'Lato',
+      paddingRight: '0px',
     },
     submitButton: {
       backgroundColor: '#4285F4',

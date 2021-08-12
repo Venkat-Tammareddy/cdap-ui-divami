@@ -25,7 +25,7 @@ import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import { humanReadableDate } from 'services/helpers';
 import OverlaySmall from '../OverlaySmall/OverlaySmall';
-import { getPluginDisplayName, parseJdbcString } from '../helpers';
+import { parseJdbcString } from '../helpers';
 const I18N_PREFIX = 'features.SelectConnections';
 
 const styles = (theme): StyleRules => {
@@ -42,6 +42,9 @@ const styles = (theme): StyleRules => {
         },
         height: '36px',
       },
+      '& .MuiOutlinedInput-input': {
+        textIndent: '10px',
+      },
     },
     search: {
       width: '276px',
@@ -52,7 +55,6 @@ const styles = (theme): StyleRules => {
       '&::placeholder': {
         fontFamily: 'Lato',
         color: '#ADADAD',
-        paddingLeft: '11px',
         opacity: '0.5',
       },
       height: '50px',
@@ -98,6 +100,7 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       flexDirection: 'row-reverse',
       gap: '30px',
+      paddingTop: '50px',
     },
     cancelButton: {
       textDecoration: 'none',
@@ -107,6 +110,7 @@ const styles = (theme): StyleRules => {
       letterSpacing: '1.25px',
       lineHeight: '24px',
       fontFamily: 'Lato',
+      paddingRight: '0px',
     },
     submitButton: {
       backgroundColor: '#4285F4',
@@ -139,6 +143,32 @@ const styles = (theme): StyleRules => {
     },
     sortIcon: {
       marginLeft: '13.5px',
+      cursor: 'pointer',
+    },
+    errorContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      flexDirection: 'column',
+    },
+    errorIcon: {
+      height: '81px',
+      width: '97px',
+      marginTop: '116px',
+    },
+    errorTitle: {
+      fontFamily: 'Lato',
+      fontSize: '18px',
+      color: '#202124',
+      textAlign: 'center',
+      marginTop: '20px',
+    },
+    errorTitle2: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#666666',
+      lineHeight: '20px',
+      marginTop: '10px',
     },
   };
 };
@@ -163,7 +193,10 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const [selectedConnection, setSelectedConnection] = React.useState<any>({});
   const [sortType, setSortType] = React.useState('Down');
   const [sortNameType, setSortNameType] = React.useState('Down');
+  const [sortDbNameType, setSortDbNameType] = React.useState('Down');
   const [currentSortType, setCurrentSortType] = React.useState('name');
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [header, setHeader] = React.useState('lastUsed');
 
   React.useEffect(() => {
     selectionType === 'source'
@@ -175,17 +208,19 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const filteredList = connectionsList.filter(
     (item) =>
       (item.name.toLowerCase().includes(search.toLowerCase()) ||
-        item.connectionType.toLowerCase().includes(search.toLowerCase())) &&
+        parseJdbcString(
+          item.plugin.properties.connectionString,
+          item.plugin.properties.jdbcPluginName
+        )
+          ?.toLowerCase()
+          .includes(search.toLowerCase()) ||
+        item.plugin.properties.dataset?.toLowerCase().includes(search.toLowerCase())) &&
       ((selectionType === 'source' && item.connectionType.includes('Database')) ||
         (selectionType === 'target' && item.plugin.type.includes('batchsink')))
   );
 
   const onCancel = (e: React.FormEvent) => {
     handleCancel();
-  };
-
-  const changeCursor = (e) => {
-    e.target.style.cursor = 'pointer';
   };
 
   const handleSortToggle = (e) => {
@@ -206,15 +241,25 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
     }
   };
 
+  const handleDbNameSort = (e) => {
+    sortDbNameType === 'Down' ? setSortDbNameType('Up') : setSortDbNameType('Down');
+    if (sortNameType === 'Down') {
+      connectionsList.sort((a, b) => (a.name > b.name ? -1 : 1));
+    } else {
+      connectionsList.sort((a, b) => (a.name > b.name ? 1 : -1));
+    }
+  };
+
   const sortDownIcon = '/cdap_assets/img/sort-down-arrow.svg';
   const sortUpIcon = '/cdap_assets/img/sort-up-arrow.svg';
   const searchIcon = '/cdap_assets/img/search.svg';
-
+  const noDatabase = '/cdap_assets/img/No database.svg';
   const SearchIcon = () => {
     return <img src={searchIcon} alt="icon" />;
   };
   return (
     <div className={classes.root}>
+      <OverlaySmall onCancel={() => setIsOpen(false)} open={isOpen} />
       <div className={classes.headerContainer}>
         {selectionType === 'target' ? (
           <p className={classes.headerText}>{T.translate(`${I18N_PREFIX}.Headers.targetHeader`)}</p>
@@ -238,66 +283,94 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
         />
       </div>
 
-      <Table columnTemplate="1fr 1fr 1fr">
-        <TableHeader data-cy="table-header">
-          <TableRow className={classes.header} data-cy="table-row">
-            <TableCell>{T.translate(`${I18N_PREFIX}.Names.database`)} </TableCell>
-            <TableCell>
-              {T.translate(`${I18N_PREFIX}.Names.connection`)}{' '}
-              <img
-                src={sortNameType === 'Down' ? sortDownIcon : sortUpIcon}
-                alt="some down icon sort"
-                height="14px"
-                className={classes.sortIcon}
-                onMouseOver={changeCursor}
-                onClick={handleNameSort}
-              />
-            </TableCell>
-            <TableCell>
-              <div className="flexHeader">
-                {T.translate(`${I18N_PREFIX}.Names.lastUsedOn`)}
-                <img
-                  src={sortType === 'Down' ? sortDownIcon : sortUpIcon}
-                  alt="some down icon sort"
-                  height="14px"
-                  className={classes.sortIcon}
-                  onMouseOver={changeCursor}
-                  onClick={handleSortToggle}
-                />
-              </div>
-            </TableCell>
-          </TableRow>
-        </TableHeader>
+      {filteredList.length === 0 && search.length === 0 ? (
+        <div className={classes.errorContainer}>
+          <img src={noDatabase} alt="no-database" className={classes.errorIcon} />
+          <div className={classes.errorTitle}>
+            Looks like you do not have access to the <br /> database connections.
+          </div>
+          <div className={classes.errorTitle2}>Please check with the IT team</div>
+        </div>
+      ) : (
+        <Table columnTemplate="1fr 1fr 2fr">
+          <TableHeader data-cy="table-header">
+            <TableRow className={classes.header} data-cy="table-row">
+              <TableCell onClick={() => setHeader('dbName')}>
+                {T.translate(`${I18N_PREFIX}.Names.database`)}
+                {header === 'dbName' && (
+                  <img
+                    src={sortDbNameType === 'Down' ? sortDownIcon : sortUpIcon}
+                    alt="some down icon sort"
+                    className={classes.sortIcon}
+                    onClick={handleDbNameSort}
+                  />
+                )}
+              </TableCell>
+              <TableCell onClick={() => setHeader('connName')}>
+                {T.translate(`${I18N_PREFIX}.Names.connection`)}{' '}
+                {header === 'connName' && (
+                  <img
+                    src={sortNameType === 'Down' ? sortDownIcon : sortUpIcon}
+                    alt="some down icon sort"
+                    className={classes.sortIcon}
+                    onClick={handleNameSort}
+                  />
+                )}
+              </TableCell>
+              <TableCell onClick={() => setHeader('lastUsed')}>
+                <div className="flexHeader">
+                  {T.translate(`${I18N_PREFIX}.Names.lastUsedOn`)}
+                  {header === 'lastUsed' && (
+                    <img
+                      src={sortType === 'Down' ? sortDownIcon : sortUpIcon}
+                      alt="some down icon sort"
+                      height="14px"
+                      className={classes.sortIcon}
+                      onClick={handleSortToggle}
+                    />
+                  )}
+                </div>
+              </TableCell>
+            </TableRow>
+          </TableHeader>
 
-        <TableBody data-cy="table-body">
-          {filteredList.length === 0 ? (
-            <OverlaySmall />
-          ) : (
-            filteredList.map((conn, index) => {
-              return (
-                <TableRow
-                  data-cy={`table-row-${conn.name}`}
-                  key={index}
-                  className={
-                    selectedConnection.name === conn.name
-                      ? classes.tableRowSelected
-                      : classes.tableRow
-                  }
-                  onClick={() => setSelectedConnection(conn)}
-                >
-                  <TableCell>
-                    {selectionType === 'source'
-                      ? conn.plugin.properties.connectionString.split('/')[3]
-                      : conn.plugin.properties.dataset}
-                  </TableCell>
-                  <TableCell>{conn.name}</TableCell>
-                  <TableCell>{humanReadableDate(conn.updatedTimeMillis, true)}</TableCell>
-                </TableRow>
-              );
-            })
-          )}
-        </TableBody>
-      </Table>
+          <TableBody data-cy="table-body">
+            {filteredList.length === 0 ? (
+              <h3 className={classes.emptyList}>
+                {search.length === 0
+                  ? ''
+                  : `There are no databases and connections matching your search '${search}'`}
+              </h3>
+            ) : (
+              filteredList.map((conn, index) => {
+                return (
+                  <TableRow
+                    data-cy={`table-row-${conn.name}`}
+                    key={index}
+                    className={
+                      selectedConnection.name === conn.name
+                        ? classes.tableRowSelected
+                        : classes.tableRow
+                    }
+                    onClick={() => setSelectedConnection(conn)}
+                  >
+                    <TableCell>
+                      {selectionType === 'source'
+                        ? parseJdbcString(
+                            conn.plugin.properties.connectionString,
+                            conn.plugin.properties.jdbcPluginName
+                          )
+                        : conn.plugin.properties.dataset}
+                    </TableCell>
+                    <TableCell>{conn.name}</TableCell>
+                    <TableCell>{humanReadableDate(conn.updatedTimeMillis, true)}</TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
+      )}
       <div className={classes.buttonContainer}>
         <Button
           variant="contained"

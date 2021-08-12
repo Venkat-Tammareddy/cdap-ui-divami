@@ -49,6 +49,9 @@ const styles = (theme): StyleRules => {
       width: '100%',
       zIndex: 10,
       top: '48px',
+      '& .MuiInputBase-input': {
+        fontSize: '16px',
+      },
     },
     sdleTskWrapper: {
       width: '524px',
@@ -68,7 +71,7 @@ const styles = (theme): StyleRules => {
       position: 'absolute',
       width: '100%',
       bottom: '51px',
-      paddingRight: '36px',
+      paddingRight: '80px',
     },
     picker: {
       width: '320px',
@@ -84,12 +87,14 @@ const styles = (theme): StyleRules => {
       minHeight: '32px',
       background: '#dcedf5',
       borderRadius: '15.5px',
+      marginTop: 'auto',
     },
     timePicker: {
       border: '1px solid #c8ccd0',
+      margin: '0',
       width: 320,
       padding: '12px 10px',
-
+      borderRadius: '4px',
       '& ::before': {
         borderBottom: 'none',
         content: 'none',
@@ -98,6 +103,55 @@ const styles = (theme): StyleRules => {
         borderBottom: 'none',
         content: 'none',
       },
+    },
+    cancelButton: {
+      height: '36px',
+      textDecoration: 'none',
+      outline: 'none',
+      border: 'none',
+      paddingRight: '0px',
+      fontFamily: 'Lato',
+      fontSize: '14px',
+    },
+    scheduleButton: {
+      height: '36px',
+      backgroundColor: '#4285F4',
+      letterSpacing: '1.25px',
+      lineHeight: '24px',
+      fontSize: '14px',
+      fontFamily: 'Lato',
+    },
+    scheduleSubHeader: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#202124',
+    },
+    optionsLabel: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#202124',
+      lineHeight: '24px',
+      letterSpacing: '0.13px',
+    },
+    optionsLabel2: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#202124',
+      lineHeight: '24px',
+      letterSpacing: '0.13px',
+      marginBottom: '0px',
+    },
+    container: {
+      display: 'flex',
+      marginTop: '30px',
+      gap: '10px',
+      flexDirection: 'column',
+    },
+    foorm: {
+      marginBottom: '80px',
+    },
+    shedulemsg: {
+      paddingLeft: '20px',
     },
   };
 };
@@ -152,15 +206,27 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
   };
   const [sheduleObj, setSheduleObj] = React.useState(initialSheduleObj);
   const handleTimeChange = (date: Date | null) => {
+    const datee = new Date();
+    if (date === null) {
+      setSelectedTime(datee);
+    }
     setSelectedTime(date);
   };
   const handleDateChange = (date: Date | null) => {
+    if (date === null) {
+      setSelectedDate(new Date(0));
+    }
     setSelectedDate(date);
   };
   React.useEffect(() => {
     setSheduleObj(initialSheduleObj);
   }, [checkedItem]);
 
+  const calenderIcon = '/cdap_assets/img/calendar.svg';
+
+  const Calender = () => {
+    return <img src={calenderIcon} alt="calenderIcon" />;
+  };
   const formatAMPM = (date: Date) => {
     let hours = date.getHours();
     const minutes = date.getMinutes();
@@ -299,16 +365,30 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
       case 'Hourly': {
         return (
           <Box mb={4}>
-            <Box mb={1}>At what frequency is the event likely repeat?</Box>
+            <Box mb={1} className={classes.optionsLabel}>
+              At what frequency is the event likely repeat?
+            </Box>
             <IncrementInput
               handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
               type={'hours'}
             />
-            <Box mb={1}>When do you want to start this event? </Box>
-            <IncrementInput
-              handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
-              type={'minutes'}
-            />
+            <div className={classes.container}>
+              <Box mb={1} className={classes.optionsLabel2}>
+                When do you want to start this event?{' '}
+              </Box>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardTimePicker
+                  className={classes.timePicker}
+                  margin="normal"
+                  value={selectedTime}
+                  onChange={handleTimeChange}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change time',
+                  }}
+                  keyboardIcon={<Calender />}
+                />
+              </MuiPickersUtilsProvider>
+            </div>
           </Box>
         );
       }
@@ -316,12 +396,16 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
       case 'Daily': {
         return (
           <Box mb={4}>
-            <Box mb={1}>At what frequency is the event likely repeat?</Box>
+            <Box mb={1} className={classes.optionsLabel}>
+              At what frequency is the event likely repeat?
+            </Box>
             <IncrementInput
               handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
               type={'days'}
             />
-            <Box mb={1}>When do you want to start this event? ?</Box>
+            <Box mb={1} className={classes.optionsLabel}>
+              When do you want to start this event? ?
+            </Box>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardTimePicker
                 className={classes.timePicker}
@@ -342,7 +426,9 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
         {
           return (
             <Box mb={4}>
-              <Box mb={1}>At what frequency is the event likely repeat?</Box>
+              <Box mb={1} className={classes.optionsLabel}>
+                At what frequency is the event likely repeat?
+              </Box>
               <Box mb={2}>
                 <Grid container spacing={1}>
                   {Object.keys(sheduleObj.weekDays).map((item, index) => (
@@ -359,7 +445,9 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                 </Grid>
               </Box>
 
-              <Box mb={1}>When do you want to start this event?</Box>
+              <Box mb={1} className={classes.optionsLabel}>
+                When do you want to start this event?
+              </Box>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardTimePicker
                   className={classes.timePicker}
@@ -380,7 +468,9 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
         {
           return (
             <Box mb={4}>
-              <Box mb={1}>At what frequency is the event likely repeat?</Box>
+              <Box mb={1} className={classes.optionsLabel}>
+                At what frequency is the event likely repeat?
+              </Box>
               <IncrementInput
                 handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
                 type={'days'}
@@ -400,7 +490,9 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                 />
               </MuiPickersUtilsProvider> */}
 
-              <Box mb={1}>When do you want to start this event?</Box>
+              <Box mb={1} className={classes.optionsLabel}>
+                When do you want to start this event?
+              </Box>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardTimePicker
                   className={classes.timePicker}
@@ -436,7 +528,9 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
               />
             </MuiPickersUtilsProvider>
 
-            <Box mb={1}>When do you want to start this event?</Box>
+            <Box mb={1} className={classes.optionsLabel}>
+              When do you want to start this event?
+            </Box>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardTimePicker
                 className={classes.timePicker}
@@ -537,12 +631,14 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
         <div className={classes.sdleTskWrapper}>
           <div className={classes.heading}>
             <Box component="span" mr={2}>
-              Shedule Task
+              Schedule Task
             </Box>
             <img src={tileDesignBar}></img>
           </div>
           <Box mb={2}>
-            <Box mb={1}>How often will it recur?</Box>
+            <Box mb={1} className={classes.scheduleSubHeader}>
+              How often will it recur?
+            </Box>
             <Grid container spacing={1}>
               {recurOptions.map((item, index) => (
                 <Grid item xs={4}>
@@ -554,13 +650,12 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                     size="medium"
                     color="primary"
                   />
-                  <label>{item}</label>
+                  <label className={classes.optionsLabel}>{item}</label>
                 </Grid>
               ))}
             </Grid>
           </Box>
-          {renderForm()}
-
+          <div className={classes.foorm}>{renderForm()}</div>
           <Box
             mt={2}
             display="flex"
@@ -569,17 +664,16 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
             className={classes.msgName}
           >
             <img src={timer} />
-            {sheduleString()}
+            <span className={classes.shedulemsg}>{sheduleString()}</span>
           </Box>
           <Box className={classes.btnFooter}>
             <Grid container spacing={0}>
               <Grid className={classes.gridItem} item xs={4}></Grid>
               <Grid className={classes.gridItem} item xs={2}>
                 <Button
-                  variant="outlined"
                   size="medium"
                   color="primary"
-                  className={classes.margin}
+                  className={classes.cancelButton}
                   onClick={closeSchedule}
                 >
                   CANCEL
@@ -604,7 +698,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                   variant="contained"
                   size="medium"
                   color="primary"
-                  className={classes.margin}
+                  className={classes.scheduleButton}
                   onClick={(e) => {
                     closeSchedule();
                     saveAndShedule(true);

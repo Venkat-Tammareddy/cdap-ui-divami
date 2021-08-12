@@ -17,7 +17,7 @@
 import * as React from 'react';
 import { useContext } from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import history from 'services/history';
+import history from 'services/history'; 
 import { Typography } from '@material-ui/core';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import IngestionJobsList from '../IngestionTaskList/IngestionJobsList';
@@ -30,18 +30,22 @@ import { MyMetadataApi } from 'api/metadata';
 import { ingestionContext } from 'components/Ingestion/ingestionContext';
 import { any } from 'prop-types';
 import { humanReadableDate } from 'services/helpers';
+import { MyMetricApi } from 'api/metric';
+import produce from 'immer';
+import { parseJdbcString } from '../helpers';
+
 const styles = (theme): StyleRules => {
   return {
     root: {
       height: '100%',
     },
     container: {
-      padding: '16px 28px',
+      padding: '16px 28px 0px 28px',
       borderTop: '1px solid #A5A5A5',
     },
     flexContainer: {
       display: 'flex',
-      alignItems: 'flex-end',
+      alignItems: 'center',
     },
     taskName: {
       fontFamily: 'Lato',
@@ -69,6 +73,7 @@ const styles = (theme): StyleRules => {
     },
     arrow: {
       margin: '0px 12px',
+      paddingTop: '2px',
     },
     chip: {
       border: '1px solid #E0E0E0',
@@ -85,6 +90,7 @@ const styles = (theme): StyleRules => {
       alignItems: 'flex-end',
       marginTop: '16px',
       paddingBottom: '21px',
+      border: '1px solid red',
       borderBottom: '1px solid #A5A5A5',
     },
     title: {
@@ -140,6 +146,7 @@ const styles = (theme): StyleRules => {
       marginTop: '28px',
       marginBottom: '20px',
       paddingBottom: '20px',
+      width: '100%',
       borderBottom: '1px solid #A5A5A5',
     },
     runDetailsItem: {
@@ -163,27 +170,42 @@ const styles = (theme): StyleRules => {
       opacity: '0.8',
       marginTop: '2px',
     },
+    detailHeader: {
+      cursor: 'pointer',
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#4285F4 ',
+      display: 'flex',
+      gap: '10px',
+      alignItems: 'center',
+    },
+    detailContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+    },
+    arrowIcons: {
+      fill: '#4285F4 ',
+      alignItems: 'center',
+      cursor: 'pointer',
+    },
+    detailHeaderText: {
+      marginBottom: '0px',
+    },
+    wrapper: {
+      border: '1px solid red',
+      marginTop: '0px',
+      padding: '0px',
+    },
+    hide: {
+      display: 'none',
+    },
   };
 };
 
 interface ITaskDetailsProps extends WithStyles<typeof styles> {
   test: string;
 }
-const connection = {
-  name: 'Ingest oracle studies data to bigquery',
-  date: '04 May 21, 07:30 pm',
-  description:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam scelerisque neque odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  source: {
-    connName: 'Oracle-global-server Connection',
-    connDb: 'Studies',
-  },
-  target: {
-    connName: 'BigQuery-global-server',
-    connDb: 'StudyPerformance',
-  },
-  tags: ['Colleges', 'Exams', 'Tests'],
-};
 const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const arrowIcon = '/cdap_assets/img/arrow.svg';
   const runTaskIcon = '/cdap_assets/img/run-task-big.svg';
@@ -199,6 +221,8 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const taskName = (params as any).taskName;
 
   const [taskDetails, setTaskDetails] = React.useState({
+    taskName,
+    description: '',
     tags: [],
     runs: [],
     connections: {
@@ -207,30 +231,26 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       targetName: '',
       targetDb: '',
     },
-    sheduleDetails: { nextRuntime: [] },
+    metrics: {},
   });
   React.useEffect(() => {
-    console.log('hhhh', ingestionTasklList);
-    MyPipelineApi.fetchMacros({ appId: taskName, namespace: currentNamespace }).subscribe(
-      (res) => {
-        console.log('res', res);
-        setTaskDetails((prevData) => {
-          return {
-            ...prevData,
-            connections: {
-              sourceName: res[1].id,
-              sourceDb: res[1].spec.properties.properties.connectionString?.split('/')[3],
-              targetName: res[2].id,
-              targetDb: res[2].spec.properties.properties.dataset,
-            },
-            sheduleDetails: ingestionTasklList.find((ele) => ele.name == taskName),
-          };
-        });
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+    getRuns(taskName);
+    MyPipelineApi.get({ namespace: currentNamespace, appId: taskName }).subscribe((data) => {
+      console.log('get', data);
+      const draftObj = JSON.parse(data.configuration);
+      setTaskDetails(
+        produce((prev) => {
+          prev.description = data.description;
+          prev.connections.sourceName = draftObj.stages[0].name;
+          prev.connections.sourceDb = parseJdbcString(
+            draftObj.stages[0].plugin.properties.connectionString,
+            draftObj.stages[0].plugin.properties.jdbcPluginName
+          );
+          prev.connections.targetName = draftObj.stages[1].name;
+          prev.connections.targetDb = draftObj.stages[1].plugin.properties.dataset;
+        })
+      );
+    });
     MyMetadataApi.getTags({
       namespace: currentNamespace,
       entityType: 'apps',
@@ -244,9 +264,47 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         };
       });
     });
-    getRuns();
   }, []);
-  const getRuns = () => {
+  const getMetrics = (runs, connectionName) => {
+    const postBody = {};
+    runs.forEach((run) => {
+      postBody[`qid_${run.runid}`] = {
+        tags: {
+          namespace: currentNamespace,
+          app: taskName,
+          workflow: 'DataPipelineWorkflow',
+          run: run.runid,
+        },
+        metrics: [
+          // 'user..records.in',
+          // 'user..records.error',
+          // 'user..process.time.total',
+          // 'user..process.time.avg',
+          // 'user..process.time.max',
+          // 'user..process.time.min',
+          // 'user..process.time.stddev',
+          `user.${connectionName}.records.in`,
+          `user.${connectionName}.records.error`,
+        ],
+        timeRange: {
+          aggregate: 'true',
+        },
+      };
+    });
+    MyMetricApi.query(null, postBody).subscribe(
+      (data) => {
+        console.log(data);
+        setTaskDetails((prev) => {
+          return {
+            ...prev,
+            metrics: data,
+          };
+        });
+      },
+      (err) => console.log(err)
+    );
+  };
+  const getRuns = (connectionName?: any) => {
     MyPipelineApi.pollRuns({
       namespace: currentNamespace,
       appId: taskName,
@@ -267,6 +325,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           }),
         };
       });
+      getMetrics(data, connectionName);
     });
   };
   const runTask = (taskName: string) => {
@@ -291,9 +350,9 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     setSchedule(false);
   };
   const getSuccessRate = () => {
-    const successRuns = taskDetails.runs.filter((run) => run.status === 'SUCCESS').length;
+    const successRuns = taskDetails.runs.filter((run) => run.status === 'COMPLETED').length;
     const totalRuns = taskDetails.runs.length;
-    return (successRuns / totalRuns) * 100;
+    return ((successRuns / totalRuns) * 100).toFixed(2);
   };
   return (
     <div className={classes.root}>
@@ -311,7 +370,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       <div className={classes.container}>
         <div className={classes.flexContainer}>
           <div className={classes.taskName}>{taskName}</div>
-          <div className={classes.taskDate}>- Deployed on {connection.date}</div>
+          <div className={classes.taskDate}>- Deployed on 04 May 21, 07:30 pm</div>
         </div>
         {taskDetails.runs.length > 1 && (
           <div className={classes.runDetails}>
@@ -332,32 +391,35 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
             </div>
           </div>
         )}
-        <div className={classes.description}>{connection.description}</div>
-        <div className={classes.connectionContainer}>
-          <div className={classes.taskDate}>
-            {taskDetails.connections.sourceName}
-            {' | '}
-            {taskDetails.connections.sourceDb}
+        <div>
+          {' '}
+          <div className={classes.description}>{taskDetails.description}</div>
+          <div className={classes.connectionContainer}>
+            <div className={classes.taskDate}>
+              {taskDetails.connections.sourceName}
+              {' | '}
+              {taskDetails.connections.sourceDb}
+            </div>
+            <img className={classes.arrow} src={arrowIcon} alt="arrow" />
+            <div className={classes.taskDate}>
+              {taskDetails.connections.targetName}
+              {' | '}
+              {taskDetails.connections.targetDb}
+            </div>
           </div>
-          <img className={classes.arrow} src={arrowIcon} alt="arrow" />
-          <div className={classes.taskDate}>
-            {taskDetails.connections.targetName}
-            {' | '}
-            {taskDetails.connections.targetDb}
+          <div className={taskDetails.tags.length === 0 ? classes.hide : classes.chipContainer}>
+            {taskDetails.tags.map((tag) => {
+              return (
+                <div className={classes.chip} key={tag}>
+                  {tag}
+                </div>
+              );
+            })}
           </div>
-        </div>
-        <div className={classes.chipContainer}>
-          {taskDetails.tags.map((tag) => {
-            return (
-              <div className={classes.chip} key={tag}>
-                {tag}
-              </div>
-            );
-          })}
         </div>
       </div>
       {taskDetails.runs.length === 0 ? (
-        <>
+        <div className={classes.wrapper}>
           <Typography className={classes.title}>How Would You Like to Proceed?</Typography>
           <div className={classes.cardsContainer}>
             <div className={classes.card} onClick={() => runTask(taskName)}>
@@ -369,13 +431,13 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
             </div>
             <div className={classes.card} onClick={toggleSchedule}>
               <div className={classes.cardDescription}>
-                I would like to extract all columns from all tables without any custom selection.
+                I would like to extract the tables and columns I am interested in.
               </div>
               <div className={classes.cardTitle}>Schedule Task</div>
               <img className={classes.cardScheduleIcon} src={scheduleTaskIcon} alt="run-task" />
             </div>
           </div>
-        </>
+        </div>
       ) : (
         <div className={classes.runHistoryContainer}>
           <IngestionHeader title="Run History" graphicalView={true} setGraph={setGraph} />
@@ -385,8 +447,8 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
                 history.push(`/ns/${currentNamespace}/ingestion/task/${taskName}/job/${jobId}`);
             }}
             graph={graph}
-            jobsList={taskDetails.runs}
-          />
+            taskDetails={taskDetails}
+                     />
         </div>
       )}
     </div>

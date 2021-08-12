@@ -51,6 +51,7 @@ const styles = (theme): StyleRules => {
     },
     titleDesign: {
       marginLeft: '10px',
+      marginTop: '3px',
     },
     create: {
       fontFamily: 'Lato',
@@ -80,12 +81,62 @@ const styles = (theme): StyleRules => {
       border: '1px solid #A5A5A5',
       borderRadius: '23px',
       justifyContent: 'center',
+      overflow: 'hidden',
       alignItems: 'center',
     },
     txt: {
       marginBottom: '0',
+      fontSize: '16px',
+      fontFamily: 'Lato',
+      color: '#202124',
     },
-    viewTxt: { marginBottom: '0' },
+    viewTxt: {
+      marginLeft: '30px',
+      marginBottom: '0',
+      fontSize: '16px',
+      fontFamily: 'Lato',
+      color: '#666666',
+    },
+    hideThese: {
+      gap: '10px',
+      display: 'none',
+    },
+    showThese: {
+      display: 'flex',
+      gap: '20px',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    red: {
+      height: '12px',
+      width: '12px',
+      backgroundColor: '#F8888A ',
+      borderRadius: '50%',
+    },
+    green: {
+      height: '12px',
+      width: '12px',
+      backgroundColor: '#74D091',
+      borderRadius: '50%',
+    },
+    smallContainer: {
+      display: 'flex',
+      gap: '10px',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    selected: {},
+    active: {
+      backgroundColor: '#ECF2FD',
+      padding: '6px 12px 6px 12px',
+      borderRight: '1px solid #A5A5A5',
+      cursor: 'pointer',
+    },
+    activeChart: {
+      backgroundColor: '#ECF2FD',
+      padding: '6px 12px 6px 12px',
+      cursor: 'pointer',
+    },
   };
 };
 
@@ -134,6 +185,8 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Archive'];
+  const [showRecords, setShowRecords] = React.useState(false);
+  const [activIcon, setActivIcon] = React.useState('chart');
 
   return (
     <>
@@ -193,14 +246,36 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
         )}
         {graphicalView && (
           <div className={classes.toggleButton}>
-            <p className={classes.txt}>Records Loaded</p>
-            <p className={classes.txt}>Errors</p>
-            <p className={classes.viewTxt}>View by</p>
+            <div className={showRecords ? classes.showThese : classes.hideThese}>
+              <div className={classes.smallContainer}>
+                <div className={classes.green}></div>
+                <p className={classes.txt}>Records Loaded</p>
+              </div>
+              <div className={classes.smallContainer}>
+                <div className={classes.red}></div>
+                <p className={classes.txt}>Errors</p>
+                <p className={classes.viewTxt}>View by</p>
+              </div>
+            </div>
             <div className={classes.buttons}>
-              <div className={classes.listIcons} onClick={() => setGraph(false)}>
+              <div
+                className={activIcon === 'chart' ? classes.active : classes.listIcons}
+                onClick={() => {
+                  setActivIcon('chart');
+                  setGraph(false);
+                  setShowRecords(false);
+                }}
+              >
                 <img src={listView} height="18px" width="18px" />
               </div>
-              <div className={classes.graphIcons} onClick={() => setGraph(true)}>
+              <div
+                className={activIcon === 'graph' ? classes.activeChart : classes.graphIcons}
+                onClick={() => {
+                  setActivIcon('graph');
+                  setGraph(true);
+                  setShowRecords(true);
+                }}
+              >
                 <img src={graphView} height="15px" width="13px" />
               </div>
             </div>

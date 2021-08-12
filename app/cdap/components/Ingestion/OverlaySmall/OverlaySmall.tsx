@@ -61,16 +61,11 @@ const styles = (): StyleRules => {
   };
 };
 
-interface OverlaySmallProps extends WithStyles<typeof styles> {}
-const OverlaySmallView: React.FC<OverlaySmallProps> = ({ classes }) => {
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
+interface OverlaySmallProps extends WithStyles<typeof styles> {
+  open: boolean;
+  onCancel: () => void;
+}
+const OverlaySmallView: React.FC<OverlaySmallProps> = ({ classes, open, onCancel }) => {
   const error = '/cdap_assets/img/error-status.svg';
   const ErrorIcon = () => {
     return <img src={error} alt="err icon" height="30px" width="30px" />;
@@ -81,9 +76,9 @@ const OverlaySmallView: React.FC<OverlaySmallProps> = ({ classes }) => {
         Open dialog
       </Button> */}
       <Dialog
-        onClose={handleClose}
+        onClose={onCancel}
         aria-labelledby="customized-dialog-title"
-        open={true}
+        open={open}
         className={classes.dialog}
       >
         <div className={classes.header}>
@@ -100,8 +95,8 @@ const OverlaySmallView: React.FC<OverlaySmallProps> = ({ classes }) => {
         </div>
         <DialogActions className={classes.buttons}>
           <ButtonComponent
-            onCancel={handleClose}
-            onSubmit={handleClose}
+            onCancel={onCancel}
+            onSubmit={onCancel}
             disableSubmit={false}
             submitText="CREATE TASK"
           />

@@ -53,6 +53,11 @@ const styles = (theme): StyleRules => {
         content: 'none',
       },
     },
+    spanText: {
+      fontFamily: 'Lato',
+      fontSize: '16px',
+      color: '#666666',
+    },
   };
 };
 
@@ -126,18 +131,8 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ classes, type, handleIn
           onBlur={() => onBlur()}
           InputProps={{ classes: { input: classes.input } }}
         ></TextField>
-        <Box mx={2} component="span">
+        <Box mx={2} component="span" className={classes.spanText}>
           {timeConsts[type].string}
-        </Box>
-        <Box
-          className={classes.boxButton}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          component="span"
-          onClick={(e) => handelIncrement()}
-        >
-          <AddIcon color="primary" />
         </Box>
         <Box
           className={classes.boxButton}
@@ -148,6 +143,16 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ classes, type, handleIn
           onClick={(e) => handelDecrement()}
         >
           <RemoveIcon color="primary" />
+        </Box>
+        <Box
+          className={classes.boxButton}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          component="span"
+          onClick={(e) => handelIncrement()}
+        >
+          <AddIcon color="primary" />
         </Box>
       </div>
     </>

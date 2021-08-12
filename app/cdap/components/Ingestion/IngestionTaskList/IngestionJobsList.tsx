@@ -22,9 +22,11 @@ import Table from 'components/Table';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import { humanReadableDate, humanReadableDuration } from 'services/helpers';
-import ListAltIcon from '@material-ui/icons/ListAlt';
-import If from 'components/If';
 import Graphs from '../Graph/Graph';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { Tooltip } from '@material-ui/core';
+import { MyPipelineApi } from 'api/pipeline';
+import NamespaceStore from 'services/NamespaceStore';
 
 const styles = (theme): StyleRules => {
   return {
@@ -33,7 +35,7 @@ const styles = (theme): StyleRules => {
       margin: '0px 28px',
     },
     header: {
-      paddingBottom: '16px',
+      paddingBottom: '0px',
       fontFamily: 'Lato',
       fontSize: '16px',
       color: '#19A347',
@@ -88,63 +90,52 @@ const styles = (theme): StyleRules => {
     graphIcn: {
       cursor: 'pointer',
     },
+    failedTooltipIcon: {
+      fill: '#4285F4',
+      height: '20px',
+      width: '20px',
+    },
+    failedTooltipInfo: {},
   };
 };
-
+const TextOnlyTooltip = withStyles({
+  tooltip: {
+    borderRadius: '15.5px',
+    color: '#DB4437',
+    backgroundColor: 'FDF5F5',
+    fontSize: '14px',
+    height: '32px',
+  },
+})(Tooltip);
 interface IngestJobsListProps extends WithStyles<typeof styles> {
   graph?: boolean;
   onTaskClick: (jobId: string) => void;
-  jobsList: any[];
+  taskDetails: any;
 }
 
 const IngestionJobsList: React.FC<IngestJobsListProps> = ({
   classes,
   onTaskClick,
-  jobsList,
   graph,
+  taskDetails,
 }) => {
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
+  const failedIcon = '/cdap_assets/img/error-status.svg';
   const imgStop = '/cdap_assets/img/stop.svg';
   const successIcon = '/cdap_assets/img/success-status.svg';
-  const failedIcon = '/cdap_assets/img/error-status.svg';
-  // const [Graph, setGraph] = React.useState(true);
-
-  const runningList = [
-    {
-      jobId: 'Job 01',
-      status: 'Running',
-      executedOn: '20 May 21 IST, 09:30 PM',
-      duration: '15',
-      loadedRecords: '98989',
-      errorRecords: '3131',
-    },
-  ];
-  const successList = [
-    {
-      jobId: 'Job 02',
-      status: 'Success',
-      executedOn: '20 May 21 IST, 09:30 PM',
-      duration: '25',
-      loadedRecords: '98989',
-      errorRecords: '3131',
-    },
-    {
-      jobId: 'Job 03',
-      status: 'Failed',
-      executedOn: '20 May 21 IST, 09:30 PM',
-      duration: '30',
-      loadedRecords: '--',
-      errorRecords: '--',
-    },
-    {
-      jobId: 'Job 04',
-      status: 'Success',
-      executedOn: '20 May 21 IST, 09:30 PM',
-      duration: '15',
-      loadedRecords: '98989',
-      errorRecords: '3131',
-    },
-  ];
+  const namespace = NamespaceStore.getState().selectedNamespace;
+  const stopRun = (runId: string) => {
+    console.log(runId, 'stopped...');
+    MyPipelineApi.stopRun({
+      namespace,
+      appId: taskDetails?.taskName,
+      programType: 'workflows',
+      programName: 'DataPipelineWorkflow',
+      runId,
+    }).subscribe((msg) => {
+      console.log('run stopped successfully');
+    });
+  };
 
   return (
     <>
@@ -152,7 +143,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
         {graph ? (
           <Graphs />
         ) : (
-          <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr 2fr">
+          <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr 2fr 1fr">
             <TableHeader data-cy="table-header">
               <TableRow className={classes.header} data-cy="table-row">
                 <TableCell>Status</TableCell>
@@ -162,10 +153,11 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                 <TableCell>Records Loaded</TableCell>
                 <TableCell>Error Records</TableCell>
                 <TableCell></TableCell>
+                <TableCell></TableCell>
               </TableRow>
             </TableHeader>
             <TableBody data-cy="table-body">
-              {jobsList.map((item, index) => {
+              {taskDetails.runs.map((item, index) => {
                 return (
                   <TableRow
                     key={index}
@@ -177,8 +169,9 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                       <img
                         className={classes.statusIcon}
                         src={
-                          (item.status === 'SUCCESS' && successIcon) ||
+                          (item.status === 'COMPLETED' && successIcon) ||
                           (item.status === 'FAILED' && failedIcon) ||
+                          (item.status === 'KILLED' && failedIcon) ||
                           progressIcon
                         }
                         alt="img"
@@ -187,20 +180,63 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                       />
                       {item.status}
                     </TableCell>
-                    <TableCell>{item.runId}</TableCell>
+                    <TableCell style={{ color: '#202124' }}>{item.runId}</TableCell>
                     <TableCell>{humanReadableDate(item.start, false)}</TableCell>
                     <TableCell>
                       {item.status !== 'RUNNING' &&
                         humanReadableDuration(item.end - item.start, false)}
                     </TableCell>
-                    <TableCell>{item.status !== 'RUNNING' && item.loadedRecords}</TableCell>
-                    <TableCell>{item.status !== 'RUNNING' && item.errorRecords}</TableCell>
+                    <TableCell>
+                      {taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
+                        (item) =>
+                          item.metricName ===
+                          `user.${taskDetails.connections.sourceName}.records.in`
+                      )?.data[0].value
+                        ? taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
+                            (item) =>
+                              item.metricName ===
+                              `user.${taskDetails.connections.sourceName}.records.in`
+                          )?.data[0].value
+                        : '0'}
+                    </TableCell>
+                    <TableCell>
+                      {taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
+                        (item) =>
+                          item.metricName ===
+                          `user.${taskDetails.connections.sourceName}.records.error`
+                      )?.data[0].value
+                        ? taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
+                            (item) =>
+                              item.metricName ===
+                              `user.${taskDetails.connections.sourceName}.records.error`
+                          )?.data[0].value
+                        : '0'}
+                    </TableCell>
                     <TableCell>
                       {item.status === 'RUNNING' && (
-                        <>
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            stopRun(item.runId);
+                            console.log('stop');
+                          }}
+                        >
                           <img src={imgStop} alt="img" height="20px" width="20px" />
                           <span className={classes.marginLeft}>Stop</span>
-                        </>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {item.status === 'FAILED' ? (
+                        <TextOnlyTooltip
+                          placement="left"
+                          title="Looks like server is down...."
+                          className={classes.failedTooltipInfo}
+                        >
+                          <InfoOutlinedIcon className={classes.failedTooltipIcon} />
+                        </TextOnlyTooltip>
+                      ) : (
+                        ''
                       )}
                     </TableCell>
                   </TableRow>

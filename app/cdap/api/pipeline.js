@@ -52,6 +52,7 @@ export const MyPipelineApi = {
   pollRuns: apiCreator(dataSrc, 'GET', 'POLL', `${programPath}/runs`),
   getRunsCount: apiCreator(dataSrc, 'POST', 'REQUEST', `${runsCountPath}`),
   pollRunsCount: apiCreator(dataSrc, 'POST', 'POLL', `${runsCountPath}`),
+  stopRun: apiCreator(dataSrc, 'GET', 'REQUEST', `${programPath}/runs/:runid/stop`),
   getNextRunTime: apiCreator(dataSrc, 'GET', 'REQUEST', `${programPath}/nextruntime)`),
   batchGetNextRunTime: apiCreator(dataSrc, 'POST', 'REQUEST', batchNextRuntimePath),
   fetchMacros: apiCreator(dataSrc, 'GET', 'REQUEST', `${basepath}/plugins`),
@@ -66,6 +67,12 @@ export const MyPipelineApi = {
   getExtensions: apiCreator(dataSrc, 'GET', 'REQUEST', extensionsPath),
 
   getDrafts: apiCreator(dataSrc, 'GET', 'REQUEST', `${pipelineV1AppContextPath}/drafts`),
+  getDraftDetails: apiCreator(
+    dataSrc,
+    'GET',
+    'REQUEST',
+    `${pipelineV1AppContextPath}/drafts/:draftId`
+  ),
   saveDraft: apiCreator(dataSrc, 'PUT', 'REQUEST', `${pipelineV1AppContextPath}/drafts/:draftId`),
   deleteDraft: apiCreator(
     dataSrc,

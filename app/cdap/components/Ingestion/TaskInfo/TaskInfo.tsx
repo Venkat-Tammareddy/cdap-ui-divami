@@ -41,7 +41,6 @@ const styles = (): StyleRules => {
         letterSpacing: '0.25px',
       },
       '& .MuiInputLabel-outlined': {
-        fontSize: '12px',
         color: '#202124',
       },
       '& .MuiFormLabel-root.Mui-error': {
@@ -51,10 +50,24 @@ const styles = (): StyleRules => {
       '& .MuiAutocomplete-input': {
         fontSize: '16px',
       },
+      '& .MuiFormHelperText-root.Mui-error': {
+        color: '#DB4437',
+        fontSize: '12px',
+        fontFamily: 'Lato',
+        marginRight: '0px',
+        display: 'flex',
+        justifyContent: 'flex-end',
+      },
+      '& .MuiOutlinedInput-input': {
+        fontSize: '20px',
+      },
+      '& .MuiInputLabel-shrink': {
+        fontSize: '14px',
+      },
     },
     label: {
-      fontSize: '16px',
       color: '#202124 ',
+      fontSize: '16px',
       letterSpacing: '0.25px',
     },
     headerText: {
@@ -110,28 +123,6 @@ const styles = (): StyleRules => {
     },
     resize: {
       height: '113px',
-    },
-    buttonContainer: {
-      display: 'flex',
-      gap: '50px',
-      alignItems: 'end',
-      justifyContent: 'flex-end',
-    },
-    cancelButton: {
-      textDecoration: 'none',
-      color: '#4285F4;',
-      outline: 'none',
-      fontSize: '14px',
-      letterSpacing: '1.25px',
-      lineHeight: '24px',
-      fontFamily: 'Lato',
-    },
-    submitButton: {
-      backgroundColor: '#4285F4',
-      letterSpacing: '1.25px',
-      lineHeight: '24px',
-      fontSize: '14px',
-      fontFamily: 'Lato',
     },
     inputInfo: {
       color: '#666666',
@@ -200,7 +191,9 @@ const styles = (): StyleRules => {
       fontSize: '18px',
       letterSpacing: '0.28px',
       lineHeight: '30px',
-      color: '#4c4d4f',
+      // color: '#4c4d4f',
+      color: '#202124',
+      opacity: '0.8',
       marginBottom: '0px',
     },
     infoContainer: {
@@ -229,18 +222,21 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
   tags,
   setTags,
 }) => {
-  const [taskName, setTaskName] = React.useState(draftConfig.name);
-  const [taskDescription, setTaskDescription] = React.useState(draftConfig.description);
+  const [taskName, setTaskName] = React.useState(draftConfig?.name);
+  const [taskDescription, setTaskDescription] = React.useState(draftConfig?.description);
   const taskSpaceError = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`).toString();
   const taskLengthErrorMessage = T.translate(
     `${I18N_PREFIX}.Errors.taskNameLengthError`
   ).toString();
   const [infoMessage, setInfoMessage] = React.useState('Enter task name');
   const [secondInfoMessage, setSecondInfoMessage] = React.useState('without spaces');
-  const [autoCompleteValue, setAutoCompleteValue] = React.useState([]);
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
     errorMsg: '',
+  });
+  const [tagLengthError, setTagLengthError] = React.useState({
+    error: false,
+    errorMsg: 'Tags cannot be more than 64 characters',
   });
   const [taskTagError, setTaskTagError] = React.useState({
     error: false,
@@ -302,7 +298,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
 
   const checkValidation = (e) => {
     const curTag = e.target as HTMLInputElement;
-    const format = /^[a-zA-Z0-9]*$/;
+    const format = /^[a-zA-Z0-9-]*$/;
     if (!format.test(curTag.value)) {
       setTaskTagError({
         error: true,
@@ -312,6 +308,18 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
       setTaskTagError({
         error: false,
         errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
+      });
+    }
+
+    if (curTag.value.length > 64) {
+      setTagLengthError({
+        error: true,
+        errorMsg: 'Tags cannot be more than 64 characters',
+      });
+    } else {
+      setTagLengthError({
+        error: false,
+        errorMsg: 'Tags cannot be more than 64 characters',
       });
     }
   };
@@ -329,7 +337,6 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
               value={taskName}
               className={classes.taskName}
               InputProps={{ classes: { input: classes.input1 } }}
-              color={taskNameError.error ? 'secondary' : 'primary'}
               variant="outlined"
               autoFocus={true}
               onChange={handleTaskNameChange}
@@ -365,25 +372,6 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
               className={classes.taskDescription}
               variant="outlined"
             />
-            {/* <TextField
-              name="Tags"
-              label={T.translate(`${I18N_PREFIX}.Labels.tags`)}
-              value={taskTags}
-              variant="outlined"
-              InputProps={{ classes: { input: classes.input3 } }}
-              className={classes.taskTags}
-              onChange={handleTagsChange}
-              onFocus={handleFocus}
-              error={taskTagError.error}
-              InputLabelProps={{
-                classes: {
-                  root: classes.label,
-                },
-              }}
-            />
-            <p className={taskTagError.error ? classes.tagErrorInfo : classes.tagInfo}>
-              {taskTagError.errorMsg}
-            </p> */}
             <Autocomplete
               className={classes.taskTags}
               multiple
@@ -392,7 +380,7 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
               freeSolo
               value={tags}
               onChange={(e, newval: any) => {
-                if (taskTagError.error) {
+                if (taskTagError.error || tagLengthError.error) {
                   return;
                 }
                 setTags(newval);
@@ -401,9 +389,21 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
                 <TextField
                   {...params}
                   variant="outlined"
-                  error={taskTagError.error}
+                  error={tagLengthError.error || taskTagError.error}
                   onFocus={handleFocus}
+                  helperText={
+                    taskTagError.error
+                      ? taskTagError.errorMsg
+                      : tagLengthError.error
+                      ? tagLengthError.errorMsg
+                      : ''
+                  }
                   label={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
+                  InputLabelProps={{
+                    classes: {
+                      root: classes.label,
+                    },
+                  }}
                   name={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
                   onKeyDown={(e: any) => {
                     if (e.keyCode === 13) {
@@ -413,8 +413,18 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
                           errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
                         });
                         return;
+                      }
+                      if (tagLengthError.error) {
+                        setTagLengthError({
+                          error: false,
+                          errorMsg: 'Tags cannot be more than 64 characters',
+                        });
                       } else {
-                        setTags(tags.concat(e.target.value));
+                        if (e.target.value === '') {
+                          return;
+                        } else {
+                          setTags(tags.concat(e.target.value));
+                        }
                       }
                     }
                   }}
@@ -422,9 +432,12 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
                 />
               )}
             />
-            <p className={taskTagError.error ? classes.errorInputInfo : classes.inputInfo}>
+            {/* <p className={taskTagError.error ? classes.errorInputInfo : classes.inputInfo}>
               {taskTagError.errorMsg}
             </p>
+            <p className={tagLengthError.error ? classes.errorInputInfo : classes.inputInfo}>
+              {tagLengthError.errorMsg}
+            </p> */}
           </div>
         </div>
         <div className={classes.info}>

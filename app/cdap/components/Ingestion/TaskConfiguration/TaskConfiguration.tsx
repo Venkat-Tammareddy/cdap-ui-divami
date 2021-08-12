@@ -59,7 +59,7 @@ const styles = (): StyleRules => {
       // display: 'flex',
       // gap: '50px',
       display: 'flex',
-      gap: '50px',
+      gap: '30px',
       alignItems: 'end',
       justifyContent: 'flex-end',
     },
@@ -74,14 +74,14 @@ const styles = (): StyleRules => {
     },
     headerText: {
       fontFamily: 'Lato',
-      fontSize: '20px',
+      fontSize: '18px',
       color: '#202124',
       letterSpacing: '0px',
       margin: '0',
     },
     labelText: {
       fontFamily: 'Lato',
-      fontSize: '16px',
+      fontSize: '14px',
       color: '#202124',
       letterSpacing: '0.15px',
       lineHeight: '24px',
@@ -117,6 +117,11 @@ const styles = (): StyleRules => {
       color: '#A5A5A5',
       transform: 'scale(1.3)',
     },
+    radioChoice: {
+      gap: '24px',
+      // justifyContent: 'center',
+      alignItems: 'center',
+    },
   };
 };
 
@@ -139,7 +144,12 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onC
           <FormLabel className={classes.labelText}>
             {T.translate(`${I18N_PREFIX}.logText`)}
           </FormLabel>
-          <RadioGroup row value={logErrors} onChange={(e) => setLogErrors(e.target.value)}>
+          <RadioGroup
+            row
+            value={logErrors}
+            onChange={(e) => setLogErrors(e.target.value)}
+            className={classes.radioChoice}
+          >
             <FormControlLabel
               control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
               value="Yes"
@@ -163,6 +173,7 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onC
             row
             value={logPreferences}
             onChange={(e) => setLogPreferences(e.target.value)}
+            className={classes.radioChoice}
           >
             <FormControlLabel
               control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}

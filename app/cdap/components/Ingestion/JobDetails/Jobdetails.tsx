@@ -25,8 +25,11 @@ import TableBody from 'components/Table/TableBody';
 import { useParams } from 'react-router';
 import NamespaceStore from 'services/NamespaceStore';
 import { MyProgramApi } from 'api/program';
-import { humanReadableDate } from 'services/helpers';
+import { humanReadableDate, humanReadableDuration } from 'services/helpers';
 import { MyPipelineApi } from 'api/pipeline';
+import { MyMetricApi } from 'api/metric';
+import produce from 'immer';
+import { parseJdbcString } from '../helpers';
 
 const styles = (theme): StyleRules => {
   return {
@@ -123,6 +126,8 @@ interface IJobDetailsProps extends WithStyles<typeof styles> {}
 const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
   const [displaySummary, setDisplaySummary] = React.useState(true);
   const greenTickIcon = '/cdap_assets/img/side-stepper-tick.svg';
+  const progressIcon = '/cdap_assets/img/Inprogress.svg';
+  const failedIcon = '/cdap_assets/img/error-status.svg';
   const arrowIcon = '/cdap_assets/img/arrow.svg';
   const timeInfoIcon = '/cdap_assets/img/info-infographic.svg';
   const infoIcon = '/cdap_assets/img/info.svg';
@@ -148,34 +153,126 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [logs, setLogs] = React.useState([]);
   const [jobDetails, setJobDetails] = React.useState({
+    status: '',
+    duration: '',
     jobConfig: {
       sourceConnection: '',
       sourceDb: '',
       targetConnection: '',
       targetDb: '',
     },
+    records: {
+      in: 0,
+      out: 0,
+      error: 0,
+    },
   });
   React.useEffect(() => {
-    MyPipelineApi.fetchMacros({ appId: taskName, namespace: currentNamespace }).subscribe(
-      (res) => {
-        console.log('res', res);
-        setJobDetails((prevData) => {
-          return {
-            ...prevData,
-            jobConfig: {
-              ...prevData.jobConfig,
-              sourceConnection: res[1].id,
-              sourceDb: res[1].spec.properties.properties.connectionString?.split('/')[3],
-              targetConnection: res[2].id,
-              targetDb: res[2].spec.properties.properties.dataset,
-            },
-          };
-        });
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+    MyPipelineApi.getRunDetails({
+      namespace: currentNamespace,
+      appId: taskName,
+      programType: 'workflows',
+      programName: 'DataPipelineWorkflow',
+      runid: jobId,
+    }).subscribe((data) => {
+      console.log('aaa', data);
+      setJobDetails(
+        produce((prev) => {
+          prev.status = data.status;
+          prev.duration = humanReadableDuration(data.end - data.starting, false);
+        })
+      );
+    });
+    MyPipelineApi.get({ namespace: currentNamespace, appId: taskName }).subscribe((data) => {
+      console.log('get', data);
+      const draftObj = JSON.parse(data.configuration);
+      setJobDetails(
+        produce((prev) => {
+          prev.jobConfig.sourceConnection = draftObj.stages[0].name;
+          prev.jobConfig.sourceDb = parseJdbcString(
+            draftObj.stages[0].plugin.properties.connectionString,
+            draftObj.stages[0].plugin.properties.jdbcPluginName
+          );
+          prev.jobConfig.targetConnection = draftObj.stages[1].name;
+          prev.jobConfig.targetDb = draftObj.stages[1].plugin.properties.dataset;
+        })
+      );
+      MyMetricApi.query(null, {
+        qid: {
+          tags: {
+            namespace: currentNamespace,
+            app: taskName,
+            workflow: 'DataPipelineWorkflow',
+            run: jobId,
+          },
+          metrics: [
+            `user.${draftObj.stages[0].name}.records.in`,
+            `user.${draftObj.stages[0].name}.records.error`,
+            // 'user.Multiple Database Tables.process.time.total',
+            // 'user.Multiple Database Tables.process.time.avg',
+            // 'user.Multiple Database Tables.process.time.max',
+            // 'user.Multiple Database Tables.process.time.min',
+            // 'user.Multiple Database Tables.process.time.stddev',
+            `user.${draftObj.stages[0].name}.records.out`,
+          ],
+          timeRange: {
+            aggregate: 'true',
+          },
+        },
+      }).subscribe(
+        (data) =>
+          setJobDetails(
+            produce((prev) => {
+              prev.records.in = data.qid.series?.find(
+                (item) => item.metricName === `user.${draftObj.stages[0].name}.records.in`
+              )?.data[0].value;
+              prev.records.error = data.qid.series?.find(
+                (item) => item.metricName === `user.${draftObj.stages[0].name}.records.error`
+              )?.data[0].value;
+              prev.records.out = data.qid.series?.find(
+                (item) => item.metricName === `user.${draftObj.stages[0].name}.records.out`
+              )?.data[0].value;
+            })
+          )
+        // setJobDetails((prev) => {
+        //   return {
+        //     ...prev,
+        //     records: {
+        //       ...prev.records,
+        //       in: data.qid.series?.find(
+        //         (item) => item.metricName === 'user.Multiple Database Tables.records.in'inin
+        //       )?.data[0].value,
+        //       out: data.qid.series?.find(
+        //         (item) => item.metricName === 'user.Multiple Database Tables.records.out'
+        //       )?.data[0].value,
+        //       error: data.qid.series?.find(
+        //         (item) => item.metricName === 'user.Multiple Database Tables.records.error'
+        //       )?.data[0].value,
+        //     },
+        //   };
+        // })
+      );
+    });
+    // MyPipelineApi.fetchMacros({ appId: taskName, namespace: currentNamespace }).subscribe(
+    //   (res) => {
+    //     console.log('res', res);
+    //     setJobDetails((prevData) => {
+    //       return {
+    //         ...prevData,
+    //         jobConfig: {
+    //           ...prevData.jobConfig,
+    //           sourceConnection: res[1].id,
+    //           sourceDb: res[1].spec.properties.properties.connectionString?.split('/')[3],
+    //           targetConnection: res[2].id,
+    //           targetDb: res[2].spec.properties.properties.dataset,
+    //         },
+    //       };
+    //     });
+    //   },
+    //   (err) => {
+    //     console.log(err);
+    //   }
+    // );
   }, []);
 
   function mylogs() {
@@ -232,24 +329,29 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
           <div className={classes.jobInfo}>
             <img
               className={classes.infoIcons}
-              src={greenTickIcon}
+              src={
+                (jobDetails.status === 'COMPLETED' && greenTickIcon) ||
+                (jobDetails.status === 'FAILED' && failedIcon) ||
+                (jobDetails.status === 'KILLED' && failedIcon) ||
+                progressIcon
+              }
               alt="job-details"
               width="33px"
               height="33px"
             />
             <div className={classes.jobItem}>
-              <div className={classes.jobDetailsTop}>Job 3</div>
-              <div className={classes.jobDetailsBottom}>by Sanjith at 9 May’21, 9:30 pm </div>
+              <div className={classes.jobDetailsTop}>Job</div>
+              <div className={classes.jobDetailsBottom}>{jobId}</div>
             </div>
             <div className={classes.jobItem}>
               <div className={classes.jobDetailsTop} style={{ color: '#19A347' }}>
-                5675
+                {jobDetails.records.in ? jobDetails.records.in : 0}
               </div>
               <div className={classes.jobDetailsBottom}>Records Inserted</div>
             </div>
             <div className={classes.jobItem}>
               <div className={classes.jobDetailsTop} style={{ color: '#DB4437' }}>
-                305
+                {jobDetails.records.error ? jobDetails.records.error : 0}
               </div>
               <div className={classes.jobDetailsBottom}>Records with Errors </div>
             </div>
@@ -261,7 +363,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
               height="33px"
             />
             <div className={classes.jobItem}>
-              <div className={classes.jobDetailsTop}>15 min</div>
+              <div className={classes.jobDetailsTop}>{jobDetails.duration}</div>
               <div className={classes.jobDetailsBottom}>Execution time</div>
             </div>
           </div>
@@ -287,7 +389,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                 >
                   {tables.map((item) => {
                     return (
-                      <li style={{ marginRight: '120px' }}>
+                      <li style={{ marginRight: '120px' }} key={item}>
                         <span className={classes.jobDetailsTop}>{item}</span>
                       </li>
                     );

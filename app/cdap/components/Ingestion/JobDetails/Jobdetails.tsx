@@ -31,6 +31,7 @@ import { MyMetricApi } from 'api/metric';
 import produce from 'immer';
 import { parseJdbcString } from '../helpers';
 import history from 'services/history';
+import { ConnectionsApi } from 'api/connections';
 
 const styles = (theme): StyleRules => {
   return {
@@ -138,19 +139,6 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
   const taskName = (params as any).taskName;
   const jobId = (params as any).jobId;
 
-  const tables = [
-    'Table_one',
-    'Table_two',
-    'Table_three',
-    'Table_four',
-    'Table_five',
-    'Table_six',
-    'Table_seven',
-    'Table_eight',
-    'Table_nine',
-    'Table_ten',
-  ];
-
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [logs, setLogs] = React.useState([]);
   const [jobDetails, setJobDetails] = React.useState({
@@ -167,6 +155,8 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
       out: 0,
       error: 0,
     },
+    sourceList: [],
+    targetList: [],
   });
   React.useEffect(() => {
     MyPipelineApi.getRunDetails({
@@ -198,6 +188,41 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
           prev.jobConfig.targetDb = draftObj.stages[1].plugin.properties.dataset;
         })
       );
+      setJobDetails(
+        produce((draft) => {
+          draft.targetList = [draftObj.stages[1].plugin.properties.dataset];
+        })
+      );
+      {
+        draftObj.stages[0].plugin.properties.whitelist === ''
+          ? ConnectionsApi.exploreConnection(
+              {
+                context: currentNamespace,
+                connectionid: draftObj.stages[1].name,
+              },
+              {
+                path: '/public',
+                limit: 1000,
+              }
+            ).subscribe(
+              (message) => {
+                console.log(message);
+                setJobDetails(
+                  produce((draft) => {
+                    draft.targetList = message.entities.map((item) => item.name);
+                  })
+                );
+              },
+              (err) => {
+                console.log('TablesList-err', err);
+              }
+            )
+          : setJobDetails(
+              produce((draft) => {
+                draft.sourceList = draftObj.stages[0].plugin.properties.whitelist.split(',');
+              })
+            );
+      }
       MyMetricApi.query(null, {
         qid: {
           tags: {
@@ -351,7 +376,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                     columnCount: 2,
                   }}
                 >
-                  {tables.map((item) => {
+                  {jobDetails.sourceList.map((item) => {
                     return (
                       <li style={{ marginRight: '120px' }} key={item}>
                         <span className={classes.jobDetailsTop}>{item}</span>
@@ -370,7 +395,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                     columnCount: 2,
                   }}
                 >
-                  {tables.map((item) => {
+                  {jobDetails.targetList.map((item) => {
                     return (
                       <li style={{ marginRight: '120px' }}>
                         <span className={classes.jobDetailsTop}>{item}</span>

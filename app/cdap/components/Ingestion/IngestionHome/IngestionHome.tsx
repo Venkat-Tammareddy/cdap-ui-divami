@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react';
+import { useContext } from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import history from 'services/history';
 import IngestionTaskList from 'components/Ingestion/IngestionTaskList/index';
@@ -31,6 +32,8 @@ import If from 'components/If';
 import ErrorBanner from 'components/ErrorBanner';
 import { MyPipelineApi } from 'api/pipeline';
 import { humanReadableDate } from 'services/helpers';
+import { MyMetadataApi } from 'api/metadata';
+import { ingestionContext } from 'components/Ingestion/ingestionContext';
 
 const I18N_PREFIX = 'features.PipelineList.DeployedPipelineView';
 
@@ -113,6 +116,7 @@ const styles = (theme): StyleRules => {
 
 interface IIngestionHomeProps extends WithStyles<typeof styles> {}
 const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
+  const { setIngestionListfn } = useContext(ingestionContext);
   const [displayDrafts, setDisplayDrafts] = React.useState(false);
   const [draftsList, setDraftsList] = React.useState([]);
   const [search, setSearch] = React.useState('');
@@ -167,6 +171,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   }
   const setIngestionTaskList = () => {
     console.log('mytest', data.pipelines);
+    setIngestionListfn(data.pipelines);
     return data.pipelines.map((ele) => {
       return {
         runId: ele.runs[0]?.runid,

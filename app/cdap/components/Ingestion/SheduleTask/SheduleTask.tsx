@@ -116,10 +116,11 @@ const styles = (theme): StyleRules => {
     scheduleButton: {
       height: '36px',
       backgroundColor: '#4285F4',
-      letterSpacing: '1.25px',
+      // letterSpacing: '1.25px',
       lineHeight: '24px',
       fontSize: '14px',
       fontFamily: 'Lato',
+      whiteSpace: 'nowrap',
     },
     scheduleSubHeader: {
       fontFamily: 'Lato',
@@ -156,14 +157,14 @@ const styles = (theme): StyleRules => {
   };
 };
 const recurOptions = [
-  // 'Every 5 min',
-  // 'Every 10 min',
-  // 'Every 30 min',
+  'Every 5 min',
+  'Every 10 min',
+  'Every 30 min',
   'Hourly',
   'Daily',
   'Weekly',
   'Monthly',
-  // 'Quarterly',
+  // 'Yearly',
 ];
 
 // const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -185,7 +186,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
   const calendar = '/cdap_assets/img/calendar.svg';
   const timer = '/cdap_assets/img/timer.svg';
 
-  const [checkedItem, setCheckedItem] = React.useState('Hourly');
+  const [checkedItem, setCheckedItem] = React.useState('Every 5 min');
   const onItemChecked = (item: string) => {
     setCheckedItem(item);
   };
@@ -257,6 +258,15 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
   };
   const setTimeString = () => {
     switch (checkedItem) {
+      case 'Every 5 min': {
+        return `*/5 * * * *`;
+      }
+      case 'Every 10 min': {
+        return `*/10 * * * *`;
+      }
+      case 'Every 30 min': {
+        return `*/30 * * * *`;
+      }
       case 'Hourly':
         {
           return `${sheduleObj.minutes} */${sheduleObj.hours} * * *`;
@@ -288,7 +298,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
     }
   };
 
-  const shedule = () => {
+  const saveAndShedule = (shedule) => {
     const sheduleBody = {
       namespace: 'default',
       application: draftObj.name,
@@ -327,21 +337,23 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
     ).subscribe(
       (message) => {
         console.log('sheduleUpdate', message);
-        MyPipelineApi.schedule(
-          {
-            namespace: NamespaceStore.getState().selectedNamespace,
-            appId: draftObj.name,
-            scheduleId: 'dataPipelineSchedule',
-          },
-          sheduleBody
-        ).subscribe(
-          (message) => {
-            console.log('shedule', message);
-          },
-          (err) => {
-            console.log(err);
-          }
-        );
+        if (shedule) {
+          MyPipelineApi.schedule(
+            {
+              namespace: NamespaceStore.getState().selectedNamespace,
+              appId: draftObj.name,
+              scheduleId: 'dataPipelineSchedule',
+            },
+            sheduleBody
+          ).subscribe(
+            (message) => {
+              console.log('shedule', message);
+            },
+            (err) => {
+              console.log(err);
+            }
+          );
+        }
       },
       (err) => {
         console.log(err);
@@ -498,19 +510,11 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
           );
         }
         break;
-      case 'Quarterly': {
+      case 'Yearly': {
         return (
           <Box mb={4}>
-            <Box mb={1} className={classes.optionsLabel}>
-              At what frequency is the event likely repeat?
-            </Box>
-            <IncrementInput
-              handleIncremtChanges={(type, inputValue) => handleIncremtChanges(type, inputValue)}
-              type={'quarters'}
-            />
-            <Box mb={1} className={classes.optionsLabel}>
-              Select date of month?
-            </Box>
+            <Box mb={1}>At what frequency is the event likely repeat?</Box>
+            <Box mb={1}>Select date of month?</Box>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardDatePicker
                 margin="normal"
@@ -550,8 +554,17 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
   };
 
   const sheduleString = () => {
-    const string = `The task is scheduled to run every  `;
+    const string = `The pipeline is sheduled to run every  `;
     switch (checkedItem) {
+      case 'Every 5 min': {
+        return <span className={classes.sheduleString}>{string} 5 minutes</span>;
+      }
+      case 'Every 10 min': {
+        return <span className={classes.sheduleString}>{string} 10 minutes</span>;
+      }
+      case 'Every 30 min': {
+        return <span className={classes.sheduleString}>{string} 30 minutes</span>;
+      }
       case 'Hourly':
         {
           return (
@@ -579,7 +592,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
               {string}
               {Object.keys(sheduleObj.weekDays).map((ele) => {
                 if (sheduleObj.weekDays[ele]) {
-                  return ',' + ele;
+                  return ele + ',';
                 }
               })}
               {' at ' + formatAMPM(selectedTime)}
@@ -656,8 +669,8 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
           </Box>
           <Box className={classes.btnFooter}>
             <Grid container spacing={0}>
-              <Grid className={classes.gridItem} item xs={6}></Grid>
-              <Grid className={classes.gridItem} item xs={3}>
+              <Grid className={classes.gridItem} item xs={4}></Grid>
+              <Grid className={classes.gridItem} item xs={2}>
                 <Button
                   size="medium"
                   color="primary"
@@ -667,7 +680,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                   CANCEL
                 </Button>
               </Grid>
-              <Grid className={classes.gridItem} item xs={3}>
+              <Grid className={classes.gridItem} item xs={2}>
                 <Button
                   variant="contained"
                   size="medium"
@@ -675,10 +688,24 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                   className={classes.scheduleButton}
                   onClick={(e) => {
                     closeSchedule();
-                    shedule();
+                    saveAndShedule(false);
                   }}
                 >
-                  SCHEDULE
+                  SAVE
+                </Button>
+              </Grid>
+              <Grid className={classes.gridItem} item xs={4}>
+                <Button
+                  variant="contained"
+                  size="medium"
+                  color="primary"
+                  className={classes.scheduleButton}
+                  onClick={(e) => {
+                    closeSchedule();
+                    saveAndShedule(true);
+                  }}
+                >
+                  SAVE AND SHEDULE
                 </Button>
               </Grid>
             </Grid>

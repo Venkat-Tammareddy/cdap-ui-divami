@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react';
+import { useContext } from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import history from 'services/history';
 import { Typography } from '@material-ui/core';
@@ -26,6 +27,9 @@ import SheduleTask from '../SheduleTask/SheduleTask';
 import { useParams } from 'react-router';
 import { MyPipelineApi } from 'api/pipeline';
 import { MyMetadataApi } from 'api/metadata';
+import { ingestionContext } from 'components/Ingestion/ingestionContext';
+import { any } from 'prop-types';
+import { humanReadableDate } from 'services/helpers';
 import { MyMetricApi } from 'api/metric';
 import produce from 'immer';
 import { parseJdbcString } from '../helpers';
@@ -213,8 +217,10 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const [schedule, setSchedule] = React.useState(false);
   const [graph, setGraph] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
+  const { ingestionTasklList } = useContext(ingestionContext);
   const params = useParams();
   const taskName = (params as any).taskName;
+
   const [taskDetails, setTaskDetails] = React.useState({
     taskName,
     description: '',

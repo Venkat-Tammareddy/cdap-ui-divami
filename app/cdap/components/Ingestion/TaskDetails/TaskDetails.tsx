@@ -17,7 +17,7 @@
 import * as React from 'react';
 import { useContext } from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import history from 'services/history'; 
+import history from 'services/history';
 import { Typography } from '@material-ui/core';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import IngestionJobsList from '../IngestionTaskList/IngestionJobsList';
@@ -448,7 +448,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
             }}
             graph={graph}
             taskDetails={taskDetails}
-                     />
+          />
         </div>
       )}
     </div>

@@ -116,10 +116,11 @@ const styles = (theme): StyleRules => {
     scheduleButton: {
       height: '36px',
       backgroundColor: '#4285F4',
-      letterSpacing: '1.25px',
+      // letterSpacing: '1.25px',
       lineHeight: '24px',
       fontSize: '14px',
       fontFamily: 'Lato',
+      whiteSpace: 'nowrap',
     },
     scheduleSubHeader: {
       fontFamily: 'Lato',
@@ -684,7 +685,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({ classes, closeSchedule }) => 
                   variant="contained"
                   size="medium"
                   color="primary"
-                  className={classes.margin}
+                  className={classes.scheduleButton}
                   onClick={(e) => {
                     closeSchedule();
                     saveAndShedule(false);

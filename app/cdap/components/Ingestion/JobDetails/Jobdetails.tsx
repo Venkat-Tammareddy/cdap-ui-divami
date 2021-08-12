@@ -198,7 +198,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
           ? ConnectionsApi.exploreConnection(
               {
                 context: currentNamespace,
-                connectionid: draftObj.stages[1].name,
+                connectionid: draftObj.stages[0].name,
               },
               {
                 path: '/public',
@@ -209,7 +209,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                 console.log(message);
                 setJobDetails(
                   produce((draft) => {
-                    draft.targetList = message.entities.map((item) => item.name);
+                    draft.sourceList = message.entities.map((item) => item.name);
                   })
                 );
               },

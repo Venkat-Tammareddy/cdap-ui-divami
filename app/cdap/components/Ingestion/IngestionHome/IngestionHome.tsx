@@ -15,6 +15,7 @@
  */
 
 import * as React from 'react';
+import { useContext } from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import history from 'services/history';
 import IngestionTaskList from 'components/Ingestion/IngestionTaskList/index';
@@ -31,6 +32,8 @@ import If from 'components/If';
 import ErrorBanner from 'components/ErrorBanner';
 import { MyPipelineApi } from 'api/pipeline';
 import { humanReadableDate } from 'services/helpers';
+import { MyMetadataApi } from 'api/metadata';
+import { ingestionContext } from 'components/Ingestion/ingestionContext';
 
 const I18N_PREFIX = 'features.PipelineList.DeployedPipelineView';
 
@@ -58,16 +61,17 @@ const styles = (theme): StyleRules => {
       display: 'grid',
       gridTemplateColumns: '0fr 1fr 0fr',
     },
-    taskTabs: {
+    tabs: {
       minWidth: '30px',
       maxWidth: '70px',
       fontFamily: 'Lato',
       fontSize: '14px',
       color: ' #202124;',
       letterSpacing: '0.13px',
-      paddingBottom: '10px',
-      // marginRight: '22.5px',
+      padding: '7.5px',
+      marginRight: '22.5px',
       cursor: 'pointer',
+      whiteSpace: 'nowrap',
       // '&:active': {
       //   textDecoration: 'underline',
       // },
@@ -107,17 +111,12 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       gap: '500px',
     },
-    // tasksDiv: {
-    //   maxWidth: 'fit-content',
-    // },
-    // draftsDiv: {
-
-    // },
   };
 };
 
 interface IIngestionHomeProps extends WithStyles<typeof styles> {}
 const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
+  const { setIngestionListfn } = useContext(ingestionContext);
   const [displayDrafts, setDisplayDrafts] = React.useState(false);
   const [draftsList, setDraftsList] = React.useState([]);
   const [search, setSearch] = React.useState('');
@@ -172,11 +171,12 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   }
   const setIngestionTaskList = () => {
     console.log('mytest', data.pipelines);
+    setIngestionListfn(data.pipelines);
     return data.pipelines.map((ele) => {
       return {
         runId: ele.runs[0]?.runid,
         taskName: ele.name,
-        status: ele.runs.length === 0 ? '' : ele.runs[0].status,
+        status: ele.runs.length === 0 ? 'DEPLOYED' : ele.runs[0].status,
         sourceConnectionDb: '',
         sourceConnection: '',
         targetConnection: '',
@@ -242,9 +242,9 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
         />
         <div className={classes.tabbleViewWrpr}>
           <div className={classes.tabsWrapper}>
-            <div className={classes.tasksDiv}>
+            <div>
               <span
-                className={classes.taskTabs}
+                className={classes.tabs}
                 onClick={() => setDisplayDrafts(false)}
                 style={{
                   borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none',
@@ -254,9 +254,9 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
                 TASKS ({data.pipelines.length})
               </span>
             </div>
-            <div className={classes.draftsDiv}>
+            <div>
               <span
-                className={classes.draftTabs}
+                className={classes.tabs}
                 onClick={() => setDisplayDrafts(true)}
                 style={{
                   borderBottom: displayDrafts ? '4px solid #4285F4' : 'none',

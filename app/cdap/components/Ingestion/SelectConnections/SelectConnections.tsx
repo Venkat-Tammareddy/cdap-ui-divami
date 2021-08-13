@@ -324,7 +324,6 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
                     <img
                       src={sortType === 'Down' ? sortDownIcon : sortUpIcon}
                       alt="some down icon sort"
-                      height="14px"
                       className={classes.sortIcon}
                       onClick={handleSortToggle}
                     />

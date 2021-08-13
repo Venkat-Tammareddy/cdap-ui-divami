@@ -111,6 +111,7 @@ interface IngestJobsListProps extends WithStyles<typeof styles> {
   graph?: boolean;
   onTaskClick: (jobId: string) => void;
   taskDetails: any;
+  setLoading: () => void;
 }
 
 const IngestionJobsList: React.FC<IngestJobsListProps> = ({
@@ -118,6 +119,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
   onTaskClick,
   graph,
   taskDetails,
+  setLoading,
 }) => {
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
   const failedIcon = '/cdap_assets/img/error-status.svg';
@@ -125,13 +127,13 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
   const successIcon = '/cdap_assets/img/success-status.svg';
   const namespace = NamespaceStore.getState().selectedNamespace;
   const stopRun = (runId: string) => {
-    console.log(runId, 'stopped...');
+    setLoading();
     MyPipelineApi.stopRun({
       namespace,
       appId: taskDetails?.taskName,
       programType: 'workflows',
       programName: 'DataPipelineWorkflow',
-      runId,
+      runid: runId,
     }).subscribe((msg) => {
       console.log('run stopped successfully');
     });
@@ -230,7 +232,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                       {item.status === 'FAILED' ? (
                         <TextOnlyTooltip
                           placement="left"
-                          title="Looks like server is down...."
+                          title="Check execution logs for more details"
                           className={classes.failedTooltipInfo}
                         >
                           <InfoOutlinedIcon className={classes.failedTooltipIcon} />

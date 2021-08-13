@@ -184,10 +184,6 @@ const styles = (): StyleRules => {
       lineHeight: '24px',
       cursor: 'pointer',
     },
-    emptyList: {
-      textAlign: 'center',
-      margin: '30px 30px',
-    },
   };
 };
 interface ITableItem {
@@ -276,32 +272,28 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
         </Menu>
       </div>
       <Box className={classes.box}>
-        {tablesList.length === 0 ? (
-          <h3 className={classes.emptyList}>There are no connections...</h3>
-        ) : (
-          <Grid container spacing={2}>
-            {filteredList.length === 0 ? (
-              <h3 className={classes.emptyList}>
-                {search.length === 0 ? '' : `There are no tables matching your search '${search}'`}
-              </h3>
-            ) : (
-              filteredList.map((item) => (
-                <Grid item xs={4} className={classes.gridbox} key={item.tableName}>
-                  <Checkbox
-                    checked={item.selected}
-                    onChange={() => handleChange(item.tableName)}
-                    name={item.tableName}
-                    className={classes.checkboxes}
-                    icon={<CheckboxNormal />}
-                    checkedIcon={<CheckedIcon />}
-                    color="primary"
-                  />
-                  <label className={classes.labelText}>{item.tableName}</label>
-                </Grid>
-              ))
-            )}
-          </Grid>
-        )}
+        <Grid container spacing={2}>
+          {filteredList.length === 0 ? (
+            <h3 className={classes.emptyList}>
+              {search.length === 0 ? '' : `There are no tables matching your search '${search}'`}
+            </h3>
+          ) : (
+            filteredList.map((item) => (
+              <Grid item xs={4} className={classes.gridbox} key={item.tableName}>
+                <Checkbox
+                  checked={item.selected}
+                  onChange={() => handleChange(item.tableName)}
+                  name={item.tableName}
+                  className={classes.checkboxes}
+                  icon={<CheckboxNormal />}
+                  checkedIcon={<CheckedIcon />}
+                  color="primary"
+                />
+                <label className={classes.labelText}>{item.tableName}</label>
+              </Grid>
+            ))
+          )}
+        </Grid>
       </Box>
     </div>
   );

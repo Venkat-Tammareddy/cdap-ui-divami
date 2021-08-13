@@ -25,7 +25,6 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import NamespaceStore from 'services/NamespaceStore';
 import produce from 'immer';
-import { MyPipelineApi } from 'api/pipeline';
 import TaskOptions from './TaskOptions';
 import TaskTags from './TaskTags';
 import TaskConnections from './TaskConnections';
@@ -113,40 +112,14 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
   refetch,
 }) => {
   const myimg = '/cdap_assets/img/idle-status.svg';
-  const runSuccess = '/cdap_assets/img/last-run-tick.svg';
-  const runError = '/cdap_assets/img/lastrun-error.svg';
-  const runProgress = '/cdap_assets/img/lastrun-inprogress.svg';
+  const progressIcon = '/cdap_assets/img/Inprogress.svg';
 
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [taskList, setTaskList] = React.useState(data);
-  const [more, setMore] = React.useState(false);
-
   const filteredList = taskList.filter((item) =>
     item.taskName?.toLowerCase().includes(searchText?.toLowerCase())
   );
 
-  React.useEffect(() => {
-    taskList.map((item, index) => {
-      MyPipelineApi.getRuns({
-        namespace: currentNamespace,
-        appId: item.taskName,
-        programType: 'workflows',
-        programName: 'DataPipelineWorkflow',
-      }).subscribe((runs) => {
-        setTaskList(
-          produce((draft) => {
-            draft[index].runs = runs.map((run) => {
-              return {
-                status: run.status,
-                runId: run.runid,
-              };
-            });
-          })
-        );
-      }),
-        (err) => console.log(err);
-    });
-  }, []);
   return (
     <>
       <div className={classes.root}>
@@ -176,14 +149,17 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                     e.preventDefault();
                     history.push(`/ns/${currentNamespace}/ingestion/task/${item.taskName}`);
                   }}
-                  // to={`/ns/${currentNamespace}/ingestion/task/${item.taskName}`}
-                  onMouseOver={() => setMore(true)}
                 >
                   <TableCell>
                     <Grid container spacing={0}>
                       <Grid className={classes.gridItem} item xs={1}>
                         <Paper className={classes.paper}>
-                          <img src={myimg} alt="img" height="27.2px" width="23px" />
+                          <img
+                            src={(item.status === 'RUNNING' && progressIcon) || myimg}
+                            alt="img"
+                            height="27.2px"
+                            width="23px"
+                          />
                         </Paper>
                       </Grid>
                       <Grid item xs={11}>
@@ -196,38 +172,18 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                   <TableCell>
                     <TaskTags taskName={item.taskName} />
                   </TableCell>
-                  <TableCell>
-                    <Grid container spacing={0}>
-                      {item.runs.map(
-                        (run, i) =>
-                          i < 3 && (
-                            <Grid item xs={2} key={i}>
-                              <Paper className={classes.paper}>
-                                <img
-                                  src={
-                                    (run.status === 'RUNNING' && runProgress) ||
-                                    (run.status === 'COMPLETED' && runSuccess) ||
-                                    (run.status === 'FAILED' && runError) ||
-                                    (run.status === 'KILLED' && runError) ||
-                                    runProgress
-                                  }
-                                  alt="img"
-                                  height="20px"
-                                  width="20px"
-                                />
-                              </Paper>
-                            </Grid>
-                          )
-                      )}
-                    </Grid>
-                  </TableCell>
-                  <TableCell>
-                    <TaskOptions
-                      taskName={item.taskName}
-                      latestRun={item.runs[0]}
-                      refetch={refetch}
-                    />
-                  </TableCell>
+                  <TaskOptions
+                    taskName={item.taskName}
+                    runs={item.runs}
+                    setRuns={(runs) =>
+                      setTaskList(
+                        produce((draft) => {
+                          draft[index].runs = runs;
+                        })
+                      )
+                    }
+                    refetch={refetch}
+                  />
                 </TableRow>
               );
             })}

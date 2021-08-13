@@ -90,6 +90,7 @@ const styles = (): StyleRules => {
       margin: '0',
       marginTop: '8px',
       color: '#202124',
+      letterSpacing: '0.45px',
     },
     test: {
       display: 'flex',
@@ -159,7 +160,7 @@ const AcknowledgementView: React.FC<IAcknowledgementProps> = ({
       <div className={classes.ackMessage}>
         <img src={ackIcon} alt="ack icon" height="92px" width="130px" />
         <p className={classes.ackMsg}>Successfully Deployed Task</p>
-        <p className={classes.ackText}>Ingest oracle studies data to big query</p>
+        <p className={classes.ackText}>{draftObj.name}</p>
       </div>
       <div className={classes.ackOptions}>
         <div className={classes.test}>

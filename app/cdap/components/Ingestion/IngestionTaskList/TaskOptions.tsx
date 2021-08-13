@@ -16,11 +16,12 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Grid, Menu, MenuItem, Paper } from '@material-ui/core';
+import { CircularProgress, Grid, Menu, MenuItem, Paper } from '@material-ui/core';
 import { MyPipelineApi } from 'api/pipeline';
 import NamespaceStore from 'services/NamespaceStore';
 import LoadingSVG from 'components/LoadingSVG';
 import TableCell from 'components/Table/TableCell';
+import IconSVG from 'components/IconSVG';
 
 const styles = (theme): StyleRules => {
   return {
@@ -90,12 +91,13 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
         refetch();
       });
     type === 'Run Task' &&
-      MyPipelineApi.run({
+      (MyPipelineApi.run({
         namespace,
         appId: taskName,
       }).subscribe((message) => {
         console.log(taskName + 'started running....');
-      });
+      }),
+      setLoading(true));
   };
   const stopRun = (runId: string) => {
     console.log(latestRun);
@@ -164,6 +166,11 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
             {loading ? (
               <LoadingSVG />
             ) : (
+              // <IconSVG name="icon-spinner" className="fa-lg fa-spin" data-testid="loading-icon" />
+              //   <>
+              //   <CircularProgress />
+              //   Processing...
+              // </>
               <Paper
                 className={classes.paper}
                 hidden={!(latestRun?.status === 'RUNNING')}

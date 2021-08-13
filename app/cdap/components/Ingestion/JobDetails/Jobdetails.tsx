@@ -209,7 +209,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                 console.log(message);
                 setJobDetails(
                   produce((draft) => {
-                    draft.sourceList = message.entities.map((item) => item.name);
+                    draft.sourceList = message.entities?.map((item) => item.name);
                   })
                 );
               },
@@ -219,7 +219,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
             )
           : setJobDetails(
               produce((draft) => {
-                draft.sourceList = draftObj.stages[0].plugin.properties.whitelist.split(',');
+                draft.sourceList = draftObj.stages[0].plugin.properties.whitelist?.split(',');
               })
             );
       }

@@ -59,7 +59,7 @@ const styles = (): StyleRules => {
         justifyContent: 'flex-end',
       },
       '& .MuiOutlinedInput-input': {
-        fontSize: '20px',
+        fontSize: '16px',
       },
       '& .MuiInputLabel-shrink': {
         fontSize: '14px',

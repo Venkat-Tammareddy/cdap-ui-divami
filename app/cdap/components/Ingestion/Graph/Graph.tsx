@@ -31,58 +31,61 @@ import {
 } from 'react-vis';
 import '../../../../../node_modules/react-vis/dist/style.css';
 import { CardContent, Typography } from '@material-ui/core';
-import Card from 'components/Card';
+import Card from '@material-ui/core/Card';
 import If from 'components/If';
 const styles = (): StyleRules => {
   return {
     root: {
       overflowX: 'auto',
       scrollBarWidth: 'thin',
-      height: '300px',
-      width: '1280',
+      height: '500px',
+      width: '1280px',
     },
     croot: {
-      Width: '260px',
-      height: '181px',
+      padding: '24px',
     },
     title: {
       fontSize: '18px',
       fontFamily: 'Lato',
       paddingLeft: '0',
       color: '#202124',
+      whitespace: 'nowrap',
+      overflow: 'hidden',
+      marginBottom: '0px',
     },
     up: {
       display: 'flex',
       borderBottom: '2px solid grey',
-      marginTop: '-10px',
-      gap: '50px',
+      // marginTop: '-10px',
+      gap: '85px',
       justifyContent: 'center',
       alignItems: 'center',
     },
-    sukces: {
+    successText: {
+      fontFamily: 'Lato',
       backgroundColor: '#0F9D58',
       borderRadius: '16px',
-      color: 'white',
-      padding: '5px 10px',
+      color: '#FFFFFF',
+      padding: '2px 10px 5px 10px',
       fontSize: '14px',
-      marginBottom: '10px',
+      marginBottom: '9.5px',
     },
     info: {
       display: 'flex',
-      paddingTop: '15px',
       flexDirection: 'column',
-      gap: '5px',
+      marginTop: '15.5px',
+      gap: '15px',
       color: '#202124',
       fontSize: '14px',
     },
     hnt: {
-      border: '1px solid #A5A5A5',
       width: '261px',
-      padding: '0',
-      margin: '0',
+      height: '181px',
     },
-    hehe: {
-      border: '1px solid blue',
+    jobInfo: {
+      fontFamily: 'Lato',
+      fontSize: '14px',
+      color: '#202124;',
     },
   };
 };
@@ -112,29 +115,20 @@ const GraphsView: React.FC<GraphsProps> = ({ classes }) => {
     { x: 'job7', y: 60 },
     { x: 'job8', y: 47 },
     { x: 'job9', y: 99 },
-    { x: 'job10', y: 92 },
+    { x: 'job10', y: 150 },
   ];
-  const [tooltip, setTooltip] = React.useState(false);
   const [value, setValue] = React.useState({});
-  const show = () => {
-    setTooltip(true);
-  };
 
   return (
     <div className={classes.root}>
-      <FlexibleWidthXYPlot
-        xType="ordinal"
-        width={1280}
-        height={300}
-        style={{ paddingLeft: '30px' }}
-      >
+      <FlexibleWidthXYPlot xType="ordinal" width={1280} height={300} margin={{ left: 100 }}>
         <HorizontalGridLines />
         <XAxis />
         <ChartLabel
           text="Records"
           className="alt-y-label"
           includeMargin={false}
-          xPercent={-0.017}
+          xPercent={-0.03}
           yPercent={0.5}
           style={{
             transform: 'rotate(-90)',
@@ -144,7 +138,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes }) => {
         />
         <YAxis />
         <VerticalBarSeries
-          barWidth={0.5}
+          barWidth={0.2}
           data={myData}
           color="#74D091"
           onMouseover={() => alert('1')}
@@ -159,21 +153,17 @@ const GraphsView: React.FC<GraphsProps> = ({ classes }) => {
             align={{ vertical: 'bottom', horizontal: 'right' }}
             className={classes.hnt}
           >
-            <Card className={classes.croot}>
-              <div className={classes.up}>
-                <p className={classes.title}>Job 04</p>
-                <div className={classes.sukces}>Success</div>
-              </div>
-              <div className={classes.info}>
-                <Typography variant="body2" component="p">
-                  02 May 21, 07:30 pm
-                </Typography>
-                <Typography variant="body2" component="p">
-                  3820 Records Loaded
-                </Typography>
-                <Typography variant="body2" component="p">
-                  976 Error Records
-                </Typography>
+            <Card className={classes.croot} variant="outlined">
+              <div className={classes.container}>
+                <div className={classes.up}>
+                  <p className={classes.title}>Job 04</p>
+                  <div className={classes.successText}>Success</div>
+                </div>
+                <div className={classes.info}>
+                  <p className={classes.jobInfo}>02 May 21, 07:30 pm</p>
+                  <p className={classes.jobInfo}>3820 Records Loaded</p>
+                  <p className={classes.jobInfo}>976 Error Records</p>
+                </div>
               </div>
             </Card>
           </Hint>
@@ -186,7 +176,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes }) => {
           style={{ cursor: 'pointer' }}
         />
         <VerticalBarSeries
-          barWidth={0.5}
+          barWidth={0.2}
           data={myData2}
           color="#DB4437"
           style={{ cursor: 'pointer' }}

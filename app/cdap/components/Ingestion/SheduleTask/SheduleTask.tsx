@@ -156,6 +156,9 @@ const styles = (theme): StyleRules => {
     shedulemsg: {
       paddingLeft: '20px',
     },
+    radioButtons: {
+      marginLeft: '0px',
+    },
   };
 };
 const recurOptions = [
@@ -674,9 +677,9 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
             <Box mb={1} className={classes.scheduleSubHeader}>
               How often will it recur?
             </Box>
-            <Grid container spacing={1}>
+            <Grid container>
               {recurOptions.map((item, index) => (
-                <Grid item xs={4}>
+                <Grid item xs={4} className={classes.radioButtons}>
                   <Radio
                     onClick={(e) => {
                       onItemChecked(item);

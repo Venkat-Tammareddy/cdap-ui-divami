@@ -196,7 +196,10 @@ const styles = (theme): StyleRules => {
       marginBottom: '0px',
     },
     wrapper: {
+<<<<<<< HEAD
+=======
       // border: '1px solid red',
+>>>>>>> 5861e02667c719d9577a54ec972b4c85b0a58571
       marginTop: '0px',
       padding: '0px',
     },

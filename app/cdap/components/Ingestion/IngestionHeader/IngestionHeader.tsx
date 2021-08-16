@@ -61,6 +61,8 @@ const styles = (theme): StyleRules => {
       lineHeight: '24px',
       cursor: 'pointer',
       marginLeft: '28px',
+      display: 'flex',
+      alignItems: 'center',
     },
     createIcon: {
       marginRight: '10px',
@@ -236,7 +238,7 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
               src={taskActionsIcon}
               alt="task-actions-ingestion"
             />
-            <span>Task Actions</span>
+            <span style={{ textAlign: 'center' }}>Task Actions</span>
           </div>
         )}
         {browseBtn && (

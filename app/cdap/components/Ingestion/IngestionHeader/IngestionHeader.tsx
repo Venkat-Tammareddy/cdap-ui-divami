@@ -149,12 +149,13 @@ interface IngestionHeaderProps extends WithStyles<typeof styles> {
   runBtn?: boolean;
   onRun?: () => void;
   taskActionsBtn?: boolean;
-  onTaskActions?: () => void;
+  onTaskActions?: (any) => void;
   navToHome?: () => void;
   browseBtn?: boolean;
   onBrowse?: () => void;
   graphicalView?: boolean;
   setGraph?: any;
+  taskOptions?: any[];
 }
 const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   classes,
@@ -172,6 +173,7 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   taskName,
   jobName,
   setGraph,
+  taskOptions,
 }) => {
   const titleDesignIcon = '/cdap_assets/img/title-design-bar.svg';
   const createIcon = '/cdap_assets/img/create.svg';
@@ -226,7 +228,6 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
           <div
             className={classes.create}
             onClick={(e) => {
-              onTaskActions();
               setAnchorEl(e.currentTarget);
             }}
           >
@@ -297,17 +298,19 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
           },
         }}
       >
-        {options.map((option) => (
-          <MenuItem
-            key={option}
-            // selected={option === 'Pyxis'}
-            onClick={(e) => {
-              // onOptionSelect(selectedRow);
-            }}
-          >
-            {option}
-          </MenuItem>
-        ))}
+        {taskOptions
+          ? taskOptions.map((option) => (
+              <MenuItem
+                key={option}
+                onClick={(e) => {
+                  onTaskActions(option);
+                  setAnchorEl(null);
+                }}
+              >
+                {option}
+              </MenuItem>
+            ))
+          : ''}
       </Menu>
     </>
   );

@@ -18,8 +18,8 @@ import T from 'i18n-react';
 import { TextField } from '@material-ui/core';
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import ButtonComponent from '../ButtonComponent/ButtonComponent';
+import TaskInfoFields from './TaskInfoFields';
 const I18N_PREFIX = 'features.TaskInfo';
 
 const styles = (): StyleRules => {
@@ -224,19 +224,11 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
 }) => {
   const [taskName, setTaskName] = React.useState(draftConfig?.name);
   const [taskDescription, setTaskDescription] = React.useState(draftConfig?.description);
-  const taskSpaceError = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`).toString();
-  const taskLengthErrorMessage = T.translate(
-    `${I18N_PREFIX}.Errors.taskNameLengthError`
-  ).toString();
   const [infoMessage, setInfoMessage] = React.useState('Enter task name');
   const [secondInfoMessage, setSecondInfoMessage] = React.useState('without spaces');
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
     errorMsg: '',
-  });
-  const [tagLengthError, setTagLengthError] = React.useState({
-    error: false,
-    errorMsg: 'Tags cannot be more than 64 characters',
   });
   const [taskTagError, setTaskTagError] = React.useState({
     error: false,
@@ -257,32 +249,6 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
     submitValues(formDataObject);
   };
 
-  // const onCancel = (e: React.FormEvent) => {
-  //   handleCancel();
-  // };
-
-  const handleTaskNameChange = (e: React.FormEvent) => {
-    const inputValue = e.target as HTMLInputElement;
-    if (inputValue.value.length > 64) {
-      taskNameError.error = true;
-      taskNameError.errorMsg = taskLengthErrorMessage;
-    } else {
-      taskNameError.error = false;
-      taskNameError.errorMsg = taskSpaceError;
-      if (inputValue.value.includes(' ')) {
-        taskNameError.error = true;
-        taskNameError.errorMsg = T.translate(`${I18N_PREFIX}.Errors.errorWithOutEx`).toString();
-      } else {
-        taskNameError.error = false;
-        taskNameError.errorMsg = T.translate(
-          `${I18N_PREFIX}.Errors.taskNameFormatError`
-        ).toString();
-      }
-    }
-    setTaskNameError(taskNameError);
-    setTaskName(inputValue.value);
-  };
-
   const handleFocus = (e: React.FormEvent) => {
     const currentElement = e.target as HTMLInputElement;
     const name = currentElement.name;
@@ -296,150 +262,23 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
     }
   };
 
-  const checkValidation = (e) => {
-    const curTag = e.target as HTMLInputElement;
-    const format = /^[a-zA-Z0-9-]*$/;
-    if (!format.test(curTag.value)) {
-      setTaskTagError({
-        error: true,
-        errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
-      });
-    } else {
-      setTaskTagError({
-        error: false,
-        errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
-      });
-    }
-
-    if (curTag.value.length > 64) {
-      setTagLengthError({
-        error: true,
-        errorMsg: 'Tags cannot be more than 64 characters',
-      });
-    } else {
-      setTagLengthError({
-        error: false,
-        errorMsg: 'Tags cannot be more than 64 characters',
-      });
-    }
-  };
   const infoIcon = '/cdap_assets/img/info-infographic.svg';
   return (
     <form onSubmit={handleSubmit} className={classes.root}>
       <div className={classes.LeftRight}>
-        <div className={classes.left}>
-          <p className={classes.headerText}>Enter Task Details</p>
-          <div className={classes.textFields}>
-            <TextField
-              required
-              name={T.translate(`${I18N_PREFIX}.Name.taskName`).toString()}
-              label={T.translate(`${I18N_PREFIX}.Labels.taskName`)}
-              value={taskName}
-              className={classes.taskName}
-              InputProps={{ classes: { input: classes.input1 } }}
-              variant="outlined"
-              autoFocus={true}
-              onChange={handleTaskNameChange}
-              onFocus={handleFocus}
-              error={taskNameError.error}
-              InputLabelProps={{
-                classes: {
-                  root: classes.label,
-                },
-              }}
-            />
-            <p className={taskNameError.error ? classes.errorInputInfo : classes.inputInfo}>
-              {taskNameError.errorMsg}
-            </p>
-            <TextField
-              name={T.translate(`${I18N_PREFIX}.Name.taskDescription`).toString()}
-              onChange={(e) => setTaskDescription(e.target.value)}
-              value={taskDescription}
-              label={T.translate(`${I18N_PREFIX}.Labels.description`)}
-              InputProps={{ classes: { input: classes.input2 } }}
-              // InputProps={{
-              //   classes: {
-              //     input: classes.resize,
-              //   },
-              // }}
-              InputLabelProps={{
-                classes: {
-                  root: classes.label,
-                },
-              }}
-              multiline={true}
-              rows={8}
-              className={classes.taskDescription}
-              variant="outlined"
-            />
-            <Autocomplete
-              className={classes.taskTags}
-              multiple
-              id="tags-outlined"
-              options={[]}
-              freeSolo
-              value={tags}
-              onChange={(e, newval: any) => {
-                if (taskTagError.error || tagLengthError.error) {
-                  return;
-                }
-                setTags(newval);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  error={tagLengthError.error || taskTagError.error}
-                  onFocus={handleFocus}
-                  helperText={
-                    taskTagError.error
-                      ? taskTagError.errorMsg
-                      : tagLengthError.error
-                      ? tagLengthError.errorMsg
-                      : ''
-                  }
-                  label={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
-                  InputLabelProps={{
-                    classes: {
-                      root: classes.label,
-                    },
-                  }}
-                  name={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
-                  onKeyDown={(e: any) => {
-                    if (e.keyCode === 13) {
-                      if (taskTagError.error) {
-                        setTaskTagError({
-                          error: false,
-                          errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
-                        });
-                        return;
-                      }
-                      if (tagLengthError.error) {
-                        setTagLengthError({
-                          error: false,
-                          errorMsg: 'Tags cannot be more than 64 characters',
-                        });
-                      } else {
-                        if (e.target.value === '') {
-                          return;
-                        } else {
-                          setTags(tags.concat(e.target.value));
-                        }
-                      }
-                    }
-                  }}
-                  onChange={checkValidation}
-                />
-              )}
-            />
-            {/* <p className={taskTagError.error ? classes.errorInputInfo : classes.inputInfo}>
-              {taskTagError.errorMsg}
-            </p>
-            <p className={tagLengthError.error ? classes.errorInputInfo : classes.inputInfo}>
-              {tagLengthError.errorMsg}
-            </p> */}
-          </div>
-        </div>
+        <TaskInfoFields
+          taskName={taskName}
+          taskDescription={taskDescription}
+          tags={tags}
+          setTaskName={setTaskName}
+          setTags={setTags}
+          setTaskDescription={setTaskDescription}
+          handleFocus={handleFocus}
+          setTaskNameError={setTaskNameError}
+          setTaskTagError={setTaskTagError}
+          taskNameError={taskNameError}
+          taskTagError={taskTagError}
+        />
         <div className={classes.info}>
           <img src={infoIcon} alt="some icon text" height="75.4px" width="74px" />
           <div className={classes.infoContainer}>

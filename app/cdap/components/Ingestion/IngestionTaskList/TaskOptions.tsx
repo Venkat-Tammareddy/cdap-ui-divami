@@ -65,6 +65,7 @@ interface ITaskOptionsProps extends WithStyles<typeof styles> {
   refetch: () => void;
   runs: IRunsProps[];
   setRuns: (data: any) => void;
+  setDuplicate: (value: string) => void;
 }
 const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   classes,
@@ -72,6 +73,7 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   runs,
   refetch,
   setRuns,
+  setDuplicate,
 }) => {
   const namespace = NamespaceStore.getState().selectedNamespace;
   const latestRun = runs[0];
@@ -98,6 +100,7 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
         console.log(taskName + 'started running....');
       }),
       setLoading(true));
+    type === 'Duplicate' && setDuplicate(taskName);
   };
   const stopRun = (runId: string) => {
     console.log(latestRun);

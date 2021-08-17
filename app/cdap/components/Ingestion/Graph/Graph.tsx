@@ -50,7 +50,7 @@ const styles = (): StyleRules => {
       paddingLeft: '0',
       color: '#202124',
       whitespace: 'nowrap',
-      overflow: 'hidden',
+      // overflow: 'hidden',
       marginBottom: '0px',
     },
     up: {

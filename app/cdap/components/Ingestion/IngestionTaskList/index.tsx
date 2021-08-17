@@ -29,6 +29,8 @@ import TaskOptions from './TaskOptions';
 import TaskTags from './TaskTags';
 import TaskConnections from './TaskConnections';
 import history from 'services/history';
+import DuplicateTask from '../DuplicateTask/DuplicateTask';
+import If from 'components/If';
 
 const styles = (theme): StyleRules => {
   return {
@@ -113,7 +115,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
 }) => {
   const myimg = '/cdap_assets/img/idle-status.svg';
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
-
+  const [duplicate, setDuplicate] = React.useState<string | null>(null);
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [taskList, setTaskList] = React.useState(data);
   const filteredList = taskList.filter((item) =>
@@ -123,10 +125,15 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
   return (
     <>
       <div className={classes.root}>
-        {/* <DuplicateTask
-          submitValues={(value) => console.log(value)}
-          handleCancel={() => goToIngestionHome()}
-        /> */}
+        {duplicate && (
+          <DuplicateTask
+            duplicateTaskName={duplicate}
+            closePopup={(isDuplicated) => {
+              isDuplicated && refetch();
+              setDuplicate(null);
+            }}
+          />
+        )}
         <Table columnTemplate="2fr 1fr 1fr 1fr 1fr 1fr">
           <TableHeader data-cy="table-header">
             <TableRow className={classes.header} data-cy="table-row">
@@ -183,6 +190,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                       )
                     }
                     refetch={refetch}
+                    setDuplicate={(value) => setDuplicate(value)}
                   />
                 </TableRow>
               );

@@ -28,12 +28,12 @@ import { useParams } from 'react-router';
 import { MyPipelineApi } from 'api/pipeline';
 import { MyMetadataApi } from 'api/metadata';
 import { ingestionContext } from 'components/Ingestion/ingestionContext';
-import { any } from 'prop-types';
-import { humanReadableDate } from 'services/helpers';
 import { MyMetricApi } from 'api/metric';
 import produce from 'immer';
 import { parseJdbcString } from '../helpers';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
+import { humanReadableDate } from 'services/helpers';
+import DuplicateTask from '../DuplicateTask/DuplicateTask';
 
 const styles = (theme): StyleRules => {
   return {
@@ -193,10 +193,6 @@ const styles = (theme): StyleRules => {
       marginBottom: '0px',
     },
     wrapper: {
-<<<<<<< HEAD
-=======
-      // border: '1px solid red',
->>>>>>> 5861e02667c719d9577a54ec972b4c85b0a58571
       marginTop: '0px',
       padding: '0px',
     },
@@ -223,10 +219,11 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const { ingestionTasklList } = useContext(ingestionContext);
   const params = useParams();
   const taskName = (params as any).taskName;
-
+  const [duplicate, setDuplicate] = React.useState(false);
   const [taskDetails, setTaskDetails] = React.useState({
     taskName,
     description: '',
+    createdOn: '',
     tags: [],
     runs: [],
     connections: {
@@ -255,18 +252,28 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       );
       getRuns(draftObj.stages[0].name);
     });
-    MyMetadataApi.getTags({
+    MyMetadataApi.getMetadata({
       namespace: currentNamespace,
       entityType: 'apps',
       entityId: taskName,
-    }).subscribe((tags) => {
-      console.log(tags);
-      setTaskDetails((prev) => {
-        return {
-          ...prev,
-          tags: tags.tags.filter((tag) => tag.scope === 'USER').map((tag) => tag.name),
-        };
-      });
+    }).subscribe((metaData) => {
+      console.log(metaData);
+
+      // setTaskDetails((prev) => {
+      //   return {
+      //     ...prev,
+      //     tags: tags.tags.filter((tag) => tag.scope === 'USER').map((tag) => tag.name),
+      //   };
+      // });
+      setTaskDetails(
+        produce((draft) => {
+          draft.tags = metaData.find((item) => item.scope === 'USER').tags;
+          draft.createdOn = humanReadableDate(
+            metaData.find((item) => item.scope === 'SYSTEM').properties['creation-time'],
+            false
+          );
+        })
+      );
     });
   }, []);
   const getMetrics = (runs, connectionName) => {
@@ -357,6 +364,14 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       <If condition={schedule}>
         <SheduleTask closeSchedule={closeSchedule} />
       </If>
+      {duplicate && (
+        <DuplicateTask
+          duplicateTaskName={taskName}
+          closePopup={(isDuplicated) => {
+            setDuplicate(false);
+          }}
+        />
+      )}
       <If condition={loading}>
         <LoadingSVGCentered />
       </If>
@@ -371,7 +386,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       <div className={classes.container}>
         <div className={classes.flexContainer}>
           <div className={classes.taskName}>{taskName}</div>
-          <div className={classes.taskDate}>- Deployed on 04 May 21, 07:30 pm</div>
+          <div className={classes.taskDate}>- Deployed on {taskDetails.createdOn}</div>
         </div>
         {taskDetails.runs.length > 1 && (
           <div className={classes.runDetails}>

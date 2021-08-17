@@ -31,6 +31,10 @@ import TaskConnections from './TaskConnections';
 import history from 'services/history';
 import DuplicateTask from '../DuplicateTask/DuplicateTask';
 import If from 'components/If';
+import SheduleTask from '../SheduleTask/SheduleTask';
+import setStringtoTime from './stringToTime';
+import LoadingSVGCentered from 'components/LoadingSVGCentered';
+import { MyPipelineApi } from 'api/pipeline';
 
 const styles = (theme): StyleRules => {
   return {
@@ -116,14 +120,54 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
   const myimg = '/cdap_assets/img/idle-status.svg';
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
   const [duplicate, setDuplicate] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(false);
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [taskList, setTaskList] = React.useState(data);
+  const [schedule, setSchedule] = React.useState(false);
+  const [sheduleObj, setSheduleObj] = React.useState({ taskName: '', selectItem: {} });
   const filteredList = taskList.filter((item) =>
     item.taskName?.toLowerCase().includes(searchText?.toLowerCase())
   );
 
+  const closeSchedule = () => {
+    // setLoading(true);
+    setSchedule(false);
+  };
+  const sheduleTask = (type, taskName, cronExpression) => {
+    setLoading(true);
+    if (type == 'Suspend') {
+      MyPipelineApi.suspend({
+        namespace: NamespaceStore.getState().selectedNamespace,
+        appId: taskName,
+        scheduleId: 'dataPipelineSchedule',
+      }).subscribe(
+        (message) => {
+          console.log('shedule', message);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    } else {
+      setSchedule(true);
+      setSheduleObj({ taskName, selectItem: setStringtoTime(cronExpression) });
+    }
+  };
+
   return (
     <>
+      <If condition={loading}>
+        <LoadingSVGCentered />
+      </If>
+      <If condition={schedule}>
+        <SheduleTask
+          closeSchedule={closeSchedule}
+          setLoadingtl={setLoading}
+          // sheduleString={sheduleString}
+          taskName={sheduleObj.taskName}
+          selectItem={sheduleObj.selectItem}
+        />
+      </If>
       <div className={classes.root}>
         {duplicate && (
           <DuplicateTask
@@ -180,7 +224,11 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                     <TaskTags taskName={item.taskName} />
                   </TableCell>
                   <TaskOptions
+                    setLoadingtl={setLoading}
                     taskName={item.taskName}
+                    sheduleTask={(type, taskName, cronExpression) =>
+                      sheduleTask(type, taskName, cronExpression)
+                    }
                     runs={item.runs}
                     setRuns={(runs) =>
                       setTaskList(

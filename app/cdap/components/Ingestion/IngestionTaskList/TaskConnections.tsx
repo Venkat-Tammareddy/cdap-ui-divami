@@ -31,7 +31,7 @@ const styles = (theme): StyleRules => {
     paper: {
       boxShadow: 'none',
       backgroundColor: 'rgb(255 255 255 / 0%)',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#202124',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
@@ -73,6 +73,12 @@ const TaskConnectionsView: React.FC<ITaskConnectionsProps> = ({ classes, taskNam
         <Grid container spacing={0}>
           <Grid item xs={12}>
             <Paper className={classes.paper}>{connections.sourceDb}</Paper>
+          </Grid>
+        </Grid>
+      </TableCell>
+      <TableCell>
+        <Grid container spacing={0}>
+          <Grid item xs={12}>
             <Paper className={classes.paper}>{connections.sourceName}</Paper>
           </Grid>
         </Grid>
@@ -81,6 +87,12 @@ const TaskConnectionsView: React.FC<ITaskConnectionsProps> = ({ classes, taskNam
         <Grid container spacing={0}>
           <Grid item xs={12}>
             <Paper className={classes.paper}>{connections.targetDb}</Paper>
+          </Grid>
+        </Grid>
+      </TableCell>
+      <TableCell>
+        <Grid container spacing={0}>
+          <Grid item xs={12}>
             <Paper className={classes.paper}>{connections.targetName}</Paper>
           </Grid>
         </Grid>

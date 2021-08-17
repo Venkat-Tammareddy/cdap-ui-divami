@@ -86,6 +86,7 @@ const styles = (): StyleRules => {
       fontFamily: 'Lato',
       fontSize: '14px',
       color: '#202124;',
+      marginBottom: '0',
     },
   };
 };

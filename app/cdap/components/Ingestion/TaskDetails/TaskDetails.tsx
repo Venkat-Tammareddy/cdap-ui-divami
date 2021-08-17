@@ -43,25 +43,40 @@ const styles = (theme): StyleRules => {
     container: {
       padding: '16px 28px 0px 28px',
       borderTop: '1px solid #A5A5A5',
+      display: 'flex',
+      gap: '350px',
     },
     flexContainer: {
       display: 'flex',
-      alignItems: 'center',
+      flexDirection: 'column',
+      flex: '1',
     },
     taskName: {
       fontFamily: 'Lato',
+      position: 'absolute',
+      top: '100px',
+      backgroundColor: '#FFFFFF',
       fontSize: '18px',
       color: '#202124',
-      marginRight: '10px',
+      '&:after': {
+        content: '',
+        display: 'inline-block',
+        width: '50%',
+        margin: '0 .5em 0 -55 %',
+        verticalAlign: 'middle',
+        borderBottom: '1px solid',
+      },
+      paddingRight: '20px',
     },
     taskDate: {
       fontFamily: 'Lato',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#202124',
+      marginTop: '10px',
     },
     description: {
       fontFamily: 'Lato',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#202124',
       lineHeight: '20px',
       maxWidth: '615px',
@@ -91,7 +106,6 @@ const styles = (theme): StyleRules => {
       alignItems: 'flex-end',
       marginTop: '16px',
       paddingBottom: '21px',
-      borderBottom: '1px solid #A5A5A5',
     },
     title: {
       marginTop: '32px',
@@ -142,33 +156,34 @@ const styles = (theme): StyleRules => {
       paddingTop: '26px',
     },
     runDetails: {
-      display: 'inline-flex',
+      display: 'flex',
+      flexDirection: 'column',
       marginTop: '28px',
       marginBottom: '20px',
       paddingBottom: '20px',
       width: '100%',
-      borderBottom: '1px solid #A5A5A5',
     },
     runDetailsItem: {
-      marginLeft: '12px',
-      marginRight: '60px',
+      display: 'flex',
+      gap: '20px',
     },
     successPercentage: {
       fontFamily: 'Lato',
-      fontSize: '14px',
-      color: '#19A347',
+      fontSize: '16px',
+      color: '#202124',
+      opacity: '0.8',
     },
     runDetailsTop: {
       fontFamily: 'Lato',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#202124',
+      opacity: '0.8',
     },
     runDetailsBottom: {
       fontFamily: 'Lato',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#202124',
       opacity: '0.8',
-      marginTop: '2px',
     },
     detailHeader: {
       cursor: 'pointer',
@@ -193,15 +208,49 @@ const styles = (theme): StyleRules => {
       marginBottom: '0px',
     },
     wrapper: {
-<<<<<<< HEAD
-=======
-      // border: '1px solid red',
->>>>>>> 5861e02667c719d9577a54ec972b4c85b0a58571
       marginTop: '0px',
       padding: '0px',
     },
     hide: {
       display: 'none',
+    },
+    left: {},
+    right: {},
+    scheduleContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '20px',
+    },
+    successContainer: {
+      display: 'flex',
+      marginTop: '16.9px',
+      gap: '20px',
+    },
+    taskData: {
+      fontFamily: 'Lato',
+      fontSize: '16px',
+      color: '#202124',
+      marginLeft: '5px',
+    },
+    fullWidth: {
+      padding: '16px 28px 0px 28px',
+      borderTop: '1px solid #A5A5A5',
+    },
+    leftFullWidth: {
+      // borderRight: '1px solid #A5A5A5',
+    },
+    chipFullWidth: {
+      display: 'flex',
+      alignItems: 'flex-end',
+      marginTop: '16px',
+      paddingBottom: '21px',
+    },
+    taskDetailContainer: {
+      display: 'flex',
+      border: '1px solid #A5A5A5',
+      borderLeft: 'none',
+      gap: '350px',
+      width: '100%',
     },
   };
 };
@@ -352,6 +401,11 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     const totalRuns = taskDetails.runs.length;
     return ((successRuns / totalRuns) * 100).toFixed(2);
   };
+
+  const sourceIcon = '/cdap_assets/img/source-connection.svg';
+  const targetIcon = '/cdap_assets/img/target-connection.svg';
+  const calenderIcon = '/cdap_assets/img/schedule-task-big.svg';
+
   return (
     <div className={classes.root}>
       <If condition={schedule}>
@@ -368,56 +422,165 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         onTaskActions={() => console.log('task actions')}
         navToHome={() => history.push(`/ns/${currentNamespace}/ingestion`)}
       />
-      <div className={classes.container}>
-        <div className={classes.flexContainer}>
-          <div className={classes.taskName}>{taskName}</div>
-          <div className={classes.taskDate}>- Deployed on 04 May 21, 07:30 pm</div>
-        </div>
-        {taskDetails.runs.length > 1 && (
-          <div className={classes.runDetails}>
-            <img src={successRatePie} alt="success-rate-pie" />
-            <div className={classes.runDetailsItem}>
-              <div className={classes.successPercentage}>{getSuccessRate()}%</div>
-              <div className={classes.runDetailsBottom}>Success Rate</div>
+      <div className={taskDetails.runs.length === 0 ? classes.fullWidth : classes.container}>
+        <div className={classes.taskDetailContainer}>
+          <div className={taskDetails.runs.length === 0 ? classes.leftFullWidth : classes.left}>
+            <div className={classes.flexContainer}>
+              <div className={classes.taskName}>{taskName}</div>
+              <div className={classes.taskDate}>Deployed on 04 May 21, 07:30 pm</div>
             </div>
-            <img src={calender} alt="success-rate-pie" />
-            <div className={classes.runDetailsItem}>
-              <div className={classes.runDetailsTop}>Every month</div>
-              <div className={classes.runDetailsBottom}>Schedule Run</div>
-            </div>
-            <img src={clock} alt="success-rate-pie" />
-            <div className={classes.runDetailsItem}>
-              <div className={classes.runDetailsTop}>12 Jun 21, 09:30 pm</div>
-              <div className={classes.runDetailsBottom}>Next Schedule Run</div>
-            </div>
-          </div>
-        )}
-        <div>
-          {' '}
-          <div className={classes.description}>{taskDetails.description}</div>
-          <div className={classes.connectionContainer}>
-            <div className={classes.taskDate}>
-              {taskDetails.connections.sourceName}
-              {' | '}
-              {taskDetails.connections.sourceDb}
-            </div>
-            <img className={classes.arrow} src={arrowIcon} alt="arrow" />
-            <div className={classes.taskDate}>
-              {taskDetails.connections.targetName}
-              {' | '}
-              {taskDetails.connections.targetDb}
-            </div>
-          </div>
-          <div className={classes.chipContainer}>
-            {taskDetails.tags.map((tag) => {
-              return (
-                <div className={classes.chip} key={tag}>
-                  {tag}
+            <div>
+              <div className={classes.description}>{taskDetails.description}</div>
+              <div className={classes.connectionContainer}>
+                <img
+                  src={sourceIcon}
+                  alt="Icon"
+                  style={{
+                    backgroundColor: 'orange',
+                    fill: 'red',
+                    height: '40px',
+                    width: '40px',
+                    borderRadius: '50%',
+                    padding: '5px',
+                  }}
+                />
+                <div className={classes.taskData}>
+                  {taskDetails.connections.sourceName}
+                  {' | '}
+                  {taskDetails.connections.sourceDb}
                 </div>
-              );
-            })}
+                <img className={classes.arrow} src={arrowIcon} alt="arrow" />
+                <img
+                  src={targetIcon}
+                  alt="Icon"
+                  style={{
+                    backgroundColor: 'orange',
+                    fill: 'red',
+                    height: '40px',
+                    width: '40px',
+                    borderRadius: '50%',
+                    padding: '5px',
+                  }}
+                />
+                <div className={classes.taskData}>
+                  {taskDetails.connections.targetName}
+                  {' | '}
+                  {taskDetails.connections.targetDb}
+                </div>
+              </div>
+              <div
+                className={
+                  taskDetails.runs.length === 0 ? classes.chipContainer : classes.chipFullWidth
+                }
+              >
+                {taskDetails.tags.map((tag) => {
+                  return (
+                    <div className={classes.chip} key={tag}>
+                      {tag}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          <div className={classes.right}>
+            {taskDetails.runs.length > 1 && (
+              <div className={classes.runDetails}>
+                <img src={calenderIcon} alt="success-rate-pie" height="35.1px" width="40px" />
+                <div className={classes.successContainer}>
+                  <div className={classes.successPercentage}>Sucess Rate</div>
+                  <div className={classes.successPercentage}>{getSuccessRate()}%</div>
+                </div>
+                <div className={classes.scheduleContainer}>
+                  <div className={classes.runDetailsTop}>Schedule Run</div>
+                  <div className={classes.runDetailsBottom}>Every Month</div>
+                </div>
+                <div className={classes.runDetailsItem}>
+                  <div className={classes.runDetailsTop}>Next Run</div>
+                  <div className={classes.runDetailsBottom}>12 Jun 21, 09:30 pm</div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
+        {/* <div className={taskDetails.runs.length === 0 ? classes.leftFullWidth : classes.left}>
+          <div className={classes.flexContainer}>
+            <div className={classes.taskName}>{taskName}</div>
+            <div className={classes.taskDate}>Deployed on 04 May 21, 07:30 pm</div>
+          </div>
+          <div>
+            <div className={classes.description}>{taskDetails.description}</div>
+            <div className={classes.connectionContainer}>
+              <img
+                src={sourceIcon}
+                alt="Icon"
+                style={{
+                  backgroundColor: 'orange',
+                  fill: 'red',
+                  height: '40px',
+                  width: '40px',
+                  borderRadius: '50%',
+                  padding: '5px',
+                }}
+              />
+              <div className={classes.taskData}>
+                {taskDetails.connections.sourceName}
+                {' | '}
+                {taskDetails.connections.sourceDb}
+              </div>
+              <img className={classes.arrow} src={arrowIcon} alt="arrow" />
+              <img
+                src={targetIcon}
+                alt="Icon"
+                style={{
+                  backgroundColor: 'orange',
+                  fill: 'red',
+                  height: '40px',
+                  width: '40px',
+                  borderRadius: '50%',
+                  padding: '5px',
+                }}
+              />
+              <div className={classes.taskData}>
+                {taskDetails.connections.targetName}
+                {' | '}
+                {taskDetails.connections.targetDb}
+              </div>
+            </div>
+            <div
+              className={
+                taskDetails.runs.length === 0 ? classes.chipContainer : classes.chipFullWidth
+              }
+            >
+              {taskDetails.tags.map((tag) => {
+                return (
+                  <div className={classes.chip} key={tag}>
+                    {tag}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+        <div className={classes.right}>
+          {taskDetails.runs.length > 1 && (
+            <div className={classes.runDetails}>
+              <img src={calenderIcon} alt="success-rate-pie" height="35.1px" width="40px" />
+              <div className={classes.successContainer}>
+                <div className={classes.successPercentage}>Sucess Rate</div>
+                <div className={classes.successPercentage}>{getSuccessRate()}%</div>
+              </div>
+              <div className={classes.scheduleContainer}>
+                <div className={classes.runDetailsTop}>Schedule Run</div>
+                <div className={classes.runDetailsBottom}>Every Month</div>
+              </div>
+              <div className={classes.runDetailsItem}>
+                <div className={classes.runDetailsTop}>Next Run</div>
+                <div className={classes.runDetailsBottom}>12 Jun 21, 09:30 pm</div>
+              </div>
+            </div>
+          )}
+        </div> */}
       </div>
       {taskDetails.runs.length === 0 ? (
         <div className={classes.wrapper}>

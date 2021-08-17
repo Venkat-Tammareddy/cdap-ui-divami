@@ -55,7 +55,7 @@ const styles = (theme): StyleRules => {
     },
     tableRow: {
       cursor: 'pointer',
-      fontSize: '14px',
+      fontSize: '16px',
       fontFamily: 'Lato',
       letterSpacing: '0',
       lineHeight: '24px',
@@ -67,7 +67,7 @@ const styles = (theme): StyleRules => {
     paper: {
       boxShadow: 'none',
       backgroundColor: 'rgb(255 255 255 / 0%)',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#202124',
       textOverflow: 'ellipsis',
     },
@@ -96,6 +96,14 @@ const styles = (theme): StyleRules => {
       lineHeight: '24px',
       padding: '5px 20px',
     },
+    taskNameText: {
+      boxShadow: 'none',
+      backgroundColor: 'rgb(255 255 255 / 0%)',
+      fontSize: '16px',
+      color: '#202124',
+      textOverflow: 'ellipsis',
+      paddingLeft: '29px',
+    },
   };
 };
 
@@ -120,6 +128,9 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
     item.taskName?.toLowerCase().includes(searchText?.toLowerCase())
   );
 
+  const inProgress = '/cdap_assets/img/inprogress.svg';
+  const errorIcon = '/cdap_assets/img/error.svg';
+  const successIcon = '/cdap_assets/img/sucess.svg';
   return (
     <>
       <div className={classes.root}>
@@ -127,14 +138,14 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
           submitValues={(value) => console.log(value)}
           handleCancel={() => goToIngestionHome()}
         /> */}
-        <Table columnTemplate="2fr 1fr 1fr 1fr 1fr 1fr">
+        <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr">
           <TableHeader data-cy="table-header">
             <TableRow className={classes.header} data-cy="table-row">
               <TableCell>{'Task status & name'}</TableCell>
+              <TableCell>{'Source Database'}</TableCell>
               <TableCell>{'Source connection'}</TableCell>
+              <TableCell>{'Target Database'}</TableCell>
               <TableCell>{'Target connection'}</TableCell>
-              <TableCell>{'Tags'}</TableCell>
-              <TableCell>{'Last 3 runs status'}</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHeader>
@@ -155,7 +166,14 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                       <Grid className={classes.gridItem} item xs={1}>
                         <Paper className={classes.paper}>
                           <img
-                            src={(item.status === 'RUNNING' && progressIcon) || myimg}
+                            // src={(item.status === 'RUNNING' && progressIcon) || myimg}
+                            src={
+                              (item.status === 'RUNNING' && inProgress) ||
+                              (item.status === 'COMPLETED' && successIcon) ||
+                              (item.status === 'FAILED' && errorIcon) ||
+                              (item.status === 'KILLED' && errorIcon) ||
+                              inProgress
+                            }
                             alt="img"
                             height="27.2px"
                             width="23px"
@@ -163,15 +181,11 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                         </Paper>
                       </Grid>
                       <Grid item xs={11}>
-                        <Paper className={classes.paper}>{item.taskName}</Paper>
-                        <Paper className={classes.paper}>{item.status}</Paper>
+                        <Paper className={classes.taskNameText}>{item.taskName}</Paper>
                       </Grid>
                     </Grid>
                   </TableCell>
                   <TaskConnections taskName={item.taskName} />
-                  <TableCell>
-                    <TaskTags taskName={item.taskName} />
-                  </TableCell>
                   <TaskOptions
                     taskName={item.taskName}
                     runs={item.runs}

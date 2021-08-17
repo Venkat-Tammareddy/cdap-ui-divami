@@ -133,7 +133,7 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   React.useEffect(() => setLoading(false), [runs]);
   return (
     <>
-      <TableCell>
+      {/* <TableCell>
         <Grid container spacing={0}>
           {runs.map(
             (run, i) =>
@@ -157,7 +157,7 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
               )
           )}
         </Grid>
-      </TableCell>
+      </TableCell> */}
       <TableCell>
         <Grid container spacing={0} className={classes.root}>
           <Grid item xs={8}>

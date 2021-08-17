@@ -78,7 +78,7 @@ function setConfigAndNavigate(config: IPipelineConfig): void {
   window.location.href = hydratorLink;
 }
 
-function getClonePipelineName(name: string): string {
+export function getClonePipelineName(name: string): string {
   const match = name.match(/(_v[\d]*)$/g);
   let version;
   let existingSuffix;

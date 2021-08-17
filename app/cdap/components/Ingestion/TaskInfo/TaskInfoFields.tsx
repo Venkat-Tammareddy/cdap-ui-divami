@@ -1,0 +1,405 @@
+/*
+ * Copyright © 2020 Cask Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+import * as React from 'react';
+import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
+import { TextField } from '@material-ui/core';
+import T from 'i18n-react';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+const I18N_PREFIX = 'features.TaskInfo';
+
+const styles = (theme): StyleRules => {
+  return {
+    root: {
+      '& .MuiAutocomplete-tag': {
+        border: '1px solid rgba(0,0,0,0.12)',
+        color: '#000000',
+        backgroundColor: 'transparent',
+      },
+      '& .MuiChip-label': {
+        fontFamily: 'Lato',
+        fontSize: '14px',
+        letterSpacing: '0.25px',
+      },
+      '& .MuiInputLabel-outlined': {
+        color: '#202124',
+      },
+      '& .MuiFormLabel-root.Mui-error': {
+        color: '#DB4437',
+        fontSize: '12px',
+      },
+      '& .MuiAutocomplete-input': {
+        fontSize: '16px',
+      },
+      '& .MuiFormHelperText-root.Mui-error': {
+        color: '#DB4437',
+        fontSize: '12px',
+        fontFamily: 'Lato',
+        marginRight: '0px',
+        display: 'flex',
+        justifyContent: 'flex-end',
+      },
+      '& .MuiOutlinedInput-input': {
+        fontSize: '16px',
+      },
+      '& .MuiInputLabel-shrink': {
+        fontSize: '14px',
+      },
+    },
+    label: {
+      color: '#202124 ',
+      fontSize: '16px',
+      letterSpacing: '0.25px',
+    },
+    headerText: {
+      fontFamily: 'Lato',
+      fontSize: '18px',
+      letterSpacing: '0',
+      color: '#202124',
+      lineHeight: '24px',
+      marginBottom: '0',
+    },
+    textFields: {
+      display: 'flex',
+      flexDirection: 'column',
+      flex: '1 1 0%',
+    },
+    taskName: {
+      marginTop: '29px',
+      width: '600px',
+      height: '56px',
+      boxSizing: 'border-box',
+      // height: '56px',
+      '& .MuiFormHelperText-root': {
+        color: 'red',
+      },
+      '& label.Mui-focused': {
+        color: '#4285F4',
+        fontSize: '12px',
+        letterSpacing: '0.4px',
+        lineHeight: '16px',
+      },
+    },
+    taskDescription: {
+      width: '600px',
+      marginTop: '28px',
+      borderRadius: '4px',
+      '& label.Mui-focused': {
+        color: '#4285F4',
+        fontSize: '12px',
+        letterSpacing: '0.4px',
+        lineHeight: '16px',
+      },
+    },
+    taskTags: {
+      marginTop: '28px',
+      width: '600px',
+      height: '56px',
+      '& label.Mui-focused': {
+        color: '#4285F4',
+        fontSize: '12px',
+        letterSpacing: '0.4px',
+        lineHeight: '16px',
+      },
+    },
+    resize: {
+      height: '113px',
+    },
+    inputInfo: {
+      color: '#666666',
+      fontSize: '12px',
+      height: '15px',
+      letterSpacing: '0.19px',
+      marginTop: '10px',
+      marginLeft: '16px',
+      marginBottom: '0',
+      display: 'none',
+    },
+    errorInputInfo: {
+      color: '#DB4437',
+      display: 'flex',
+      justifyContent: 'flex-end',
+      fontFamily: 'Lato',
+      marginTop: '10px',
+      marginBottom: '0px',
+      fontSize: '12px',
+      letterSpacing: '0.19px',
+    },
+    tagInfo: {
+      marginTop: '10px',
+      height: '15px',
+      letterSpacing: '0.19px',
+      fontSize: '12px',
+      color: '#666666',
+      marginLeft: '16px',
+    },
+    input1: {
+      height: '56px',
+      boxSizing: 'border-box',
+      fontSize: '16px',
+      letterSpacing: '0.15px',
+      lineHeight: '24px',
+    },
+    input2: {
+      boxSizing: 'border-box',
+      fontSize: '16px',
+    },
+    input3: {
+      height: '56px',
+      boxSizing: 'border-box',
+      fontSize: '16px',
+      letterSpacing: '0.15px',
+      lineHeight: '24px',
+    },
+    LeftRight: {
+      display: 'flex',
+      flexDirection: 'row',
+      flex: '1 1 0%',
+    },
+    info: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '181px',
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+      marginTop: '40px',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+    },
+    infoText: {
+      fontFamily: 'Lato',
+      fontSize: '18px',
+      letterSpacing: '0.28px',
+      lineHeight: '30px',
+      // color: '#4c4d4f',
+      color: '#202124',
+      opacity: '0.8',
+      marginBottom: '0px',
+    },
+    infoContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '60px',
+      marginTop: '22.2px',
+      width: '208px',
+    },
+  };
+};
+
+interface ITaskInfoFieldsProps extends WithStyles<typeof styles> {
+  taskName: string;
+  taskDescription: string;
+  setTaskName: (value: string) => void;
+  setTaskDescription: (value: string) => void;
+  tags: string[];
+  setTags: (values: string[]) => void;
+  handleFocus?: (e: React.FormEvent) => void;
+  taskNameError;
+  setTaskNameError: (value: any) => void;
+  taskTagError;
+  setTaskTagError: (value: any) => void;
+}
+const TaskInfoFieldsView: React.FC<ITaskInfoFieldsProps> = ({
+  classes,
+  taskName,
+  setTaskName,
+  taskDescription,
+  setTaskDescription,
+  tags,
+  setTags,
+  handleFocus,
+  taskNameError,
+  setTaskNameError,
+  taskTagError,
+  setTaskTagError,
+}) => {
+  const taskSpaceError = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`).toString();
+  const taskLengthErrorMessage = T.translate(
+    `${I18N_PREFIX}.Errors.taskNameLengthError`
+  ).toString();
+
+  const [tagLengthError, setTagLengthError] = React.useState({
+    error: false,
+    errorMsg: 'Tags cannot be more than 64 characters',
+  });
+
+  const handleTaskNameChange = (e: React.FormEvent) => {
+    const inputValue = e.target as HTMLInputElement;
+    const taskNameError = {
+      error: false,
+      errorMsg: '',
+    };
+    if (inputValue.value.length > 64) {
+      taskNameError.error = true;
+      taskNameError.errorMsg = taskLengthErrorMessage;
+    } else {
+      taskNameError.error = false;
+      taskNameError.errorMsg = taskSpaceError;
+      if (inputValue.value.includes(' ')) {
+        taskNameError.error = true;
+        taskNameError.errorMsg = T.translate(`${I18N_PREFIX}.Errors.errorWithOutEx`).toString();
+      } else {
+        taskNameError.error = false;
+        taskNameError.errorMsg = T.translate(
+          `${I18N_PREFIX}.Errors.taskNameFormatError`
+        ).toString();
+      }
+    }
+    setTaskNameError(taskNameError);
+    setTaskName(inputValue.value);
+  };
+
+  const checkValidation = (e) => {
+    const curTag = e.target as HTMLInputElement;
+    const format = /^[a-zA-Z0-9-]*$/;
+    if (!format.test(curTag.value)) {
+      setTaskTagError({
+        error: true,
+        errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
+      });
+    } else {
+      setTaskTagError({
+        error: false,
+        errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
+      });
+    }
+
+    if (curTag.value.length > 64) {
+      setTagLengthError({
+        error: true,
+        errorMsg: 'Tags cannot be more than 64 characters',
+      });
+    } else {
+      setTagLengthError({
+        error: false,
+        errorMsg: 'Tags cannot be more than 64 characters',
+      });
+    }
+  };
+  return (
+    <div className={classes.root}>
+      <p className={classes.headerText}>Enter Task Details</p>
+      <div className={classes.textFields}>
+        <TextField
+          required
+          name={T.translate(`${I18N_PREFIX}.Name.taskName`).toString()}
+          label={T.translate(`${I18N_PREFIX}.Labels.taskName`)}
+          value={taskName}
+          className={classes.taskName}
+          InputProps={{ classes: { input: classes.input1 } }}
+          variant="outlined"
+          autoFocus={true}
+          onChange={handleTaskNameChange}
+          onFocus={handleFocus}
+          error={taskNameError.error}
+          InputLabelProps={{
+            classes: {
+              root: classes.label,
+            },
+          }}
+        />
+        <p className={taskNameError.error ? classes.errorInputInfo : classes.inputInfo}>
+          {taskNameError.errorMsg}
+        </p>
+        <TextField
+          name={T.translate(`${I18N_PREFIX}.Name.taskDescription`).toString()}
+          onChange={(e) => setTaskDescription(e.target.value)}
+          value={taskDescription}
+          label={T.translate(`${I18N_PREFIX}.Labels.description`)}
+          InputProps={{ classes: { input: classes.input2 } }}
+          // InputProps={{
+          //   classes: {
+          //     input: classes.resize,
+          //   },
+          // }}
+          InputLabelProps={{
+            classes: {
+              root: classes.label,
+            },
+          }}
+          multiline={true}
+          rows={8}
+          className={classes.taskDescription}
+          variant="outlined"
+        />
+        <Autocomplete
+          className={classes.taskTags}
+          multiple
+          id="tags-outlined"
+          options={[]}
+          freeSolo
+          value={tags}
+          onChange={(e, newval: any) => {
+            if (taskTagError.error || tagLengthError.error) {
+              return;
+            }
+            setTags(newval);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              error={tagLengthError.error || taskTagError.error}
+              onFocus={handleFocus}
+              helperText={
+                taskTagError.error
+                  ? taskTagError.errorMsg
+                  : tagLengthError.error
+                  ? tagLengthError.errorMsg
+                  : ''
+              }
+              label={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
+              InputLabelProps={{
+                classes: {
+                  root: classes.label,
+                },
+              }}
+              name={T.translate(`${I18N_PREFIX}.Labels.tags`).toString()}
+              onKeyDown={(e: any) => {
+                if (e.keyCode === 13) {
+                  if (taskTagError.error) {
+                    setTaskTagError({
+                      error: false,
+                      errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskTagError`),
+                    });
+                    return;
+                  }
+                  if (tagLengthError.error) {
+                    setTagLengthError({
+                      error: false,
+                      errorMsg: 'Tags cannot be more than 64 characters',
+                    });
+                  } else {
+                    if (e.target.value === '') {
+                      return;
+                    } else {
+                      setTags(tags.concat(e.target.value));
+                    }
+                  }
+                }
+              }}
+              onChange={checkValidation}
+            />
+          )}
+        />
+      </div>
+    </div>
+  );
+};
+
+const TaskInfoFields = withStyles(styles)(TaskInfoFieldsView);
+export default TaskInfoFields;

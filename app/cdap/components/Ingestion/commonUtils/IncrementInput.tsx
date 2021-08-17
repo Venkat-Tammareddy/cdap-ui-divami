@@ -64,10 +64,16 @@ const styles = (theme): StyleRules => {
 interface IncrementInputProps extends WithStyles<typeof styles> {
   type: string;
   handleIncremtChanges: (type: string, inputValue: string) => any;
+  initialValue?: number;
 }
 
-const IncrementInput: React.FC<IncrementInputProps> = ({ classes, type, handleIncremtChanges }) => {
-  const [inputValue, setInputValue] = React.useState('1');
+const IncrementInput: React.FC<IncrementInputProps> = ({
+  classes,
+  type,
+  handleIncremtChanges,
+  initialValue,
+}) => {
+  const [inputValue, setInputValue] = React.useState(initialValue);
   const timeConsts = {
     hours: { value: 23, string: 'Hr' },
     minutes: { value: 59, string: 'Min' },
@@ -81,7 +87,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ classes, type, handleIn
     handleIncremtChanges(type, inputValue);
   }, [inputValue]);
   React.useEffect(() => {
-    setInputValue('1');
+    setInputValue(initialValue);
   }, [type]);
 
   const handleChanges = (value: string) => {
@@ -115,7 +121,7 @@ const IncrementInput: React.FC<IncrementInputProps> = ({ classes, type, handleIn
   };
   const onBlur = () => {
     if (inputValue == '') {
-      setInputValue('1');
+      setInputValue(initialValue);
     }
   };
   return (

@@ -16,11 +16,12 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Grid, Menu, MenuItem, Paper } from '@material-ui/core';
+import { CircularProgress, Grid, Menu, MenuItem, Paper } from '@material-ui/core';
 import { MyPipelineApi } from 'api/pipeline';
 import NamespaceStore from 'services/NamespaceStore';
 import LoadingSVG from 'components/LoadingSVG';
 import TableCell from 'components/Table/TableCell';
+import IconSVG from 'components/IconSVG';
 
 const styles = (theme): StyleRules => {
   return {
@@ -64,6 +65,9 @@ interface ITaskOptionsProps extends WithStyles<typeof styles> {
   refetch: () => void;
   runs: IRunsProps[];
   setRuns: (data: any) => void;
+  setDuplicate: (value: string) => void;
+  sheduleTask?: (type: string, taskName: string, cronExpression: string) => void;
+  setLoadingtl?;
 }
 const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   classes,
@@ -71,6 +75,9 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   runs,
   refetch,
   setRuns,
+  setDuplicate,
+  sheduleTask,
+  setLoadingtl,
 }) => {
   const namespace = NamespaceStore.getState().selectedNamespace;
   const latestRun = runs[0];
@@ -79,9 +86,16 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   const runSuccess = '/cdap_assets/img/last-run-tick.svg';
   const runError = '/cdap_assets/img/lastrun-error.svg';
   const runProgress = '/cdap_assets/img/lastrun-inprogress.svg';
-  const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Delete'];
+  const [options, setOptions] = React.useState([
+    'Run Task',
+    'Update Schedule',
+    'Task Configuration',
+    'Duplicate',
+    'Delete',
+  ]);
   const [loading, setLoading] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [cronExpression, setCronExpression] = React.useState('');
   const open = Boolean(anchorEl);
   const optionSelect = (type: string) => {
     type === 'Delete' &&
@@ -90,12 +104,16 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
         refetch();
       });
     type === 'Run Task' &&
-      MyPipelineApi.run({
+      (MyPipelineApi.run({
         namespace,
         appId: taskName,
       }).subscribe((message) => {
         console.log(taskName + 'started running....');
-      });
+      }),
+      setLoading(true));
+    type === 'Duplicate' && setDuplicate(taskName);
+    (type == 'Reshedule' || type == 'Suspend' || type == 'Shedule') &&
+      sheduleTask(type, taskName, cronExpression);
   };
   const stopRun = (runId: string) => {
     console.log(latestRun);
@@ -111,6 +129,34 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
     });
   };
   React.useEffect(() => {
+    MyPipelineApi.scheduleDetails({
+      namespace: NamespaceStore.getState().selectedNamespace,
+      appId: taskName,
+      scheduleId: 'dataPipelineSchedule',
+    }).subscribe((message) => {
+      setLoadingtl(false);
+      setCronExpression(message.trigger.cronExpression);
+      if (message.status == 'SUSPENDED' && message.trigger.cronExpression == '0 * * * *') {
+        setOptions((prev) => {
+          const options = prev.slice(0);
+          options[1] = 'Shedule';
+          return options;
+        });
+      } else if (message.status == 'SUSPENDED') {
+        setOptions((prev) => {
+          const options = prev.slice(0);
+          options[1] = 'Reshedule';
+          return options;
+        });
+      } else {
+        setOptions((prev) => {
+          const options = prev.slice(0);
+          options[1] = 'Suspend';
+          return options;
+        });
+      }
+    });
+
     MyPipelineApi.pollRuns({
       namespace,
       appId: taskName,
@@ -164,6 +210,11 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
             {loading ? (
               <LoadingSVG />
             ) : (
+              // <IconSVG name="icon-spinner" className="fa-lg fa-spin" data-testid="loading-icon" />
+              //   <>
+              //   <CircularProgress />
+              //   Processing...
+              // </>
               <Paper
                 className={classes.paper}
                 hidden={!(latestRun?.status === 'RUNNING')}

@@ -29,6 +29,12 @@ import TaskOptions from './TaskOptions';
 import TaskTags from './TaskTags';
 import TaskConnections from './TaskConnections';
 import history from 'services/history';
+import DuplicateTask from '../DuplicateTask/DuplicateTask';
+import If from 'components/If';
+import SheduleTask from '../SheduleTask/SheduleTask';
+import setStringtoTime from './stringToTime';
+import LoadingSVGCentered from 'components/LoadingSVGCentered';
+import { MyPipelineApi } from 'api/pipeline';
 
 const styles = (theme): StyleRules => {
   return {
@@ -121,9 +127,12 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
 }) => {
   const myimg = '/cdap_assets/img/idle-status.svg';
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
-
+  const [duplicate, setDuplicate] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(false);
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [taskList, setTaskList] = React.useState(data);
+  const [schedule, setSchedule] = React.useState(false);
+  const [sheduleObj, setSheduleObj] = React.useState({ taskName: '', selectItem: {} });
   const filteredList = taskList.filter((item) =>
     item.taskName?.toLowerCase().includes(searchText?.toLowerCase())
   );
@@ -131,14 +140,56 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
   const inProgress = '/cdap_assets/img/inprogress.svg';
   const errorIcon = '/cdap_assets/img/error.svg';
   const successIcon = '/cdap_assets/img/sucess.svg';
+  const closeSchedule = () => {
+    // setLoading(true);
+    setSchedule(false);
+  };
+  const sheduleTask = (type, taskName, cronExpression) => {
+    setLoading(true);
+    if (type == 'Suspend') {
+      MyPipelineApi.suspend({
+        namespace: NamespaceStore.getState().selectedNamespace,
+        appId: taskName,
+        scheduleId: 'dataPipelineSchedule',
+      }).subscribe(
+        (message) => {
+          console.log('shedule', message);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    } else {
+      setSchedule(true);
+      setSheduleObj({ taskName, selectItem: setStringtoTime(cronExpression) });
+    }
+  };
+
   return (
     <>
+      <If condition={loading}>
+        <LoadingSVGCentered />
+      </If>
+      <If condition={schedule}>
+        <SheduleTask
+          closeSchedule={closeSchedule}
+          setLoadingtl={setLoading}
+          // sheduleString={sheduleString}
+          taskName={sheduleObj.taskName}
+          selectItem={sheduleObj.selectItem}
+        />
+      </If>
       <div className={classes.root}>
-        {/* <DuplicateTask
-          submitValues={(value) => console.log(value)}
-          handleCancel={() => goToIngestionHome()}
-        /> */}
-        <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr">
+        {duplicate && (
+          <DuplicateTask
+            duplicateTaskName={duplicate}
+            closePopup={(isDuplicated) => {
+              isDuplicated && refetch();
+              setDuplicate(null);
+            }}
+          />
+        )}
+        <Table columnTemplate="2fr 1fr 1fr 1fr 1fr 1fr">
           <TableHeader data-cy="table-header">
             <TableRow className={classes.header} data-cy="table-row">
               <TableCell>{'Task status & name'}</TableCell>
@@ -187,7 +238,11 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                   </TableCell>
                   <TaskConnections taskName={item.taskName} />
                   <TaskOptions
+                    setLoadingtl={setLoading}
                     taskName={item.taskName}
+                    sheduleTask={(type, taskName, cronExpression) =>
+                      sheduleTask(type, taskName, cronExpression)
+                    }
                     runs={item.runs}
                     setRuns={(runs) =>
                       setTaskList(
@@ -197,6 +252,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                       )
                     }
                     refetch={refetch}
+                    setDuplicate={(value) => setDuplicate(value)}
                   />
                 </TableRow>
               );

@@ -28,12 +28,15 @@ import { useParams } from 'react-router';
 import { MyPipelineApi } from 'api/pipeline';
 import { MyMetadataApi } from 'api/metadata';
 import { ingestionContext } from 'components/Ingestion/ingestionContext';
-import { any } from 'prop-types';
-import { humanReadableDate } from 'services/helpers';
 import { MyMetricApi } from 'api/metric';
 import produce from 'immer';
 import { parseJdbcString } from '../helpers';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
+import { humanReadableDate } from 'services/helpers';
+import DuplicateTask from '../DuplicateTask/DuplicateTask';
+import { isNumeric } from 'services/helpers';
+import { wholeArrayIsNumeric } from 'services/helpers';
+import moment from 'moment';
 
 const styles = (theme): StyleRules => {
   return {
@@ -272,10 +275,19 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const { ingestionTasklList } = useContext(ingestionContext);
   const params = useParams();
   const taskName = (params as any).taskName;
-
+  const [duplicate, setDuplicate] = React.useState(false);
+  const [sheduleString, setSheduleString] = React.useState('');
+  const [taskOptions, setTaskOptions] = React.useState([
+    'Run Task',
+    'update Schedule',
+    'Task Configuration',
+    'Duplicate',
+    'Archive',
+  ]);
   const [taskDetails, setTaskDetails] = React.useState({
     taskName,
     description: '',
+    createdOn: '',
     tags: [],
     runs: [],
     connections: {
@@ -287,6 +299,40 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     metrics: {},
   });
   React.useEffect(() => {
+    MyPipelineApi.scheduleDetails({
+      namespace: NamespaceStore.getState().selectedNamespace,
+      appId: taskName,
+      scheduleId: 'dataPipelineSchedule',
+    }).subscribe(
+      (message) => {
+        console.log('Shedulemessage', message);
+        setLoading(false);
+        setSheduleString(message.trigger.cronExpression);
+        if (message.status == 'SUSPENDED' && message.trigger.cronExpression == '0 * * * *') {
+          setTaskOptions((prev) => {
+            const options = prev.slice(0);
+            options[1] = 'Shedule';
+            return options;
+          });
+        } else if (message.status == 'SUSPENDED') {
+          setTaskOptions((prev) => {
+            const options = prev.slice(0);
+            options[1] = 'Reshedule';
+            return options;
+          });
+        } else {
+          setTaskOptions((prev) => {
+            const options = prev.slice(0);
+            options[1] = 'Suspend';
+            return options;
+          });
+        }
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
     MyPipelineApi.get({ namespace: currentNamespace, appId: taskName }).subscribe((data) => {
       console.log('get', data);
       const draftObj = JSON.parse(data.configuration);
@@ -304,18 +350,28 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       );
       getRuns(draftObj.stages[0].name);
     });
-    MyMetadataApi.getTags({
+    MyMetadataApi.getMetadata({
       namespace: currentNamespace,
       entityType: 'apps',
       entityId: taskName,
-    }).subscribe((tags) => {
-      console.log(tags);
-      setTaskDetails((prev) => {
-        return {
-          ...prev,
-          tags: tags.tags.filter((tag) => tag.scope === 'USER').map((tag) => tag.name),
-        };
-      });
+    }).subscribe((metaData) => {
+      console.log(metaData);
+
+      // setTaskDetails((prev) => {
+      //   return {
+      //     ...prev,
+      //     tags: tags.tags.filter((tag) => tag.scope === 'USER').map((tag) => tag.name),
+      //   };
+      // });
+      setTaskDetails(
+        produce((draft) => {
+          draft.tags = metaData.find((item) => item.scope === 'USER').tags;
+          draft.createdOn = humanReadableDate(
+            metaData.find((item) => item.scope === 'SYSTEM').properties['creation-time'],
+            false
+          );
+        })
+      );
     });
   }, []);
   const getMetrics = (runs, connectionName) => {
@@ -394,7 +450,157 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   };
 
   const closeSchedule = () => {
+    setLoading(true);
     setSchedule(false);
+  };
+  const handleTaskAtions = (option) => {
+    if (option == 'Shedule') {
+      setSchedule(true);
+    }
+
+    if (option == 'Reshedule') {
+      setSchedule(true);
+    }
+    if (option == 'Suspend') {
+      setLoading(true);
+      MyPipelineApi.suspend({
+        namespace: NamespaceStore.getState().selectedNamespace,
+        appId: taskName,
+        scheduleId: 'dataPipelineSchedule',
+      }).subscribe(
+        (message) => {
+          console.log('shedule', message);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    }
+  };
+
+  const setSelectedItem = () => {
+    const cron = sheduleString.split(' ');
+    if (
+      cron[0] === '*/5' &&
+      cron[1] === '*' &&
+      cron[2] === '*' &&
+      cron[3] === '*' &&
+      cron[4] === '*'
+    ) {
+      return { item: 'Every 5 min' };
+    }
+    if (
+      cron[0] === '*/10' &&
+      cron[1] === '*' &&
+      cron[2] === '*' &&
+      cron[3] === '*' &&
+      cron[4] === '*'
+    ) {
+      return { item: 'Every 10 min' };
+    }
+    if (
+      cron[0] === '*/30' &&
+      cron[1] === '*' &&
+      cron[2] === '*' &&
+      cron[3] === '*' &&
+      cron[4] === '*'
+    ) {
+      return { item: 'Every 30 min' };
+    }
+    if (
+      isNumeric(cron[0]) &&
+      cron[1].indexOf('/') !== -1 &&
+      cron[2] === '*' &&
+      cron[3] === '*' &&
+      cron[4] === '*'
+    ) {
+      return {
+        item: 'Hourly',
+        initialSheduleObj: {
+          hours: parseInt(cron[1].split('/')[1], 10),
+          minutes: parseInt(cron[0], 10),
+        },
+      };
+    }
+
+    if (
+      wholeArrayIsNumeric(cron.slice(0, 2)) &&
+      cron[2].indexOf('/') !== -1 &&
+      cron[3] === '*' &&
+      cron[4] === '*'
+    ) {
+      const converted12HourFormat = moment().hour(parseInt(cron[1], 10));
+      return {
+        item: 'Daily',
+        initialSheduleObj: {
+          days: parseInt(cron[2].split('/')[1], 10),
+        },
+        seletedTime: moment(
+          `${parseInt(converted12HourFormat.format('h'), 10)}:${parseInt(
+            cron[0],
+            10
+          )} ${converted12HourFormat.format('A')}`,
+          'hh:mm A'
+        ).format('YYYY-MM-DDTHH:mm'),
+      };
+    }
+
+    if (
+      wholeArrayIsNumeric(cron.slice(0, 2)) &&
+      cron[2] === '*' &&
+      cron[3] === '*' &&
+      (cron[4].indexOf(',') !== -1 || isNumeric(cron[4]))
+    ) {
+      const converted12HourFormat = moment().hour(parseInt(cron[1], 10));
+      console.log(
+        'weekly',
+        cron[4].split(',').map((val) => parseInt(val), 10)
+      );
+
+      const weekDays = {
+        Sun: false,
+        Mon: false,
+        Tue: false,
+        Wed: false,
+        Thu: false,
+        Fri: false,
+        Sat: false,
+      };
+      const weekIndexes = cron[4].split(',').map((val) => parseInt(val), 10);
+      Object.keys(weekDays).forEach((ele, index) => {
+        if (weekIndexes.includes(index + 1)) {
+          weekDays[ele] = true;
+        }
+      });
+
+      return {
+        item: 'Weekly',
+        initialSheduleObj: { weekDays },
+        seletedTime: moment(
+          `${parseInt(converted12HourFormat.format('h'), 10)}:${parseInt(
+            cron[0],
+            10
+          )} ${converted12HourFormat.format('A')}`,
+          'hh:mm A'
+        ).format('YYYY-MM-DDTHH:mm'),
+      };
+    }
+    if (wholeArrayIsNumeric(cron.slice(0, 3)) && cron[3] === '*' && cron[4] === '*') {
+      const converted12HourFormat = moment().hour(parseInt(cron[1], 10));
+      return {
+        item: 'Monthly',
+        initialSheduleObj: {
+          days: parseInt(cron[2], 10),
+        },
+        seletedTime: moment(
+          `${parseInt(converted12HourFormat.format('h'), 10)}:${parseInt(
+            cron[0],
+            10
+          )} ${converted12HourFormat.format('A')}`,
+          'hh:mm A'
+        ).format('YYYY-MM-DDTHH:mm'),
+      };
+    }
   };
   const getSuccessRate = () => {
     const successRuns = taskDetails.runs.filter((run) => run.status === 'COMPLETED').length;
@@ -409,17 +615,31 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   return (
     <div className={classes.root}>
       <If condition={schedule}>
-        <SheduleTask closeSchedule={closeSchedule} />
+        <SheduleTask
+          closeSchedule={closeSchedule}
+          sheduleString={sheduleString}
+          taskName={taskName}
+          selectItem={setSelectedItem()}
+        />
       </If>
+      {duplicate && (
+        <DuplicateTask
+          duplicateTaskName={taskName}
+          closePopup={(isDuplicated) => {
+            setDuplicate(false);
+          }}
+        />
+      )}
       <If condition={loading}>
         <LoadingSVGCentered />
       </If>
       <IngestionHeader
         title="Ingest Tasks"
         taskActionsBtn
+        taskOptions={taskOptions}
         runBtn={taskDetails.runs.length !== 0}
         onRun={() => runTask(taskName)}
-        onTaskActions={() => console.log('task actions')}
+        onTaskActions={(e) => handleTaskAtions(e)}
         navToHome={() => history.push(`/ns/${currentNamespace}/ingestion`)}
       />
       <div className={taskDetails.runs.length === 0 ? classes.fullWidth : classes.container}>

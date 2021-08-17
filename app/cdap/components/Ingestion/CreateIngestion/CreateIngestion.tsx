@@ -41,6 +41,7 @@ import { MyMetadataApi } from 'api/metadata';
 import { MyProgramApi } from 'api/program';
 import produce from 'immer';
 import { useParams } from 'react-router';
+import Alert from 'components/Alert';
 
 const styles = (theme): StyleRules => {
   return {
@@ -90,6 +91,11 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const [draftId, setDraftId] = React.useState(uuidV4());
   const [artifactsList, setArtifactsList] = React.useState([]);
   const [tags, setTags] = React.useState([]);
+  const [alert, setAlert] = React.useState({
+    show: false,
+    message: '',
+    type: 'error',
+  });
   const [draftConfig, setDraftConfig] = React.useState({
     name: '',
     description: '',
@@ -198,30 +204,44 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
       }
     );
   };
-
   const deployPipeline = () => {
     setDeployLoader(true);
-    MyPipelineApi.publish(
-      {
-        namespace: currentNamespace,
-        appId: draftConfig.name,
-      },
-      draftConfig
-    ).subscribe(
-      (message) => {
-        console.log('deploy', message);
-        setDraftObjfn(draftConfig);
-        deleteDraft();
-        setDeployLoader(false);
-        setAck(true);
-        console.log('mytest', draftConfig);
-        addTags(draftConfig.name);
-      },
-      (err) => {
-        console.log(err);
-        setDeployLoader(false);
-      }
-    );
+    MyPipelineApi.list({
+      namespace: currentNamespace,
+    }).subscribe((list) => {
+      !list.includes((item) => item.name === draftConfig.name)
+        ? MyPipelineApi.publish(
+            {
+              namespace: currentNamespace,
+              appId: draftConfig.name,
+            },
+            draftConfig
+          ).subscribe(
+            (message) => {
+              console.log('deploy', message);
+              setDraftObjfn(draftConfig);
+              deleteDraft();
+              setDeployLoader(false);
+              setAck(true);
+              console.log('mytest', draftConfig);
+              addTags(draftConfig.name);
+            },
+            (err) => {
+              console.log(err);
+              setDeployLoader(false);
+            }
+          )
+        : (console.log('pipeline name already exists ...'),
+          setAlert(() => {
+            return {
+              show: true,
+              message: 'pipeline name already exists ...',
+              type: 'error',
+            };
+          }),
+          setActiveStep(0),
+          setDeployLoader(false));
+    });
   };
   const addTags = (entityId) => {
     const params = {
@@ -464,7 +484,19 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   console.log(id);
   return (
     <div className={classes.root}>
-      <IngestionHeader title={T.translate(`${I18N_PREFIX}.createIngest`).toString()} />
+      <Alert
+        showAlert={alert.show}
+        message={alert.message}
+        onClose={() =>
+          setAlert((prev) => {
+            return {
+              ...prev,
+              show: false,
+            };
+          })
+        }
+        type={alert.type}
+      />
       {deployLoader ? (
         <LoadingSVGCentered />
       ) : (
@@ -472,18 +504,21 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           {ack ? (
             <Acknowledgement gotoTasks={() => goToIngestionHome()} />
           ) : (
-            <div className={classes.wizardAndContentWrapper}>
-              <div className={classes.wizard}>
-                <TaskTrackingWizard
-                  steps={steps}
-                  activeStep={activeStep}
-                  draftConfig={draftConfig}
-                  stepProgress={stepProgress}
-                  stepperNav={(step) => step <= stepProgress && setActiveStep(step)}
-                />
+            <>
+              <IngestionHeader title={T.translate(`${I18N_PREFIX}.createIngest`).toString()} />
+              <div className={classes.wizardAndContentWrapper}>
+                <div className={classes.wizard}>
+                  <TaskTrackingWizard
+                    steps={steps}
+                    activeStep={activeStep}
+                    draftConfig={draftConfig}
+                    stepProgress={stepProgress}
+                    stepperNav={(step) => step <= stepProgress && setActiveStep(step)}
+                  />
+                </div>
+                <div className={classes.content}>{Content()}</div>
               </div>
-              <div className={classes.content}>{Content()}</div>
-            </div>
+            </>
           )}
         </>
       )}

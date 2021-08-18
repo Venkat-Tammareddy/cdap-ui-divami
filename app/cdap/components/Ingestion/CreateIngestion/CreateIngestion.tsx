@@ -209,8 +209,18 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     MyPipelineApi.list({
       namespace: currentNamespace,
     }).subscribe((list) => {
-      !list.includes((item) => item.name === draftConfig.name)
-        ? MyPipelineApi.publish(
+      list.some((item) => item.name === draftConfig.name)
+        ? (console.log('pipeline name already exists ...'),
+          setAlert(() => {
+            return {
+              show: true,
+              message: 'pipeline name already exists ...',
+              type: 'error',
+            };
+          }),
+          setActiveStep(0),
+          setDeployLoader(false))
+        : MyPipelineApi.publish(
             {
               namespace: currentNamespace,
               appId: draftConfig.name,
@@ -230,17 +240,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               console.log(err);
               setDeployLoader(false);
             }
-          )
-        : (console.log('pipeline name already exists ...'),
-          setAlert(() => {
-            return {
-              show: true,
-              message: 'pipeline name already exists ...',
-              type: 'error',
-            };
-          }),
-          setActiveStep(0),
-          setDeployLoader(false));
+          );
     });
   };
   const addTags = (entityId) => {

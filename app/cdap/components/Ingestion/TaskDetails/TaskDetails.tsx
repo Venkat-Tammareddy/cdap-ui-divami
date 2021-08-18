@@ -44,7 +44,7 @@ const styles = (theme): StyleRules => {
       height: '100%',
     },
     container: {
-      padding: '16px 28px 0px 28px',
+      padding: '0px 28px 0px 28px',
       borderTop: '1px solid #A5A5A5',
       display: 'flex',
       gap: '350px',
@@ -57,7 +57,7 @@ const styles = (theme): StyleRules => {
     taskName: {
       fontFamily: 'Lato',
       position: 'absolute',
-      top: '100px',
+      top: '117px',
       backgroundColor: '#FFFFFF',
       fontSize: '18px',
       color: '#202124',
@@ -236,7 +236,7 @@ const styles = (theme): StyleRules => {
       marginLeft: '5px',
     },
     fullWidth: {
-      padding: '16px 28px 0px 28px',
+      padding: '0px 28px 0px 28px',
       borderTop: '1px solid #A5A5A5',
     },
     leftFullWidth: {
@@ -254,6 +254,7 @@ const styles = (theme): StyleRules => {
       borderLeft: 'none',
       gap: '350px',
       width: '100%',
+      marginTop: '38px',
     },
   };
 };
@@ -282,7 +283,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     'update Schedule',
     'Task Configuration',
     'Duplicate',
-    'Archive',
+    'Delete',
   ]);
   const [taskDetails, setTaskDetails] = React.useState({
     taskName,

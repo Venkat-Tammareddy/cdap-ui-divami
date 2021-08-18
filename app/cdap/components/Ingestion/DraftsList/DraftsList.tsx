@@ -30,17 +30,18 @@ const styles = (theme): StyleRules => {
       height: 'calc(100% - 66px)', // margin
     },
     header: {
-      paddingBottom: '0px',
+      paddingBottom: '10.5px',
       fontFamily: 'Lato',
       fontSize: '16px',
       color: '#19A347',
       lineHeight: '24px',
       backgroundColor: 'white',
       letterSpacing: 0,
+      fontWeight: 'normal',
     },
     tableRow: {
       cursor: 'pointer',
-      fontSize: '14px',
+      fontSize: '16px',
       fontFamily: 'Lato',
       letterSpacing: '0',
       lineHeight: '24px',
@@ -53,7 +54,7 @@ const styles = (theme): StyleRules => {
     paper: {
       boxShadow: 'none',
       backgroundColor: 'rgb(255 255 255 / 0%)',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#202124',
       textOverflow: 'ellipsis',
     },
@@ -81,7 +82,7 @@ const styles = (theme): StyleRules => {
     },
     menuItem: {
       fontFamily: 'Lato',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#202124',
       boxShadow: 'none',
       lineHeight: '24px',

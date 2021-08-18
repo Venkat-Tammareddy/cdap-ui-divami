@@ -43,6 +43,7 @@ import { ConnectionsApi } from 'api/connections';
 import { IStagesInterface } from '../CreateIngestion/CreateIngestion';
 const I18N_PREFIX = 'features.TaskInfo';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
+import Alert from 'components/Alert';
 
 const styles = (): StyleRules => {
   return {
@@ -407,8 +408,16 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
     MyPipelineApi.list({
       namespace: currentNamespace,
     }).subscribe((list) => {
-      list.includes((item) => item.name === taskName)
-        ? (console.log('pipeline name already exists ...'), setLoading(false))
+      list.some((item) => item.name === taskName)
+        ? (console.log('pipeline name already exists ...'),
+          setLoading(false),
+          setAlert(() => {
+            return {
+              show: true,
+              message: 'pipeline name already exists ...',
+              type: 'error',
+            };
+          }))
         : MyPipelineApi.publish(
             {
               namespace: currentNamespace,
@@ -508,10 +517,27 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
   };
 
   const arrowIcon = '/cdap_assets/img/arrow.svg';
-
+  const [alert, setAlert] = React.useState({
+    show: false,
+    message: '',
+    type: 'error',
+  });
   return (
     <div className={classes.root}>
       {loading && <LoadingSVGCentered />}
+      <Alert
+        showAlert={alert.show}
+        message={alert.message}
+        onClose={() =>
+          setAlert((prev) => {
+            return {
+              ...prev,
+              show: false,
+            };
+          })
+        }
+        type={alert.type}
+      />
       <div className={classes.sdleTskWrapper}>
         <div className={classes.headerWrapper}>
           <IngestionHeader title="Duplicate Task" />

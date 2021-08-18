@@ -16,9 +16,18 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Step, StepContent, StepLabel, Stepper, Tooltip, Typography } from '@material-ui/core';
+import {
+  Step,
+  StepContent,
+  StepIconProps,
+  StepLabel,
+  Stepper,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import { StepConnector } from '@material-ui/core';
 import { parseJdbcString } from '../helpers';
+import classname from 'classnames';
 
 const styles = (theme): StyleRules => {
   return {
@@ -37,6 +46,14 @@ const styles = (theme): StyleRules => {
         letterSpacing: '0',
         lineHeight: '24px',
         marginLeft: '8px',
+      },
+      '& .MuiStepLabel-iconContainer': {
+        border: '1px solid #A5A5A5',
+        borderRadius: '50%',
+        height: '42px',
+        width: '42px',
+        padding: '2px',
+        marginLeft: '-5px',
       },
       overflowY: 'auto',
       '& .MuiStepper-root': {
@@ -82,41 +99,45 @@ const styles = (theme): StyleRules => {
       backgroundColor: '#FBFBFB',
     },
     icon: {
-      '& .MuiStepIcon-text': {
-        fontSize: '14px',
-        fontFamily: 'Lato',
-        fill: '#78909C',
-        textAlign: 'center',
-        verticalAlign: 'middle',
-        lineHeight: '30px',
-      },
-      // margin: '4px',
-      color: '#FFFFFF',
-      height: '30px',
-      width: '30px',
-      border: '1px solid #78909c',
+      height: '36px',
+      width: '36px',
+      border: '1px solid #A5A5A5',
+      backgroundColor: '#FFFFFF',
       borderRadius: '50%',
-      '&$activeIcon': {
-        '& .MuiStepIcon-text': {
-          fontSize: '16px',
-          fontFamily: 'Lato ',
-          fill: '#FFFFFF',
-        },
-        color: '#4285F4',
-        border: 'none',
-        height: '30px',
-        width: '30px',
-        fontSize: '16px',
-        // margin: '4px',
-      },
+      padding: '4px',
+      justifyContent: 'center',
+      alignItems: 'center',
+      // '& .MuiStepIcon-text': {
+      //   fontSize: '14px',
+      //   fontFamily: 'Lato',
+      //   fill: '#78909C',
+      //   textAlign: 'center',
+      //   verticalAlign: 'middle',
+      //   lineHeight: '30px',
+      // },
+      // // margin: '4px',
+      // // color: '#FFFFFF',
+      // height: '30px',
+      // width: '30px',
+      // border: '1px solid #78909c',
+      // borderRadius: '50%',
+      // '&$activeIcon': {
+      //   '& .MuiStepIcon-text': {
+      //     fontSize: '16px',
+      //     fontFamily: 'Lato ',
+      //     // fill: '#FFFFFF',
+      //   },
+      //   color: '#4285F4',
+      //   border: 'none',
+      //   height: '30px',
+      //   width: '30px',
+      //   fontSize: '16px',
+      //   // margin: '4px',
+      // },
       '&$completedIcon': {
         color: 'green',
+        fill: 'red',
       },
-    },
-    activeIcon: {},
-    completedIcon: {
-      // margin: '4px',
-      cursor: 'pointer',
     },
     stepContent: {
       fontFamily: 'Lato',
@@ -155,6 +176,19 @@ const styles = (theme): StyleRules => {
       fontsize: '4em',
       color: 'red',
       backgroundColor: '#A5A5A5',
+    },
+    completedIcon: {
+      cursor: 'pointer',
+      backgroundColor: '#87C975',
+      padding: '4px',
+      borderRadius: '50%',
+    },
+    activeIcon: {
+      backgroundColor: '#4285F4',
+      padding: '4px',
+      borderRadius: '50%',
+      alignItems: 'center',
+      color: 'orange',
     },
   };
 };
@@ -229,6 +263,11 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
     );
   };
 
+  const taskDetailSvg = '/cdap_assets/img/task-details.svg';
+  const connSvg = '/cdap_assets/img/source-connection.svg';
+  const mappingSvg = '/cdap_assets/img/target-mapping.svg';
+  const configurationSvg = '/cdap_assets/img/configuration.svg';
+
   const Connector = withStyles({
     alternativeLabel: {
       top: 10,
@@ -256,6 +295,41 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
       fontSize: '20px',
     },
   })(Tooltip);
+
+  const StepperIcon = (props: StepIconProps) => {
+    const { active, completed } = props;
+
+    const icons: { [index: string]: React.ReactElement } = {
+      1: <img src={taskDetailSvg} alt="img" style={{ paddingLeft: '6px', paddingBottom: '2px' }} />,
+      2: <img src={connSvg} alt="img" style={{ paddingLeft: '4px', paddingBottom: '2px' }} />,
+      3: <img src={connSvg} alt="img" style={{ paddingLeft: '4px', paddingBottom: '2px' }} />,
+      4: <img src={mappingSvg} alt="img" style={{ paddingLeft: '4px', paddingBottom: '2px' }} />,
+      5: (
+        <img
+          src={configurationSvg}
+          alt="img"
+          style={{ paddingLeft: '2px', paddingBottom: '5px' }}
+        />
+      ),
+    };
+
+    return (
+      <div
+        className={classname(
+          classes.icon,
+          active && classes.activeIcon,
+          String(props.icon) <= stepProgress + 1
+            ? String(props.icon) === activeStep + 1
+              ? {}
+              : classes.completedIcon
+            : {}
+        )}
+      >
+        {icons[String(props.icon)]}
+      </div>
+    );
+  };
+
   return (
     <div className={classes.root}>
       <Stepper
@@ -276,7 +350,8 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
                 },
               }}
               StepIconComponent={
-                index <= stepProgress ? (index === activeStep ? null : iconn) : null
+                // index <= stepProgress ? (index === activeStep ? null : taskDetailsIcon) : null
+                StepperIcon
               }
               onClick={() => stepperNav(index)}
             >

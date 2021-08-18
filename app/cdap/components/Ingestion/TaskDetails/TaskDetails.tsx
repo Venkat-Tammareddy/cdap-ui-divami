@@ -476,6 +476,9 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         }
       );
     }
+    if (option === 'Duplicate') {
+      setDuplicate(true);
+    }
   };
 
   const setSelectedItem = () => {

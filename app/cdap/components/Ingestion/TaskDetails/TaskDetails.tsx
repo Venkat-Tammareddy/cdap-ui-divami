@@ -284,7 +284,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     'update Schedule',
     'Task Configuration',
     'Duplicate',
-    'Archive',
+    'Delete',
   ]);
   const [taskDetails, setTaskDetails] = React.useState({
     taskName,

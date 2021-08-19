@@ -39,6 +39,7 @@ const styles = (theme): StyleRules => {
       lineHeight: '24px',
       backgroundColor: 'white',
       letterSpacing: 0,
+      fontWeight: 'normal',
     },
     tableRow: {
       cursor: 'pointer',

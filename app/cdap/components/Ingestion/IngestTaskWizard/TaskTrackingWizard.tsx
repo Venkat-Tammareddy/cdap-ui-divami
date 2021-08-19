@@ -52,7 +52,7 @@ const styles = (theme): StyleRules => {
         borderRadius: '50%',
         height: '42px',
         width: '42px',
-        padding: '2px',
+        padding: '4px',
         marginLeft: '-5px',
       },
       overflowY: 'auto',
@@ -99,8 +99,8 @@ const styles = (theme): StyleRules => {
       backgroundColor: '#FBFBFB',
     },
     icon: {
-      height: '36px',
-      width: '36px',
+      height: '32px',
+      width: '32px',
       // border: '1px solid #A5A5A5',
       backgroundColor: '#FFFFFF',
       borderRadius: '50%',
@@ -299,15 +299,24 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
     const { active, completed } = props;
 
     const icons: { [index: string]: React.ReactElement } = {
-      1: <img src={taskDetailSvg} alt="img" style={{ paddingLeft: '8px' }} />,
-      2: <img src={connSvg} alt="img" style={{ paddingLeft: '5px' }} />,
-      3: <img src={connSvg} alt="img" style={{ paddingLeft: '5px' }} />,
-      4: <img src={mappingSvg} alt="img" style={{ paddingLeft: '6px', paddingBottom: '2px' }} />,
+      1: (
+        <img
+          src={taskDetailSvg}
+          alt="img"
+          style={{
+            paddingLeft: '6px',
+            paddingBottom: '3px',
+          }}
+        />
+      ),
+      2: <img src={connSvg} alt="img" style={{ paddingLeft: '3px', paddingBottom: '2px' }} />,
+      3: <img src={connSvg} alt="img" style={{ paddingLeft: '3px', paddingBottom: '2px' }} />,
+      4: <img src={mappingSvg} alt="img" style={{ paddingLeft: '4px', paddingBottom: '2px' }} />,
       5: (
         <img
           src={configurationSvg}
           alt="img"
-          style={{ paddingLeft: '4px', paddingBottom: '1px' }}
+          style={{ paddingLeft: '3px', paddingBottom: '2px' }}
         />
       ),
     };

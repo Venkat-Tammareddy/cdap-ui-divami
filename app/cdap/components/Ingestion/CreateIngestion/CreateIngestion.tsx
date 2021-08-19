@@ -42,6 +42,7 @@ import { MyProgramApi } from 'api/program';
 import produce from 'immer';
 import { useParams } from 'react-router';
 import Alert from 'components/Alert';
+import OverlaySmall from '../OverlaySmall/OverlaySmall';
 
 const styles = (theme): StyleRules => {
   return {
@@ -484,10 +485,12 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   console.log(id);
   return (
     <div className={classes.root}>
-      <Alert
-        showAlert={alert.show}
-        message={alert.message}
-        onClose={() =>
+      <OverlaySmall
+        onCancel={() => goToIngestionHome()}
+        open={alert.show}
+        title="Pipeline name already exists"
+        description={`The pipeline with name "${draftConfig.name}" already exists, please enter a new name to create this pipeline`}
+        onSubmit={() =>
           setAlert((prev) => {
             return {
               ...prev,
@@ -495,7 +498,8 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
             };
           })
         }
-        type={alert.type}
+        submitText="Change name"
+        errorType
       />
       {deployLoader ? (
         <LoadingSVGCentered />

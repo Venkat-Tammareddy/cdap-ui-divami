@@ -191,7 +191,6 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const [sortType, setSortType] = React.useState('Down');
   const [sortNameType, setSortNameType] = React.useState('Down');
   const [sortDbNameType, setSortDbNameType] = React.useState('Down');
-  const [currentSortType, setCurrentSortType] = React.useState('name');
   const [isOpen, setIsOpen] = React.useState(false);
   const [header, setHeader] = React.useState('lastUsed');
 

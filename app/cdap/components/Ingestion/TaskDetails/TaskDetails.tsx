@@ -666,6 +666,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
                     width: '40px',
                     borderRadius: '50%',
                     padding: '5px',
+                    fill: 'white',
                   }}
                 />
                 <div className={classes.taskData}>

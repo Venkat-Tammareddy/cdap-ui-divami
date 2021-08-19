@@ -336,7 +336,7 @@ const MappingView: React.FC<IIngestionProps> = ({
                 </Typography>
               </div>
               <div className={classes.cardTitle}>
-                {T.translate(`${I18N_PREFIX}.AllTables.title`)}
+                {T.translate(`${I18N_PREFIX}.AllTables.title`) + ` (${items.length})`}
               </div>
               <img className={classes.cardRunIcon} src={allTables} alt="run-task" />
               {cardSelected === 'all' && (

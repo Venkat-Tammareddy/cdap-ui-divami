@@ -188,7 +188,6 @@ const styles = (theme): StyleRules => {
       padding: '4px',
       borderRadius: '50%',
       alignItems: 'center',
-      color: 'orange',
     },
   };
 };

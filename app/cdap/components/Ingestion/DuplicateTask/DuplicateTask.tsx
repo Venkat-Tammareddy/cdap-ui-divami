@@ -612,7 +612,10 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
                   >
                     <FormControlLabel
                       control={
-                        <Radio classes={{ root: classes.radio, checked: classes.checked }} />
+                        <Radio
+                          classes={{ root: classes.radio, checked: classes.checked }}
+                          color="primary"
+                        />
                       }
                       value="Yes"
                       label={<Typography className={classes.choices}>Yes</Typography>}
@@ -620,7 +623,10 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
                     />
                     <FormControlLabel
                       control={
-                        <Radio classes={{ root: classes.radio, checked: classes.checked }} />
+                        <Radio
+                          classes={{ root: classes.radio, checked: classes.checked }}
+                          color="primary"
+                        />
                       }
                       value="No"
                       label={<Typography className={classes.choices}>No</Typography>}
@@ -640,7 +646,10 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
                   >
                     <FormControlLabel
                       control={
-                        <Radio classes={{ root: classes.radio, checked: classes.checked }} />
+                        <Radio
+                          classes={{ root: classes.radio, checked: classes.checked }}
+                          color="primary"
+                        />
                       }
                       value="Yes"
                       label={<Typography className={classes.choices}>Yes</Typography>}
@@ -648,7 +657,10 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
                     />
                     <FormControlLabel
                       control={
-                        <Radio classes={{ root: classes.radio, checked: classes.checked }} />
+                        <Radio
+                          classes={{ root: classes.radio, checked: classes.checked }}
+                          color="primary"
+                        />
                       }
                       value="No"
                       label={<Typography className={classes.choices}>No</Typography>}

@@ -25,6 +25,7 @@ import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import { getCurrentNamespace } from 'services/NamespaceStore';
 import { Paper, Menu, MenuItem } from '@material-ui/core';
+import history from 'services/history';
 
 const styles = (theme): StyleRules => {
   return {
@@ -86,8 +87,6 @@ const styles = (theme): StyleRules => {
       fontFamily: 'Lato',
       fontSize: '16px',
       color: '#202124',
-      boxShadow: 'none',
-      lineHeight: '24px',
       padding: '5px 20px',
     },
   };
@@ -96,10 +95,11 @@ const styles = (theme): StyleRules => {
 interface DraftsListProps extends WithStyles<typeof styles> {
   searchText: String;
   data: any[];
+  reFetchDrafts: () => void;
 }
 
-const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data }) => {
-  const [draftsList, setDraftsList] = React.useState(data);
+const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data, reFetchDrafts }) => {
+  // const [draftsList, setDraftsList] = React.useState(data);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -107,23 +107,25 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data }) =>
     item.pipeLineName.toLowerCase().includes(searchText.toLowerCase())
   );
   const namespace = NamespaceStore.getState().selectedNamespace;
+  const deleteDraft = (draftId: string) => {
+    MyPipelineApi.deleteDraft({
+      context: namespace,
+      draftId,
+    }).subscribe(
+      (message) => {
+        reFetchDrafts();
+      },
+      (err) => {
+        console.log('d-e', err);
+      }
+    );
+  };
 
   // Handling More Options
-  // const optionSelect = (type: string) => {
-  //   type === 'Delete' &&
-  //     MyPipelineApi.delete({ namespace, appId: taskName }).subscribe((msg) => {
-  //       console.log(taskName, 'deleted succesfully');
-  //       refetch();
-  //     });
-  //   type === 'Run Task' &&
-  //     (MyPipelineApi.run({
-  //       namespace,
-  //       appId: taskName,
-  //     }).subscribe((message) => {
-  //       console.log(taskName + 'started running....');
-  //     }),
-  //     setLoading(true));
-  // };
+  const optionSelect = (type: string, draftId: string) => {
+    type === 'Delete' && deleteDraft(draftId);
+    type === 'Edit' && history.push(`/ns/${getCurrentNamespace()}/ingestion/create/${draftId}`);
+  };
 
   const options = ['Edit', 'Delete'];
   const moreImg = '/cdap_assets/img/more.svg';
@@ -177,7 +179,12 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data }) =>
                           vertical: 'top',
                           horizontal: 'right',
                         }}
-                        onClose={(e) => setAnchorEl(null)}
+                        onClose={(e: React.MouseEvent<HTMLButtonElement>) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.nativeEvent.stopImmediatePropagation();
+                          setAnchorEl(null);
+                        }}
                         PaperProps={{
                           style: {
                             maxHeight: 48 * 4.5,
@@ -193,7 +200,7 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data }) =>
                               e.preventDefault();
                               e.stopPropagation();
                               e.nativeEvent.stopImmediatePropagation();
-                              // optionSelect(option);
+                              optionSelect(option, item.id);
                               setAnchorEl(null);
                             }}
                             className={classes.menuItem}

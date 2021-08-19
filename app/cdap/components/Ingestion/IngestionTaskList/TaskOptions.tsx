@@ -22,6 +22,7 @@ import NamespaceStore from 'services/NamespaceStore';
 import LoadingSVG from 'components/LoadingSVG';
 import TableCell from 'components/Table/TableCell';
 import IconSVG from 'components/IconSVG';
+import TaskConnections from './TaskConnections';
 
 const styles = (theme): StyleRules => {
   return {
@@ -54,6 +55,17 @@ const styles = (theme): StyleRules => {
         backgroundColor: '#A5A5A5',
       },
     },
+    gridItem: {
+      margin: 'auto',
+    },
+    taskNameText: {
+      boxShadow: 'none',
+      backgroundColor: 'rgb(255 255 255 / 0%)',
+      fontSize: '16px',
+      color: '#202124',
+      textOverflow: 'ellipsis',
+      paddingLeft: '29px',
+    },
   };
 };
 interface IRunsProps {
@@ -85,7 +97,10 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   const imgMore = '/cdap_assets/img/more.svg';
   const runSuccess = '/cdap_assets/img/last-run-tick.svg';
   const runError = '/cdap_assets/img/lastrun-error.svg';
-  const runProgress = '/cdap_assets/img/lastrun-inprogress.svg';
+  const killedIcon = '/cdap_assets/img/killed.svg';
+  const inProgress = '/cdap_assets/img/inprogress.svg';
+  const errorIcon = '/cdap_assets/img/error.svg';
+  const successIcon = '/cdap_assets/img/sucess.svg';
   const [options, setOptions] = React.useState([
     'Run Task',
     'Update Schedule',
@@ -179,6 +194,30 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   React.useEffect(() => setLoading(false), [runs]);
   return (
     <>
+      <TableCell>
+        <Grid container spacing={0}>
+          <Grid className={classes.gridItem} item xs={1}>
+            <Paper className={classes.paper}>
+              <img
+                // src={(item.status === 'RUNNING' && progressIcon) || myimg}
+                src={
+                  (latestRun?.status === 'RUNNING' && inProgress) ||
+                  (latestRun?.status === 'COMPLETED' && successIcon) ||
+                  (latestRun?.status === 'FAILED' && errorIcon) ||
+                  (latestRun?.status === 'KILLED' && killedIcon) ||
+                  inProgress
+                }
+                alt="img"
+                height="27.2px"
+                width="23px"
+              />
+            </Paper>
+          </Grid>
+          <Grid item xs={11}>
+            <Paper className={classes.taskNameText}>{taskName}</Paper>
+          </Grid>
+        </Grid>
+      </TableCell>
       {/* <TableCell>
         <Grid container spacing={0}>
           {runs.map(
@@ -204,6 +243,7 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
           )}
         </Grid>
       </TableCell> */}
+      <TaskConnections taskName={taskName} />
       <TableCell>
         <Grid container spacing={0} className={classes.root}>
           <Grid item xs={8}>

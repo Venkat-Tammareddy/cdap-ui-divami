@@ -198,6 +198,14 @@ const styles = (theme): StyleRules => {
       marginTop: '22.2px',
       width: '208px',
     },
+    taskNameText: {
+      boxShadow: 'none',
+      backgroundColor: 'rgb(255 255 255 / 0%)',
+      fontSize: '16px',
+      color: '#202124',
+      textOverflow: 'ellipsis',
+      paddingLeft: '29px',
+    },
   };
 };
 

@@ -652,7 +652,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           <div className={taskDetails.runs.length === 0 ? classes.leftFullWidth : classes.left}>
             <div className={classes.flexContainer}>
               <div className={classes.taskName}>{taskName}</div>
-              <div className={classes.taskDate}>Deployed on 04 May 21, 07:30 pm</div>
+              <div className={classes.taskDate}>Deployed on {taskDetails.createdOn}</div>
             </div>
             <div>
               <div className={classes.description}>{taskDetails.description}</div>

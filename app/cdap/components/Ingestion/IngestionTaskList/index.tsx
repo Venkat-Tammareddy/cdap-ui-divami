@@ -212,7 +212,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                     history.push(`/ns/${currentNamespace}/ingestion/task/${item.taskName}`);
                   }}
                 >
-                  <TableCell>
+                  {/* <TableCell>
                     <Grid container spacing={0}>
                       <Grid className={classes.gridItem} item xs={1}>
                         <Paper className={classes.paper}>
@@ -235,8 +235,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                         <Paper className={classes.taskNameText}>{item.taskName}</Paper>
                       </Grid>
                     </Grid>
-                  </TableCell>
-                  <TaskConnections taskName={item.taskName} />
+                  </TableCell> */}
                   <TaskOptions
                     setLoadingtl={setLoading}
                     taskName={item.taskName}

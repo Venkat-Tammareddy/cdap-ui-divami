@@ -17,7 +17,7 @@
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import Dialog from '@material-ui/core/Dialog';
-import { Button, DialogTitle, DialogContent, Typography, DialogActions } from '@material-ui/core';
+import { DialogActions } from '@material-ui/core';
 import ButtonComponent from '../ButtonComponent/ButtonComponent';
 
 const styles = (): StyleRules => {
@@ -45,7 +45,6 @@ const styles = (): StyleRules => {
       lineHeight: '24px',
       paddingTop: '8px',
     },
-    dialog: {},
     content: {
       height: '99px',
       width: '484px',
@@ -64,8 +63,22 @@ const styles = (): StyleRules => {
 interface OverlaySmallProps extends WithStyles<typeof styles> {
   open: boolean;
   onCancel: () => void;
+  onSubmit: () => void;
+  title: string;
+  description: string;
+  submitText: string;
+  errorType?: boolean;
 }
-const OverlaySmallView: React.FC<OverlaySmallProps> = ({ classes, open, onCancel }) => {
+const OverlaySmallView: React.FC<OverlaySmallProps> = ({
+  classes,
+  open,
+  onCancel,
+  title,
+  description,
+  onSubmit,
+  submitText,
+  errorType,
+}) => {
   const error = '/cdap_assets/img/error-status.svg';
   const ErrorIcon = () => {
     return <img src={error} alt="err icon" height="30px" width="30px" />;
@@ -82,23 +95,18 @@ const OverlaySmallView: React.FC<OverlaySmallProps> = ({ classes, open, onCancel
         className={classes.dialog}
       >
         <div className={classes.header}>
-          <div className={classes.errIcn}>
-            <ErrorIcon />
-          </div>
-          <p className={classes.headerText}>Failed to connect the Studies database.</p>
+          <div className={classes.errIcn}>{errorType && <ErrorIcon />}</div>
+          <p className={classes.headerText}>{title}</p>
         </div>
         <div className={classes.content}>
-          <p>
-            Please retry after some time, or continue to create the task with all tables. However,
-            you can only run once the server is up.
-          </p>
+          <p>{description}</p>
         </div>
         <DialogActions className={classes.buttons}>
           <ButtonComponent
             onCancel={onCancel}
-            onSubmit={onCancel}
+            onSubmit={onSubmit}
             disableSubmit={false}
-            submitText="CREATE TASK"
+            submitText={submitText}
           />
         </DialogActions>
       </Dialog>

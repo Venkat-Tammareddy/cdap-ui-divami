@@ -44,6 +44,7 @@ import { IStagesInterface } from '../CreateIngestion/CreateIngestion';
 const I18N_PREFIX = 'features.TaskInfo';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
 import Alert from 'components/Alert';
+import OverlaySmall from '../OverlaySmall/OverlaySmall';
 
 const styles = (): StyleRules => {
   return {
@@ -525,10 +526,12 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
   return (
     <div className={classes.root}>
       {loading && <LoadingSVGCentered />}
-      <Alert
-        showAlert={alert.show}
-        message={alert.message}
-        onClose={() =>
+      <OverlaySmall
+        onCancel={() => closePopup(false)}
+        open={alert.show}
+        title="Pipeline name already exists"
+        description={`The pipeline with name "${taskName}" already exists, please enter a new name to create this pipeline`}
+        onSubmit={() =>
           setAlert((prev) => {
             return {
               ...prev,
@@ -536,7 +539,8 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
             };
           })
         }
-        type={alert.type}
+        submitText="Change name"
+        errorType
       />
       <div className={classes.sdleTskWrapper}>
         <div className={classes.headerWrapper}>

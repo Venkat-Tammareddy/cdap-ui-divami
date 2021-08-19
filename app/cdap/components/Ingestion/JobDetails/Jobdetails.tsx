@@ -137,7 +137,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
   const arrowIcon = '/cdap_assets/img/arrow.svg';
   const timeInfoIcon = '/cdap_assets/img/info-infographic.svg';
   const infoIcon = '/cdap_assets/img/info.svg';
-  const errorIcon = '/cdap_assets/img/error.svg';
+  const errorIcon = '/cdap_assets/img/error-status.svg';
   const warningIcon = '/cdap_assets/img/Warning.svg';
   const params = useParams();
   const taskName = (params as any).taskName;

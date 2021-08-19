@@ -17,8 +17,10 @@
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import TableHeader from 'components/Table/TableHeader';
+import { MyPipelineApi } from 'api/pipeline';
 import TableRow from 'components/Table/TableRow';
 import Table from 'components/Table';
+import NamespaceStore from 'services/NamespaceStore';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import { getCurrentNamespace } from 'services/NamespaceStore';
@@ -30,7 +32,7 @@ const styles = (theme): StyleRules => {
       height: 'calc(100% - 66px)', // margin
     },
     header: {
-      paddingBottom: '0px',
+      paddingBottom: '10.5px',
       fontFamily: 'Lato',
       fontSize: '16px',
       color: '#19A347',
@@ -40,7 +42,7 @@ const styles = (theme): StyleRules => {
     },
     tableRow: {
       cursor: 'pointer',
-      fontSize: '14px',
+      fontSize: '16px',
       fontFamily: 'Lato',
       letterSpacing: '0',
       lineHeight: '24px',
@@ -53,7 +55,7 @@ const styles = (theme): StyleRules => {
     paper: {
       boxShadow: 'none',
       backgroundColor: 'rgb(255 255 255 / 0%)',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#202124',
       textOverflow: 'ellipsis',
     },
@@ -81,7 +83,7 @@ const styles = (theme): StyleRules => {
     },
     menuItem: {
       fontFamily: 'Lato',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#202124',
       boxShadow: 'none',
       lineHeight: '24px',
@@ -103,6 +105,24 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data }) =>
   const filteredList = data.filter((item) =>
     item.pipeLineName.toLowerCase().includes(searchText.toLowerCase())
   );
+  const namespace = NamespaceStore.getState().selectedNamespace;
+
+  // Handling More Options
+  // const optionSelect = (type: string) => {
+  //   type === 'Delete' &&
+  //     MyPipelineApi.delete({ namespace, appId: taskName }).subscribe((msg) => {
+  //       console.log(taskName, 'deleted succesfully');
+  //       refetch();
+  //     });
+  //   type === 'Run Task' &&
+  //     (MyPipelineApi.run({
+  //       namespace,
+  //       appId: taskName,
+  //     }).subscribe((message) => {
+  //       console.log(taskName + 'started running....');
+  //     }),
+  //     setLoading(true));
+  // };
 
   const options = ['Edit', 'Delete'];
   const moreImg = '/cdap_assets/img/more.svg';
@@ -139,6 +159,7 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data }) =>
                         className={classes.optionsIcon}
                         onClick={(e) => {
                           e.preventDefault();
+                          e.stopPropagation();
                           setAnchorEl(e.currentTarget);
                         }}
                       />

@@ -82,18 +82,15 @@ const styles = (theme): StyleRules => {
       cursor: 'pointer',
       fontSize: '14px',
       fontFamily: 'Lato',
-      letterSpacing: '0',
-      lineHeight: '24px',
-      border: 'none',
       borderBottom: '1px solid #DFDFDF',
     },
     tableRowSelected: {
       padding: '10px 20px',
       cursor: 'pointer',
-      border: '1px solid gray',
-      background: '#F0F0F0',
+      background: 'rgb(66,133,244,.15)',
       fontSize: '14px',
       fontFamily: 'Lato',
+      borderBottom: '1px solid #DFDFDF',
     },
     buttonContainer: {
       marginTop: 'auto',
@@ -242,12 +239,41 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   };
 
   const handleDbNameSort = (e) => {
-    sortDbNameType === 'Down' ? setSortDbNameType('Up') : setSortDbNameType('Down');
-    if (sortNameType === 'Down') {
-      connectionsList.sort((a, b) => (a.name > b.name ? -1 : 1));
+    if (selectionType === 'source') {
+      if (sortNameType === 'Down') {
+        connectionsList.sort((a, b) =>
+          parseJdbcString(
+            a.plugin.properties.connectionString,
+            a.plugin.properties.jdbcPluginName
+          ) >
+          parseJdbcString(b.plugin.properties.connectionString, b.plugin.properties.jdbcPluginName)
+            ? -1
+            : 1
+        );
+      } else {
+        connectionsList.sort((a, b) =>
+          parseJdbcString(
+            a.plugin.properties.connectionString,
+            a.plugin.properties.jdbcPluginName
+          ) >
+          parseJdbcString(b.plugin.properties.connectionString, b.plugin.properties.jdbcPluginName)
+            ? 1
+            : -1
+        );
+      }
+      sortDbNameType === 'Down' ? setSortDbNameType('Up') : setSortDbNameType('Down');
     } else {
-      connectionsList.sort((a, b) => (a.name > b.name ? 1 : -1));
+      if (sortNameType === 'Down') {
+        connectionsList.sort((a, b) =>
+          a.plugin.properties.dataset > b.plugin.properties.dataset ? -1 : 1
+        );
+      } else {
+        connectionsList.sort((a, b) =>
+          a.plugin.properties.dataset > b.plugin.properties.dataset ? 1 : -1
+        );
+      }
     }
+    sortNameType === 'Down' ? setSortNameType('Up') : setSortNameType('Down');
   };
 
   const sortDownIcon = '/cdap_assets/img/sort-down-arrow.svg';
@@ -257,6 +283,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const SearchIcon = () => {
     return <img src={searchIcon} alt="icon" />;
   };
+
   return (
     <div className={classes.root}>
       <OverlaySmall onCancel={() => setIsOpen(false)} open={isOpen} />

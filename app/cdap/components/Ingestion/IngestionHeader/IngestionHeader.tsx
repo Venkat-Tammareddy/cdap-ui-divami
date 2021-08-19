@@ -32,7 +32,7 @@ const styles = (theme): StyleRules => {
     },
     title: {
       fontFamily: 'Lato',
-      fontSize: '18px',
+      fontSize: '20px',
       color: '#202124',
       letterSpacing: '0',
       marginRight: 'auto',

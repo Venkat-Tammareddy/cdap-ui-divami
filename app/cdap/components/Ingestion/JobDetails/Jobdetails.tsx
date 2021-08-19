@@ -121,6 +121,10 @@ const styles = (theme): StyleRules => {
     statusIcon: {
       marginRight: '17px',
     },
+    rowText: {
+      fontSize: '14px',
+      color: '#202124',
+    },
   };
 };
 
@@ -435,8 +439,10 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                       />
                       {item.log.logLevel}
                     </TableCell>
-                    <TableCell>{humanReadableDate(item.log.timestamp, true)}</TableCell>
-                    <TableCell>{item.log.message}</TableCell>
+                    <TableCell className={classes.rowText}>
+                      {humanReadableDate(item.log.timestamp, true)}
+                    </TableCell>
+                    <TableCell className={classes.rowText}>{item.log.message}</TableCell>
                   </TableRow>
                 );
               })}

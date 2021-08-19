@@ -44,7 +44,7 @@ const styles = (theme): StyleRules => {
       height: '100%',
     },
     container: {
-      padding: '16px 28px 0px 28px',
+      padding: '0px 28px 0px 28px',
       borderTop: '1px solid #A5A5A5',
       display: 'flex',
       gap: '350px',
@@ -57,7 +57,7 @@ const styles = (theme): StyleRules => {
     taskName: {
       fontFamily: 'Lato',
       position: 'absolute',
-      top: '100px',
+      top: '-18px',
       backgroundColor: '#FFFFFF',
       fontSize: '18px',
       color: '#202124',
@@ -236,7 +236,7 @@ const styles = (theme): StyleRules => {
       marginLeft: '5px',
     },
     fullWidth: {
-      padding: '16px 28px 0px 28px',
+      padding: '0px 28px 0px 28px',
       borderTop: '1px solid #A5A5A5',
     },
     leftFullWidth: {
@@ -254,6 +254,8 @@ const styles = (theme): StyleRules => {
       borderLeft: 'none',
       gap: '350px',
       width: '100%',
+      marginTop: '38px',
+      position: 'relative',
     },
   };
 };
@@ -659,8 +661,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
                   src={sourceIcon}
                   alt="Icon"
                   style={{
-                    backgroundColor: 'orange',
-                    fill: 'red',
+                    backgroundColor: '#FACE75',
                     height: '40px',
                     width: '40px',
                     borderRadius: '50%',
@@ -677,8 +678,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
                   src={targetIcon}
                   alt="Icon"
                   style={{
-                    backgroundColor: 'orange',
-                    fill: 'red',
+                    backgroundColor: '#FACE75',
                     height: '40px',
                     width: '40px',
                     borderRadius: '50%',

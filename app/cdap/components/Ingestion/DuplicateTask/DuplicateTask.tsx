@@ -247,7 +247,7 @@ const styles = (): StyleRules => {
     },
     labelText: {
       fontFamily: 'Lato',
-      fontSize: '16px',
+      fontSize: '14px',
       color: '#202124',
       letterSpacing: '0.15px',
       lineHeight: '24px',

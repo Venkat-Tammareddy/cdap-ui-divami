@@ -54,6 +54,7 @@ const styles = (theme): StyleRules => {
       },
       '& .MuiOutlinedInput-input': {
         fontSize: '16px',
+        fontFamily: 'Lato',
       },
       '& .MuiInputLabel-shrink': {
         fontSize: '14px',

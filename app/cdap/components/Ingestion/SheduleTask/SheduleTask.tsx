@@ -159,6 +159,9 @@ const styles = (theme): StyleRules => {
     radioButtons: {
       marginLeft: '0px',
     },
+    scheduleHeader: {
+      color: '#202124',
+    },
   };
 };
 const recurOptions = [
@@ -668,7 +671,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
       <div className={classes.root}>
         <div className={classes.sdleTskWrapper}>
           <div className={classes.heading}>
-            <Box component="span" mr={2}>
+            <Box component="span" mr={2} className={classes.scheduleHeader}>
               Schedule Task
             </Box>
             <img src={tileDesignBar}></img>
@@ -742,7 +745,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
                     saveAndShedule(true);
                   }}
                 >
-                  SAVE AND SHEDULE
+                  SAVE AND SCHEDULE
                 </Button>
               </Grid>
             </Grid>

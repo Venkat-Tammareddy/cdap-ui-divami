@@ -269,7 +269,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
 
             <TextField
               variant="outlined"
-              placeholder={'Search drafts'}
+              placeholder={displayDrafts ? 'Search drafts' : 'Search tasks'}
               className={classes.search}
               onChange={(e) => setSearch(e.target.value)}
               InputProps={{

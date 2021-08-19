@@ -142,7 +142,7 @@ export function getPluginDisplayName(plugin) {
   return displayName ? displayName : pluginName;
 }
 
-export const parseJdbcString = (connectionString: string, databaseType: string) => {
+export const parseJdbcString = (connectionString: string, jdbcPluginName: string) => {
   const type1 = [
     'postgresql',
     'netezza',
@@ -157,23 +157,23 @@ export const parseJdbcString = (connectionString: string, databaseType: string) 
     'cloudsql-postgresql',
   ];
   const type2 = [,];
-  if (type1.includes(databaseType)) {
+  if (type1.includes(jdbcPluginName)) {
     return connectionString.split('/')[3];
   }
-  if (databaseType === 'sqlserver') {
+  if (jdbcPluginName === 'sqlserver') {
     return connectionString
       .split('/')[2]
       .split(';')[1]
       .split('=')[1];
   }
-  if (databaseType === 'teradata') {
+  if (jdbcPluginName === 'teradata') {
     return connectionString
       .split('/')[3]
       .split(' ')[0]
       .split('=')[1]
       .split(',')[0];
   }
-  if (databaseType === 'saphana') {
+  if (jdbcPluginName === 'saphana') {
     return connectionString.split('/')[2].split(':')[1];
   }
 };

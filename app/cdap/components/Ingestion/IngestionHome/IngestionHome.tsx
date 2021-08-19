@@ -119,6 +119,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const { setIngestionListfn } = useContext(ingestionContext);
   const [displayDrafts, setDisplayDrafts] = React.useState(false);
   const [draftsList, setDraftsList] = React.useState([]);
+  const [loader, setLoader] = React.useState(false);
   const [search, setSearch] = React.useState('');
   const namespace = getCurrentNamespace();
 
@@ -129,12 +130,13 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
       (list) => {
         console.log('h', list);
         setDraftsList(list);
+        setLoader(false);
       },
       (err) => {
         console.log('err', err);
       }
     );
-  }, []);
+  }, [loader]);
 
   const QUERY = gql`
   {
@@ -166,7 +168,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     fetchPolicy: 'no-cache',
     notifyOnNetworkStatusChange: true,
   });
-  if (loading || networkStatus === 4) {
+  if (loading || loader || networkStatus === 4) {
     return <LoadingSVGCentered />;
   }
   const setIngestionTaskList = () => {
@@ -174,9 +176,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     setIngestionListfn(data.pipelines);
     return data.pipelines.map((ele) => {
       return {
-        runId: ele.runs[0]?.runid,
         taskName: ele.name,
-        status: ele.runs.length === 0 ? 'DEPLOYED' : ele.runs[0].status,
         sourceConnectionDb: '',
         sourceConnection: '',
         targetConnection: '',
@@ -184,7 +184,6 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
         tags: [],
         runs: [],
         moreBtnVisible: true,
-        stopBtn: ele.runs.length === 0 ? false : ele.runs[0].status === 'RUNNING' && true,
       };
     });
   };
@@ -280,7 +279,13 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
             />
           </div>
           {displayDrafts ? (
-            <DraftsList data={mapDratsList()} searchText={search} />
+            <DraftsList
+              data={mapDratsList()}
+              searchText={search}
+              reFetchDrafts={() => {
+                setLoader(true);
+              }}
+            />
           ) : (
             <IngestionTaskList
               searchText={search}

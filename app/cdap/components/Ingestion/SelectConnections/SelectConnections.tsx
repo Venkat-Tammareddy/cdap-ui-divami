@@ -191,7 +191,6 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const [sortType, setSortType] = React.useState('Down');
   const [sortNameType, setSortNameType] = React.useState('Down');
   const [sortDbNameType, setSortDbNameType] = React.useState('Down');
-  const [isOpen, setIsOpen] = React.useState(false);
   const [header, setHeader] = React.useState('lastUsed');
 
   React.useEffect(() => {
@@ -285,7 +284,6 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
 
   return (
     <div className={classes.root}>
-      <OverlaySmall onCancel={() => setIsOpen(false)} open={isOpen} />
       <div className={classes.headerContainer}>
         {selectionType === 'target' ? (
           <p className={classes.headerText}>{T.translate(`${I18N_PREFIX}.Headers.targetHeader`)}</p>

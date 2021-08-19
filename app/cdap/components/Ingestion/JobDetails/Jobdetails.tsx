@@ -73,12 +73,18 @@ const styles = (theme): StyleRules => {
     },
     jobDetailsTop: {
       fontFamily: 'Lato',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#202124',
+    },
+    jobNames: {
+      fontFamily: 'Lato',
+      fontSize: '16px',
+      color: '#202124',
+      marginLeft: '5px',
     },
     jobDetailsBottom: {
       fontFamily: 'Lato',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#202124',
       opacity: '0.8',
     },
@@ -98,6 +104,7 @@ const styles = (theme): StyleRules => {
     },
     tablesWrapper: {
       display: 'flex',
+      width: '100%',
     },
     header: {
       paddingBottom: '16px',
@@ -125,6 +132,14 @@ const styles = (theme): StyleRules => {
       fontSize: '14px',
       color: '#202124',
     },
+    selectedTableNames: {
+      fontSize: '16px',
+      fontFamily: 'Lato',
+      color: '#202124',
+    },
+    table: {
+      width: '100%',
+    },
   };
 };
 
@@ -139,6 +154,9 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
   const infoIcon = '/cdap_assets/img/info.svg';
   const errorIcon = '/cdap_assets/img/error-status.svg';
   const warningIcon = '/cdap_assets/img/Warning.svg';
+  const sourceIcon = '/cdap_assets/img/source-connection.svg';
+  const targetIcon = '/cdap_assets/img/target-connection.svg';
+  const calenderIcon = '/cdap_assets/img/schedule-task-big.svg';
   const params = useParams();
   const taskName = (params as any).taskName;
   const jobId = (params as any).jobId;
@@ -360,19 +378,42 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
               <div className={classes.jobDetailsBottom}>Execution time</div>
             </div>
           </div>
-          <IngestionHeader title="Job Configuration" />
+          {/* <IngestionHeader title="Job Configuration" /> */}
           <div className={classes.connectionContainer}>
-            <div className={classes.jobDetailsTop}>
+            <img
+              src={sourceIcon}
+              alt="Icon"
+              style={{
+                backgroundColor: '#FACE75',
+                height: '40px',
+                width: '40px',
+                borderRadius: '50%',
+                padding: '5px',
+                fill: 'white',
+              }}
+            />
+            <div className={classes.jobNames}>
               {jobDetails.jobConfig.sourceConnection + ' | ' + jobDetails.jobConfig.sourceDb}
             </div>
             <img className={classes.arrow} src={arrowIcon} alt="arrow" />
-            <div className={classes.jobDetailsTop}>
+            <img
+              src={targetIcon}
+              alt="Icon"
+              style={{
+                backgroundColor: '#FACE75',
+                height: '40px',
+                width: '40px',
+                borderRadius: '50%',
+                padding: '5px',
+              }}
+            />
+            <div className={classes.jobNames}>
               {jobDetails.jobConfig.targetConnection + ' | ' + jobDetails.jobConfig.targetDb}
             </div>
           </div>
           <div className={classes.tablesWrapper}>
             <div>
-              <IngestionHeader title="Source Tables" />
+              <IngestionHeader title="Selected tables" />
               <div className={classes.table}>
                 <ul
                   style={{
@@ -383,15 +424,16 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                   {jobDetails.sourceList.map((item) => {
                     return (
                       <li style={{ marginRight: '120px' }} key={item}>
-                        <span className={classes.jobDetailsTop}>{item}</span>
+                        <span className={classes.selectedTableNames}>{item}</span>
                       </li>
                     );
                   })}
                 </ul>
               </div>
             </div>
-            <div>
-              <IngestionHeader title="Target Tables" />
+            <hr className={classes.hrLine} />
+            {/* <div> */}
+            {/* <IngestionHeader title="Target Tables" />
               <div className={classes.table}>
                 <ul
                   style={{
@@ -407,8 +449,8 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                     );
                   })}
                 </ul>
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
           </div>
         </>
       ) : (

@@ -264,6 +264,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
 
   const taskDetailSvg = '/cdap_assets/img/task-details.svg';
   const connSvg = '/cdap_assets/img/source-connection.svg';
+  const targetSvg = '/cdap_assets/img/target-connection.svg';
   const mappingSvg = '/cdap_assets/img/target-mapping.svg';
   const configurationSvg = '/cdap_assets/img/configuration.svg';
 
@@ -310,7 +311,7 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
         />
       ),
       2: <img src={connSvg} alt="img" style={{ paddingLeft: '3px', paddingBottom: '2px' }} />,
-      3: <img src={connSvg} alt="img" style={{ paddingLeft: '3px', paddingBottom: '2px' }} />,
+      3: <img src={targetSvg} alt="img" style={{ paddingLeft: '2px', paddingBottom: '3px' }} />,
       4: <img src={mappingSvg} alt="img" style={{ paddingLeft: '4px', paddingBottom: '2px' }} />,
       5: (
         <img

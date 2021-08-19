@@ -29,7 +29,6 @@ const styles = (): StyleRules => {
     header: {
       display: 'flex',
       height: '67px',
-      borderBottom: '2px solid #4285F4',
       borderBottomRadius: '10px',
       alignItems: 'center',
     },
@@ -56,6 +55,28 @@ const styles = (): StyleRules => {
       paddingTop: '0',
       paddingLeft: '40px',
       paddingBottom: '40px',
+    },
+    descriptionText: {
+      fontSize: '14px',
+      fontFamily: 'Lato',
+      color: '#202124',
+    },
+    flexLines: {
+      display: 'flex',
+      height: 'max-content',
+    },
+    hr1: {
+      width: '5%',
+      marginTop: '0px',
+      border: '2px solid #F4B400',
+      borderRadius: '0px 1.5px 1.5px 0px',
+    },
+    hr2: {
+      width: '95%',
+      marginTop: '0px',
+      marginLeft: '4px',
+      border: '2px solid #4285F4',
+      borderRadius: '1.5px 0px 0px 1.5px',
     },
   };
 };
@@ -98,8 +119,12 @@ const OverlaySmallView: React.FC<OverlaySmallProps> = ({
           <div className={classes.errIcn}>{errorType && <ErrorIcon />}</div>
           <p className={classes.headerText}>{title}</p>
         </div>
+        <div className={classes.flexLines}>
+          <hr className={classes.hr1} />
+          <hr className={classes.hr2} />
+        </div>
         <div className={classes.content}>
-          <p>{description}</p>
+          <p className={classes.descriptionText}>{description}</p>
         </div>
         <DialogActions className={classes.buttons}>
           <ButtonComponent

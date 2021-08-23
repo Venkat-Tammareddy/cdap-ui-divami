@@ -34,6 +34,7 @@ import { MyPipelineApi } from 'api/pipeline';
 import { humanReadableDate } from 'services/helpers';
 import { MyMetadataApi } from 'api/metadata';
 import { ingestionContext } from 'components/Ingestion/ingestionContext';
+import OverlaySmall from '../OverlaySmall/OverlaySmall';
 
 const I18N_PREFIX = 'features.PipelineList.DeployedPipelineView';
 
@@ -227,12 +228,22 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
       };
     });
   };
+  // const [alert, setAlert] = React.useState(false);
   return (
     <>
       {/* <SheduleTask /> */}
+
       <If condition={!!error && !!bannerMessage}>
         <ErrorBanner error={bannerMessage} />
       </If>
+      {/* <OverlaySmall
+        onCancel={undefined}
+        open={alert}
+        title="Confirm delete"
+        description={`Are you sure you want to delete this pipeline?`}
+        onSubmit={undefined}
+        submitText="Delete"
+      /> */}
       <div className={classes.root}>
         <IngestionHeader
           title="Ingest Tasks"

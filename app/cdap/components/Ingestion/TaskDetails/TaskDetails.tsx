@@ -712,7 +712,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
               <div className={classes.runDetails}>
                 <img src={calenderIcon} alt="success-rate-pie" height="35.1px" width="40px" />
                 <div className={classes.successContainer}>
-                  <div className={classes.successPercentage}>Sucess Rate</div>
+                  <div className={classes.successPercentage}>Success Rate</div>
                   <div className={classes.successPercentage}>{getSuccessRate()}%</div>
                 </div>
                 <div className={classes.scheduleContainer}>

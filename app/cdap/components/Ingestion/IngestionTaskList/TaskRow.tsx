@@ -140,6 +140,7 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
       runid: runId,
     }).subscribe((msg) => {
       console.log('run stopped successfully');
+      setLoading(true);
     });
   };
   React.useEffect(() => {

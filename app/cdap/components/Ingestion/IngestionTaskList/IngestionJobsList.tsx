@@ -143,7 +143,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
     <>
       <div className={classes.root}>
         {graph ? (
-          <Graphs />
+          <Graphs items={taskDetails} metrix={taskDetails.metrics} />
         ) : (
           <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr 2fr 1fr">
             <TableHeader data-cy="table-header">

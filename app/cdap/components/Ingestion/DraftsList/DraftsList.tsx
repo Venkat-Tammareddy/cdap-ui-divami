@@ -26,6 +26,8 @@ import TableBody from 'components/Table/TableBody';
 import { getCurrentNamespace } from 'services/NamespaceStore';
 import { Paper, Menu, MenuItem } from '@material-ui/core';
 import history from 'services/history';
+import DraftOptions from './DraftOptions';
+import OverlaySmall from '../OverlaySmall/OverlaySmall';
 
 const styles = (theme): StyleRules => {
   return {
@@ -99,18 +101,15 @@ interface DraftsListProps extends WithStyles<typeof styles> {
 }
 
 const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data, reFetchDrafts }) => {
-  // const [draftsList, setDraftsList] = React.useState(data);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
+  const [alert, setAlert] = React.useState<string | null>(null);
   const filteredList = data.filter((item) =>
     item.pipeLineName.toLowerCase().includes(searchText.toLowerCase())
   );
   const namespace = NamespaceStore.getState().selectedNamespace;
-  const deleteDraft = (draftId: string) => {
+  const deleteDraft = () => {
     MyPipelineApi.deleteDraft({
       context: namespace,
-      draftId,
+      draftId: alert,
     }).subscribe(
       (message) => {
         reFetchDrafts();
@@ -120,33 +119,31 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data, reFe
       }
     );
   };
-
-  // Handling More Options
-  const optionSelect = (type: string, draftId: string) => {
-    type === 'Delete' && deleteDraft(draftId);
-    type === 'Edit' && history.push(`/ns/${getCurrentNamespace()}/ingestion/create/${draftId}`);
-  };
-
-  const options = ['Edit', 'Delete'];
-  const moreImg = '/cdap_assets/img/more.svg';
-
   return (
     <>
       <div className={classes.root}>
-        <Table columnTemplate="2fr 1fr 1fr 1fr">
+        <OverlaySmall
+          onCancel={() => setAlert(null)}
+          open={!!alert}
+          title="Confirm delete"
+          description={`Are you sure you want to delete this pipeline draft?`}
+          onSubmit={() => deleteDraft()}
+          submitText="Delete"
+        />
+        <Table columnTemplate="2fr 2fr 2fr 1fr">
           <TableHeader data-cy="table-header">
             <TableRow className={classes.header} data-cy="table-row">
-              <TableCell>{'Pipleline name'}</TableCell>
+              <TableCell>{'Pipeline name'}</TableCell>
               <TableCell>{'Type'}</TableCell>
               <TableCell>{'Last saved'}</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHeader>
           <TableBody data-cy="table-body">
-            {filteredList.map((item, index) => {
+            {filteredList.map((item) => {
               return (
                 <TableRow
-                  key={index}
+                  key={item.id}
                   className={classes.tableRow}
                   data-cy={`table-row-${item.pipeLineName}`}
                   to={`/ns/${getCurrentNamespace()}/ingestion/create/${item.id}`}
@@ -155,61 +152,7 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data, reFe
                   <TableCell>{item.type}</TableCell>
                   <TableCell>{item.lastSaved}</TableCell>
                   <TableCell>
-                    <Paper className={classes.paper}>
-                      <img
-                        src={moreImg}
-                        // style={{ cursor: 'pointer' }}
-                        className={classes.optionsIcon}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setAnchorEl(e.currentTarget);
-                        }}
-                      />
-                      <Menu
-                        id="long-menu"
-                        keepMounted
-                        anchorEl={anchorEl}
-                        open={open}
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'left',
-                        }}
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'right',
-                        }}
-                        onClose={(e: React.MouseEvent<HTMLButtonElement>) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          e.nativeEvent.stopImmediatePropagation();
-                          setAnchorEl(null);
-                        }}
-                        PaperProps={{
-                          style: {
-                            maxHeight: 48 * 4.5,
-                            width: '20ch',
-                            marginTop: '40px',
-                          },
-                        }}
-                      >
-                        {options.map((option) => (
-                          <MenuItem
-                            key={option}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              e.nativeEvent.stopImmediatePropagation();
-                              optionSelect(option, item.id);
-                              setAnchorEl(null);
-                            }}
-                            className={classes.menuItem}
-                          >
-                            {option}
-                          </MenuItem>
-                        ))}
-                      </Menu>
-                    </Paper>
+                    <DraftOptions draftId={item.id} deleteDraft={(draftId) => setAlert(draftId)} />
                   </TableCell>
                 </TableRow>
               );

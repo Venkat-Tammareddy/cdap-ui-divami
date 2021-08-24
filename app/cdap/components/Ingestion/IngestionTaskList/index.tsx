@@ -25,7 +25,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import NamespaceStore from 'services/NamespaceStore';
 import produce from 'immer';
-import TaskOptions from './TaskOptions';
+import TaskRow from './TaskRow';
 import TaskTags from './TaskTags';
 import TaskConnections from './TaskConnections';
 import history from 'services/history';
@@ -131,10 +131,10 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
   const [duplicate, setDuplicate] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
-  const [taskList, setTaskList] = React.useState(data);
+  // const [taskList, setTaskList] = React.useState(data);
   const [schedule, setSchedule] = React.useState(false);
   const [sheduleObj, setSheduleObj] = React.useState({ taskName: '', selectItem: {} });
-  const filteredList = taskList.filter((item) =>
+  const filteredList = data.filter((item) =>
     item.taskName?.toLowerCase().includes(searchText?.toLowerCase())
   );
   const [alert, setAlert] = React.useState<string | null>(null);
@@ -204,14 +204,14 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
             }}
           />
         )}
-        <Table columnTemplate="2fr 1fr 1fr 1fr 1fr 1fr">
+        <Table columnTemplate="2fr 2fr 2fr 1fr 1fr 1fr">
           <TableHeader data-cy="table-header">
             <TableRow className={classes.header} data-cy="table-row">
               <TableCell>{'Task status & name'}</TableCell>
-              <TableCell>{'Source Database'}</TableCell>
-              <TableCell>{'Source connection'}</TableCell>
-              <TableCell>{'Target Database'}</TableCell>
-              <TableCell>{'Target connection'}</TableCell>
+              <TableCell>{'Source Database & Connection'}</TableCell>
+              <TableCell>{'Target Database & Connection'}</TableCell>
+              <TableCell>{'Tags'}</TableCell>
+              <TableCell>{'Last 3 runs status'}</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHeader>
@@ -219,7 +219,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
             {filteredList.map((item, index) => {
               return (
                 <TableRow
-                  key={index}
+                  key={item.taskName}
                   className={classes.tableRow}
                   data-cy={`table-row-${item.taskName}`}
                   onClick={(e) => {
@@ -227,43 +227,11 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                     history.push(`/ns/${currentNamespace}/ingestion/task/${item.taskName}`);
                   }}
                 >
-                  {/* <TableCell>
-                    <Grid container spacing={0}>
-                      <Grid className={classes.gridItem} item xs={1}>
-                        <Paper className={classes.paper}>
-                          <img
-                            // src={(item.status === 'RUNNING' && progressIcon) || myimg}
-                            src={
-                              (item.status === 'RUNNING' && inProgress) ||
-                              (item.status === 'COMPLETED' && successIcon) ||
-                              (item.status === 'FAILED' && errorIcon) ||
-                              (item.status === 'KILLED' && errorIcon) ||
-                              inProgress
-                            }
-                            alt="img"
-                            height="27.2px"
-                            width="23px"
-                          />
-                        </Paper>
-                      </Grid>
-                      <Grid item xs={11}>
-                        <Paper className={classes.taskNameText}>{item.taskName}</Paper>
-                      </Grid>
-                    </Grid>
-                  </TableCell> */}
-                  <TaskOptions
+                  <TaskRow
                     setLoadingtl={setLoading}
                     taskName={item.taskName}
                     sheduleTask={(type, taskName, cronExpression) =>
                       sheduleTask(type, taskName, cronExpression)
-                    }
-                    runs={item.runs}
-                    setRuns={(runs) =>
-                      setTaskList(
-                        produce((draft) => {
-                          draft[index].runs = runs;
-                        })
-                      )
                     }
                     deletePipeline={(taskName) => {
                       setAlert(taskName);

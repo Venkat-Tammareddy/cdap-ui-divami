@@ -61,7 +61,7 @@ const TaskTagsView: React.FC<ITaskTagsProps> = ({ classes, taskName }) => {
         tags.tags.length < 1 && setViewMore(false);
       }
     });
-  }, []);
+  }, [taskName]);
 
   return (
     <Grid container spacing={0}>

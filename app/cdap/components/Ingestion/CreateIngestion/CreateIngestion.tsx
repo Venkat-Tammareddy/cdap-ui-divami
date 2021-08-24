@@ -67,17 +67,20 @@ const styles = (theme): StyleRules => {
 };
 export interface IStagesInterface {
   name: string;
+  connectionType: string;
+  id: string;
   plugin: {
     name: string;
     type: string;
     label?: string;
+    artifact: {};
     properties: {
       referenceName: string;
       connectionString: string;
       jdbcPluginName: string;
       user: string;
       password: string;
-      whitelist: string;
+      whitelist?: string;
     };
   };
 }
@@ -288,17 +291,26 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
             tags={tags}
             setTags={setTags}
             submitValues={(details: any) => {
-              setDraftConfig((prevDraftConfig) => {
-                return {
-                  ...prevDraftConfig,
-                  name: details.taskName,
-                  description: details.taskDescription,
-                  artifact: {
-                    ...prevDraftConfig.artifact,
-                    ...artifactsList.find((artifact) => artifact.name === 'cdap-data-pipeline'),
-                  },
-                };
-              });
+              setDraftConfig(
+                produce((prevDraft) => {
+                  prevDraft.name = details.taskName;
+                  prevDraft.description = details.taskDescription;
+                  prevDraft.artifact = artifactsList.find(
+                    (artifact) => artifact.name === 'cdap-data-pipeline'
+                  );
+                })
+              );
+              // setDraftConfig((prevDraftConfig) => {
+              //   return {
+              //     ...prevDraftConfig,
+              //     name: details.taskName,
+              //     description: details.taskDescription,
+              //     artifact: {
+              //       ...prevDraftConfig.artifact,
+              //       ...artifactsList.find((artifact) => artifact.name === 'cdap-data-pipeline'),
+              //     },
+              //   };
+              // });
               handleNext();
             }}
             handleCancel={() => {
@@ -313,46 +325,68 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
             connectionsList={connections}
             draftConfig={draftConfig}
             submitConnection={(a: any) => {
-              setDraftConfig((prevDraftConfig) => {
-                return {
-                  ...prevDraftConfig,
-                  config: {
-                    ...prevDraftConfig.config,
-                    connections: [
-                      {
-                        ...prevDraftConfig.config.connections[0],
-                        from: a.name,
+              setDraftConfig(
+                produce((prevDraft) => {
+                  prevDraft.config.connections[0].from = a.name;
+                  prevDraft.config.stages[0] = {
+                    name: a.name,
+                    connectionType: a.connectionType,
+                    plugin: {
+                      name: 'MultiTableDatabase',
+                      type: 'batchsource',
+                      artifact: artifactsList.find(
+                        (artifact) => artifact.name === 'multi-table-plugins'
+                      ),
+                      properties: {
+                        ...a.plugin.properties,
+                        referenceName: 'ingestion-multitable-bigquery',
+                        whitelist: '',
                       },
-                    ],
-                    stages: [
-                      {
-                        name: a.name,
-                        connectionType: a.connectionType,
-                        plugin: {
-                          name: 'MultiTableDatabase',
-                          type: 'batchsource',
-                          artifact: artifactsList.find(
-                            (artifact) => artifact.name === 'multi-table-plugins'
-                          ),
-                          properties: {
-                            ...a.plugin.properties,
-                            referenceName: 'ingestion-multitable-bigquery',
-                            whitelist: '',
-                          },
-                        },
-                        outputSchema: [
-                          {
-                            name: 'etlSchemaBody',
-                            schema: '',
-                          },
-                        ],
-                        id: a.name,
-                      },
-                      prevDraftConfig.config.stages[1],
-                    ],
-                  },
-                };
-              });
+                    },
+                    id: a.name,
+                  };
+                })
+              );
+              // setDraftConfig((prevDraftConfig) => {
+              //   return {
+              //     ...prevDraftConfig,
+              //     config: {
+              //       ...prevDraftConfig.config,
+              //       connections: [
+              //         {
+              //           ...prevDraftConfig.config.connections[0],
+              //           from: a.name,
+              //         },
+              //       ],
+              //       stages: [
+              //         {
+              //           name: a.name,
+              //           connectionType: a.connectionType,
+              //           plugin: {
+              //             name: 'MultiTableDatabase',
+              //             type: 'batchsource',
+              //             artifact: artifactsList.find(
+              //               (artifact) => artifact.name === 'multi-table-plugins'
+              //             ),
+              //             properties: {
+              //               ...a.plugin.properties,
+              //               referenceName: 'ingestion-multitable-bigquery',
+              //               whitelist: '',
+              //             },
+              //           },
+              //           outputSchema: [
+              //             {
+              //               name: 'etlSchemaBody',
+              //               schema: '',
+              //             },
+              //           ],
+              //           id: a.name,
+              //         },
+              //         prevDraftConfig.config.stages[1],
+              //       ],
+              //     },
+              //   };
+              // });
               handleNext();
             }}
             handleCancel={() => {
@@ -367,35 +401,49 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
             connectionsList={connections}
             draftConfig={draftConfig}
             submitConnection={(a: any) => {
-              setDraftConfig((prevDraftConfig) => {
-                return {
-                  ...prevDraftConfig,
-                  config: {
-                    ...prevDraftConfig.config,
-                    connections: [{ ...prevDraftConfig.config.connections[0], to: a.name }],
-                    stages: [
-                      prevDraftConfig.config.stages[0],
-                      {
-                        name: a.name,
-                        connectionType: a.connectionType,
-                        plugin: {
-                          ...a.plugin,
-                          artifact: artifactsList.find(
-                            (artifact) => artifact.name === 'google-cloud'
-                          ),
-                        },
-                        outputSchema: [
-                          {
-                            name: 'etlSchemaBody',
-                            schema: '',
-                          },
-                        ],
-                        id: a.name,
-                      },
-                    ],
-                  },
-                };
-              });
+              setDraftConfig(
+                produce((prevDraft) => {
+                  prevDraft.config.connections[0].to = a.name;
+                  prevDraft.config.stages[1] = {
+                    name: a.name,
+                    connectionType: a.connectionType,
+                    plugin: {
+                      ...a.plugin,
+                      artifact: artifactsList.find((artifact) => artifact.name === 'google-cloud'),
+                    },
+                    id: a.name,
+                  };
+                })
+              );
+              // setDraftConfig((prevDraftConfig) => {
+              //   return {
+              //     ...prevDraftConfig,
+              //     config: {
+              //       ...prevDraftConfig.config,
+              //       connections: [{ ...prevDraftConfig.config.connections[0], to: a.name }],
+              //       stages: [
+              //         prevDraftConfig.config.stages[0],
+              //         {
+              //           name: a.name,
+              //           connectionType: a.connectionType,
+              //           plugin: {
+              //             ...a.plugin,
+              //             artifact: artifactsList.find(
+              //               (artifact) => artifact.name === 'google-cloud'
+              //             ),
+              //           },
+              //           outputSchema: [
+              //             {
+              //               name: 'etlSchemaBody',
+              //               schema: '',
+              //             },
+              //           ],
+              //           id: a.name,
+              //         },
+              //       ],
+              //     },
+              //   };
+              // });
               handleNext();
             }}
             handleCancel={() => {

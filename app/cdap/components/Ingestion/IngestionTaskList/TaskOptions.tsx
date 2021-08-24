@@ -74,22 +74,22 @@ interface IRunsProps {
 }
 interface ITaskOptionsProps extends WithStyles<typeof styles> {
   taskName: string;
-  refetch: () => void;
   runs: IRunsProps[];
   setRuns: (data: any) => void;
   setDuplicate: (value: string) => void;
   sheduleTask?: (type: string, taskName: string, cronExpression: string) => void;
   setLoadingtl?;
+  deletePipeline: (taskName: string) => void;
 }
 const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   classes,
   taskName,
   runs,
-  refetch,
   setRuns,
   setDuplicate,
   sheduleTask,
   setLoadingtl,
+  deletePipeline,
 }) => {
   const namespace = NamespaceStore.getState().selectedNamespace;
   const latestRun = runs[0];
@@ -113,11 +113,7 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   const [cronExpression, setCronExpression] = React.useState('');
   const open = Boolean(anchorEl);
   const optionSelect = (type: string) => {
-    type === 'Delete' &&
-      MyPipelineApi.delete({ namespace, appId: taskName }).subscribe((msg) => {
-        console.log(taskName, 'deleted succesfully');
-        refetch();
-      });
+    type === 'Delete' && deletePipeline(taskName);
     type === 'Run Task' &&
       (MyPipelineApi.run({
         namespace,

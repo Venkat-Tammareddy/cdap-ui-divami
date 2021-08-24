@@ -35,6 +35,7 @@ import SheduleTask from '../SheduleTask/SheduleTask';
 import setStringtoTime from './stringToTime';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
 import { MyPipelineApi } from 'api/pipeline';
+import OverlaySmall from '../OverlaySmall/OverlaySmall';
 
 const styles = (theme): StyleRules => {
   return {
@@ -136,7 +137,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
   const filteredList = taskList.filter((item) =>
     item.taskName?.toLowerCase().includes(searchText?.toLowerCase())
   );
-
+  const [alert, setAlert] = React.useState<string | null>(null);
   const inProgress = '/cdap_assets/img/inprogress.svg';
   const errorIcon = '/cdap_assets/img/error.svg';
   const successIcon = '/cdap_assets/img/sucess.svg';
@@ -164,9 +165,23 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
       setSheduleObj({ taskName, selectItem: setStringtoTime(cronExpression) });
     }
   };
-
+  const deletePipeline = () => {
+    MyPipelineApi.delete({ namespace: currentNamespace, appId: alert }).subscribe((msg) => {
+      console.log(alert, 'deleted successfully');
+      refetch();
+    });
+    setAlert(null);
+  };
   return (
     <>
+      <OverlaySmall
+        onCancel={() => setAlert(null)}
+        open={!!alert}
+        title="Confirm delete"
+        description={`Are you sure you want to delete pipeline ${alert}?`}
+        onSubmit={() => deletePipeline()}
+        submitText="Delete"
+      />
       <If condition={loading}>
         <LoadingSVGCentered />
       </If>
@@ -250,7 +265,9 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                         })
                       )
                     }
-                    refetch={refetch}
+                    deletePipeline={(taskName) => {
+                      setAlert(taskName);
+                    }}
                     setDuplicate={(value) => setDuplicate(value)}
                   />
                 </TableRow>

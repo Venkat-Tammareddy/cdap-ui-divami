@@ -55,7 +55,7 @@ const styles = (theme): StyleRules => {
     tabsWrapper: {
       padding: '18px 0px',
       display: 'grid',
-      gridTemplateColumns: '0.1fr 1fr 0fr 0fr',
+      gridTemplateColumns: '0.1fr 1fr 0fr 0fr 0fr',
     },
     tabContainer: {
       height: '80px',

@@ -165,7 +165,7 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onC
           </RadioGroup>
         </div>
 
-        <div className={classes.preferencesSection}>
+        {/* <div className={classes.preferencesSection}>
           <FormLabel className={classes.labelText}>
             {T.translate(`${I18N_PREFIX}.preferenceText`)}
           </FormLabel>
@@ -196,7 +196,7 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, onC
               className={classes.choices}
             />
           </RadioGroup>
-        </div>
+        </div> */}
       </div>
 
       <div className={classes.buttonContainer}>

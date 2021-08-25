@@ -91,20 +91,24 @@ const styles = (): StyleRules => {
   };
 };
 
-interface GraphsProps extends WithStyles<typeof styles> {}
-const GraphsView: React.FC<GraphsProps> = ({ classes }) => {
-  const myData = [
-    { x: 'job1', y: 45 },
-    { x: 'job2', y: 77 },
-    { x: 'job3', y: 15 },
-    { x: 'job4', y: 20 },
-    { x: 'job5', y: 25 },
-    { x: 'job6', y: 30 },
-    { x: 'job7', y: 80 },
-    { x: 'job8', y: 42 },
-    { x: 'job9', y: 99 },
-    { x: 'job10', y: 90 },
-  ];
+interface GraphsProps extends WithStyles<typeof styles> {
+  items: any;
+  metrix: any;
+}
+const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
+  // const myData = [
+  //   { x: 'job1', y: 45 },
+  //   { x: 'job2', y: 77 },
+  //   { x: 'job3', y: 15 },
+  //   { x: 'job4', y: 20 },
+  //   { x: 'job5', y: 25 },
+  //   { x: 'job6', y: 30 },
+  //   { x: 'job7', y: 80 },
+  //   { x: 'job8', y: 42 },
+  //   { x: 'job9', y: 99 },
+  //   { x: 'job10', y: 90 },
+  // ];
+  const myData = [];
 
   const myData2 = [
     { x: 'job1', y: 29 },
@@ -119,6 +123,48 @@ const GraphsView: React.FC<GraphsProps> = ({ classes }) => {
     { x: 'job10', y: 150 },
   ];
   const [value, setValue] = React.useState({});
+  let runIdArray = [];
+  let runIdArray2 = [];
+  items.runs.map((item, index) => {
+    const obj = { x: '', y: '' };
+    if (item.hasOwnProperty('runId')) {
+      obj.x = item.runId;
+      runIdArray.push(obj);
+      runIdArray2.push(obj);
+      console.log('PLZ WORK' + item.runId);
+    }
+  });
+
+  // Records in
+  const inn = [];
+  const out = [];
+  const Ins = items.runs.map((item, index) => {
+    const data1 = metrix[`qid_${item.runId}`]?.series?.find(
+      (item) => item.metricName === `user.${items.connections.sourceName}.records.in`
+    )?.data[0].value
+      ? metrix[`qid_${item.runId}`]?.series?.find(
+          (item) => item.metricName === `user.${items.connections.sourceName}.records.in`
+        )?.data[0].value
+      : '0';
+
+    inn.push(data1);
+    const data2 = metrix[`qid_${item.runId}`]?.series?.find(
+      (item) => item.metricName === `user.${items.connections.sourceName}.records.error`
+    )?.data[0].value
+      ? metrix[`qid_${item.runId}`]?.series?.find(
+          (item) => item.metricName === `user.${items.connections.sourceName}.records.error`
+        )?.data[0].value
+      : '0';
+    out.push(data2);
+  });
+
+  runIdArray = runIdArray.map((item, index) => {
+    return { x: item.x, y: inn[index] };
+  });
+
+  runIdArray2 = runIdArray2.map((item, index) => {
+    return { x: item.x, y: out[index] };
+  });
 
   return (
     <div className={classes.root}>
@@ -140,7 +186,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes }) => {
         <YAxis />
         <VerticalBarSeries
           barWidth={0.2}
-          data={myData}
+          data={runIdArray}
           color="#74D091"
           onMouseover={() => alert('1')}
           style={{ cursor: 'pointer' }}
@@ -172,13 +218,13 @@ const GraphsView: React.FC<GraphsProps> = ({ classes }) => {
 
         <VerticalBarSeries
           barWidth={0.1}
-          data={myData2}
+          data={runIdArray}
           color="transparent"
           style={{ cursor: 'pointer' }}
         />
         <VerticalBarSeries
           barWidth={0.2}
-          data={myData2}
+          data={runIdArray2}
           color="#DB4437"
           style={{ cursor: 'pointer' }}
           onValueMouseOver={(d) => {

@@ -46,6 +46,7 @@ const styles = (theme): StyleRules => {
   return {
     root: {
       height: 'calc(100% - 48px)', // margin
+      left: '0px',
       background: '#9898989c',
       position: 'fixed',
       width: '100%',
@@ -70,10 +71,10 @@ const styles = (theme): StyleRules => {
       marginBottom: '29px',
     },
     btnFooter: {
-      position: 'absolute',
-      width: '100%',
-      bottom: '51px',
-      paddingRight: '80px',
+      display: 'flex',
+      marginTop: '38px',
+      gap: '30px',
+      alignItems: 'center',
     },
     picker: {
       width: '320px',
@@ -83,13 +84,14 @@ const styles = (theme): StyleRules => {
     },
     sheduleString: {
       fontSize: '14px',
+      padding: '0',
     },
     msgName: {
       minWidth: '390px',
       minHeight: '32px',
       background: '#dcedf5',
       borderRadius: '15.5px',
-      marginTop: 'auto',
+      marginTop: '0px',
     },
     timePicker: {
       border: '1px solid #c8ccd0',
@@ -108,12 +110,15 @@ const styles = (theme): StyleRules => {
     },
     cancelButton: {
       height: '36px',
+      paddingLeft: '0px',
       textDecoration: 'none',
+      color: '#4285F4 ',
       outline: 'none',
       border: 'none',
       paddingRight: '0px',
       fontFamily: 'Lato',
       fontSize: '14px',
+      marginLeft: '80px',
     },
     scheduleButton: {
       height: '36px',
@@ -154,13 +159,19 @@ const styles = (theme): StyleRules => {
       marginBottom: '80px',
     },
     shedulemsg: {
-      paddingLeft: '20px',
+      paddingLeft: '22px',
     },
     radioButtons: {
       marginLeft: '0px',
     },
     scheduleHeader: {
       color: '#202124',
+    },
+    timerIcon: {
+      paddingLeft: '8px',
+    },
+    radioContainer: {
+      marginLeft: '-10px',
     },
   };
 };
@@ -591,7 +602,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
   };
 
   const sheduleLable = () => {
-    const string = `The pipeline is sheduled to run every  `;
+    const string = `The task is scheduled to run every  `;
     switch (checkedItem) {
       case 'Every 5 min': {
         return <span className={classes.sheduleString}>{string} 5 minutes</span>;
@@ -680,7 +691,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
             <Box mb={1} className={classes.scheduleSubHeader}>
               How often will it recur?
             </Box>
-            <Grid container>
+            <Grid container className={classes.radioContainer}>
               {recurOptions.map((item, index) => (
                 <Grid item xs={4} className={classes.radioButtons}>
                   <Radio
@@ -701,55 +712,54 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
             mt={2}
             display="flex"
             alignItems="center"
-            justifyContent="space-evenly"
+            // justifyContent="space-evenly"
             className={classes.msgName}
           >
-            <img src={timer} />
+            <img src={timer} className={classes.timerIcon} />
             <span className={classes.shedulemsg}>{sheduleLable()}</span>
           </Box>
-          <Box className={classes.btnFooter}>
-            <Grid container spacing={0}>
-              <Grid className={classes.gridItem} item xs={4}></Grid>
-              <Grid className={classes.gridItem} item xs={2}>
-                <Button
-                  size="medium"
-                  color="primary"
-                  onClick={closeSchedule}
-                  className={classes.cancelButton}
-                >
-                  CANCEL
-                </Button>
-              </Grid>
-              <Grid className={classes.gridItem} item xs={2}>
-                <Button
-                  variant="contained"
-                  size="medium"
-                  color="primary"
-                  className={classes.scheduleButton}
-                  onClick={(e) => {
-                    closeSchedule();
-                    saveAndShedule(false);
-                  }}
-                >
-                  SAVE
-                </Button>
-              </Grid>
-              <Grid className={classes.gridItem} item xs={4}>
-                <Button
-                  variant="contained"
-                  size="medium"
-                  color="primary"
-                  className={classes.scheduleButton}
-                  onClick={(e) => {
-                    closeSchedule();
-                    saveAndShedule(true);
-                  }}
-                >
-                  SAVE AND SCHEDULE
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
+          <div className={classes.btnFooter}>
+            {/* <Grid container spacing={0}> */}
+            {/* <Grid className={classes.gridItem} item xs={2}> */}
+            <Button
+              size="medium"
+              color="primary"
+              onClick={closeSchedule}
+              className={classes.cancelButton}
+            >
+              CANCEL
+            </Button>
+            {/* </Grid> */}
+            {/* <Grid className={classes.gridItem} item xs={2}> */}
+            <Button
+              variant="contained"
+              size="medium"
+              color="primary"
+              className={classes.scheduleButton}
+              onClick={(e) => {
+                closeSchedule();
+                saveAndShedule(false);
+              }}
+            >
+              SAVE
+            </Button>
+            {/* </Grid> */}
+            {/* <Grid className={classes.gridItem} item xs={4}> */}
+            <Button
+              variant="contained"
+              size="medium"
+              color="primary"
+              className={classes.scheduleButton}
+              onClick={(e) => {
+                closeSchedule();
+                saveAndShedule(true);
+              }}
+            >
+              SAVE & SCHEDULE
+            </Button>
+            {/* </Grid> */}
+            {/* </Grid> */}
+          </div>
         </div>
       </div>
     </>

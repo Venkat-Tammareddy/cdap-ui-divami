@@ -21,7 +21,7 @@ import history from 'services/history';
 import IngestionTaskList from 'components/Ingestion/IngestionTaskList/index';
 import DraftsList from 'components/Ingestion/DraftsList/DraftsList';
 import T from 'i18n-react';
-import { TextField, Button } from '@material-ui/core';
+import { Button, Checkbox, Menu, MenuItem, Paper, TextField } from '@material-ui/core';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
 import { getCurrentNamespace } from 'services/NamespaceStore';
 import { gql } from 'apollo-boost';
@@ -107,6 +107,7 @@ const styles = (theme): StyleRules => {
         padding: '0px',
         textIndent: '10px',
       },
+      paddingRight: '5px',
     },
     homeHeaders: {
       display: 'flex',
@@ -116,6 +117,46 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    filterIcn: {
+      paddingTop: '10px',
+      cursor: 'pointer',
+    },
+    paper: {
+      //   border: '1px solid green',
+      boxShadow: 'none',
+      backgroundColor: 'rgb(255 255 255 / 0%)',
+      fontSize: '14px',
+      color: '#202124',
+      textOverflow: 'ellipsis',
+    },
+    checkbox: {
+      margin: '0',
+    },
+    filterTitle: {
+      fontFamily: 'Lato',
+      color: '#202124',
+      fontSize: '18px',
+      letterSpacing: '0',
+      marginLeft: '19px',
+      marginTop: '20px',
+      marginBottom: '2',
+    },
+    applyButton: {
+      marginLeft: '62px',
+      width: '80px',
+      fontSize: '14px',
+      marginTop: '6px',
+    },
+    menuItem: {
+      height: '34px',
+      paddingTop: '11px',
+      fontSize: '16px',
+      fontFamily: 'Lato',
+    },
+    hrLine: {
+      width: '90%',
+      borderTop: '1px solid #A5A5A5',
     },
   };
 };
@@ -131,6 +172,9 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const namespace = getCurrentNamespace();
   const [pageNo, setPageNo] = React.useState(1);
 
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const [filterOptions, setFilterOptions] = React.useState([]);
   React.useEffect(() => {
     MyPipelineApi.getDrafts({
       context: namespace,
@@ -224,10 +268,14 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   // }
 
   const searchIcon = '/cdap_assets/img/search.svg';
+  const filterIcon = '/cdap_assets/img/filter.svg';
 
   const SearchIcon = () => {
     return <img src={searchIcon} alt="icon" />;
   };
+
+  const options = ['All', 'Running', 'Success', 'Failed', 'Killed'];
+
   const mapDratsList = () => {
     return draftsList.map((ele) => {
       return {
@@ -307,6 +355,64 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
               autoFocus={false}
               data-cy="connections-search"
             />
+            <Paper className={classes.paper}>
+              <img
+                src={filterIcon}
+                className={classes.filterIcn}
+                alt="get a good browser"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.nativeEvent.stopImmediatePropagation();
+                  setAnchorEl(e.currentTarget);
+                }}
+              />
+              <Menu
+                keepMounted
+                anchorEl={anchorEl}
+                open={open}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                onClose={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.nativeEvent.stopImmediatePropagation();
+                  setAnchorEl(null);
+                }}
+                PaperProps={{
+                  style: {
+                    height: '327px',
+                    width: '204px',
+                  },
+                }}
+              >
+                <p className={classes.filterTitle}>Filter by Status</p>
+                {options.map((option) => (
+                  <MenuItem
+                    key={option}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.nativeEvent.stopImmediatePropagation();
+                      // optionSelect(option);
+                    }}
+                    className={classes.menuItem}
+                  >
+                    <Checkbox className={classes.checkbox} /> {option}
+                  </MenuItem>
+                ))}
+                <hr className={classes.hrLine} />
+                <Button variant="contained" color="primary" className={classes.applyButton}>
+                  APPLY
+                </Button>
+              </Menu>
+            </Paper>
           </div>
           {displayDrafts ? (
             <DraftsList

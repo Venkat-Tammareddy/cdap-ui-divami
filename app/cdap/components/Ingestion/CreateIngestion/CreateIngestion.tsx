@@ -20,11 +20,6 @@ import { useContext } from 'react';
 import T from 'i18n-react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import TaskTrackingWizard from '../IngestTaskWizard/TaskTrackingWizard';
-import If from 'components/If';
-import TaskInfo from '../TaskInfo/TaskInfo';
-import SelectConnections from '../SelectConnections/SelectConnections';
-import TaskConfiguration from '../TaskConfiguration/TaskConfiguration';
-import MappingLayout from '../MappingLayout/MappingLayout';
 import uuidV4 from 'uuid/v4';
 import { MyPipelineApi } from 'api/pipeline';
 import { ConnectionsApi } from 'api/connections';
@@ -34,15 +29,13 @@ import LoadingSVGCentered from 'components/LoadingSVGCentered';
 const I18N_PREFIX = 'features.CreateIngestion';
 import Acknowledgement from '../Acknowledgement/Acknowledgement';
 import IngestionHeader from '../IngestionHeader/IngestionHeader';
-import CustomTablesSelection from '../CustomTableSelection/CustomTableSelection';
 import { MyArtifactApi } from 'api/artifact';
 import { ingestionContext } from 'components/Ingestion/ingestionContext';
 import { MyMetadataApi } from 'api/metadata';
-import { MyProgramApi } from 'api/program';
-import produce from 'immer';
 import { useParams } from 'react-router';
-import Alert from 'components/Alert';
 import OverlaySmall from '../OverlaySmall/OverlaySmall';
+import StepperContent from './StepperContent/StepperContent';
+import Steps from './Steps/Steps';
 
 const styles = (theme): StyleRules => {
   return {
@@ -84,6 +77,44 @@ export interface IStagesInterface {
     };
   };
 }
+export interface IDraftConfigInterface {
+  name: string;
+  description: string;
+  artifact: {
+    name: string;
+    version: string;
+    scope: string;
+    label: string;
+  };
+  config: {
+    resources: {
+      memoryMB: number;
+      virtualCores: number;
+    };
+    driverResources: {
+      memoryMB: number;
+      virtualCores: number;
+    };
+    connections: [
+      {
+        from: string;
+        to: string;
+      }
+    ];
+    comments: [];
+    postActions: [];
+    properties: {};
+    processTimingEnabled: boolean;
+    stageLoggingEnabled: boolean;
+    pushdownEnabled: boolean;
+    stages: IStagesInterface[];
+    transformationPushdown: null;
+    schedule: string;
+    engine: string;
+    numOfRecordsPreview: number;
+    maxConcurrentRuns: number;
+  };
+}
 interface ICreateIngestionProps extends WithStyles<typeof styles> {}
 const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
@@ -97,10 +128,11 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
   const [tags, setTags] = React.useState([]);
   const [alert, setAlert] = React.useState({
     show: false,
-    message: '',
+    title: '',
+    description: '',
     type: 'error',
   });
-  const [draftConfig, setDraftConfig] = React.useState({
+  const [draftConfig, setDraftConfig] = React.useState<IDraftConfigInterface>({
     name: '',
     description: '',
     artifact: {
@@ -218,8 +250,9 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
           setAlert(() => {
             return {
               show: true,
-              message: 'pipeline name already exists ...',
-              type: 'error',
+              title: 'Pipeline name already exists',
+              description: `The pipeline with name "${draftConfig.name}" already exists, please enter a new name to create this pipeline`,
+              type: 'duplicate-name',
             };
           }),
           setActiveStep(0),
@@ -281,272 +314,44 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     activeStep === stepProgress && setStepProgress((prev) => prev + 1);
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
-
-  const Content = () => {
-    switch (activeStep) {
-      case 0:
-        return (
-          <TaskInfo
-            draftConfig={draftConfig}
-            tags={tags}
-            setTags={setTags}
-            submitValues={(details: any) => {
-              setDraftConfig(
-                produce((prevDraft) => {
-                  prevDraft.name = details.taskName;
-                  prevDraft.description = details.taskDescription;
-                  prevDraft.artifact = artifactsList.find(
-                    (artifact) => artifact.name === 'cdap-data-pipeline'
-                  );
-                })
-              );
-              // setDraftConfig((prevDraftConfig) => {
-              //   return {
-              //     ...prevDraftConfig,
-              //     name: details.taskName,
-              //     description: details.taskDescription,
-              //     artifact: {
-              //       ...prevDraftConfig.artifact,
-              //       ...artifactsList.find((artifact) => artifact.name === 'cdap-data-pipeline'),
-              //     },
-              //   };
-              // });
-              handleNext();
-            }}
-            handleCancel={() => {
-              goToIngestionHome();
-            }}
-          />
-        );
-      case 1:
-        return (
-          <SelectConnections
-            selectionType={T.translate(`${I18N_PREFIX}.SelectConnections.source`).toString()}
-            connectionsList={connections}
-            draftConfig={draftConfig}
-            submitConnection={(a: any) => {
-              setDraftConfig(
-                produce((prevDraft) => {
-                  prevDraft.config.connections[0].from = a.name;
-                  prevDraft.config.stages[0] = {
-                    name: a.name,
-                    connectionType: a.connectionType,
-                    plugin: {
-                      name: 'MultiTableDatabase',
-                      type: 'batchsource',
-                      artifact: artifactsList.find(
-                        (artifact) => artifact.name === 'multi-table-plugins'
-                      ),
-                      properties: {
-                        ...a.plugin.properties,
-                        referenceName: 'ingestion-multitable-bigquery',
-                        whitelist: '',
-                      },
-                    },
-                    id: a.name,
-                  };
-                })
-              );
-              // setDraftConfig((prevDraftConfig) => {
-              //   return {
-              //     ...prevDraftConfig,
-              //     config: {
-              //       ...prevDraftConfig.config,
-              //       connections: [
-              //         {
-              //           ...prevDraftConfig.config.connections[0],
-              //           from: a.name,
-              //         },
-              //       ],
-              //       stages: [
-              //         {
-              //           name: a.name,
-              //           connectionType: a.connectionType,
-              //           plugin: {
-              //             name: 'MultiTableDatabase',
-              //             type: 'batchsource',
-              //             artifact: artifactsList.find(
-              //               (artifact) => artifact.name === 'multi-table-plugins'
-              //             ),
-              //             properties: {
-              //               ...a.plugin.properties,
-              //               referenceName: 'ingestion-multitable-bigquery',
-              //               whitelist: '',
-              //             },
-              //           },
-              //           outputSchema: [
-              //             {
-              //               name: 'etlSchemaBody',
-              //               schema: '',
-              //             },
-              //           ],
-              //           id: a.name,
-              //         },
-              //         prevDraftConfig.config.stages[1],
-              //       ],
-              //     },
-              //   };
-              // });
-              handleNext();
-            }}
-            handleCancel={() => {
-              goToIngestionHome();
-            }}
-          />
-        );
-      case 2:
-        return (
-          <SelectConnections
-            selectionType={T.translate(`${I18N_PREFIX}.SelectConnections.target`).toString()}
-            connectionsList={connections}
-            draftConfig={draftConfig}
-            submitConnection={(a: any) => {
-              setDraftConfig(
-                produce((prevDraft) => {
-                  prevDraft.config.connections[0].to = a.name;
-                  prevDraft.config.stages[1] = {
-                    name: a.name,
-                    connectionType: a.connectionType,
-                    plugin: {
-                      ...a.plugin,
-                      artifact: artifactsList.find((artifact) => artifact.name === 'google-cloud'),
-                    },
-                    id: a.name,
-                  };
-                })
-              );
-              // setDraftConfig((prevDraftConfig) => {
-              //   return {
-              //     ...prevDraftConfig,
-              //     config: {
-              //       ...prevDraftConfig.config,
-              //       connections: [{ ...prevDraftConfig.config.connections[0], to: a.name }],
-              //       stages: [
-              //         prevDraftConfig.config.stages[0],
-              //         {
-              //           name: a.name,
-              //           connectionType: a.connectionType,
-              //           plugin: {
-              //             ...a.plugin,
-              //             artifact: artifactsList.find(
-              //               (artifact) => artifact.name === 'google-cloud'
-              //             ),
-              //           },
-              //           outputSchema: [
-              //             {
-              //               name: 'etlSchemaBody',
-              //               schema: '',
-              //             },
-              //           ],
-              //           id: a.name,
-              //         },
-              //       ],
-              //     },
-              //   };
-              // });
-              handleNext();
-            }}
-            handleCancel={() => {
-              goToIngestionHome();
-            }}
-          />
-        );
-      case 3:
-        return (
-          <>
-            <MappingLayout
-              onSubmit={(list) => {
-                setDraftConfig(
-                  produce((state) => {
-                    state.config.stages[0].plugin.properties.whitelist = list;
-                  })
-                );
-              }}
-              handleNext={handleNext}
-              selectedList={draftConfig.config.stages[0].plugin.properties.whitelist}
-              onCancel={() => goToIngestionHome()}
-              connectionId={draftConfig.config.stages[0].name}
-              cardSelected={cardSelected}
-              setCardSelected={setCardSelected}
-            />
-            {/* {customTablesSelection ? (
-              <CustomTablesSelection
-              isCustomTableSelection
-                submitValues={(list) => {
-                  setCustomTablesSelection(false);
-                  setDraftConfig(
-                    (prevDraftConfig) => {
-                      return {
-                        ...prevDraftConfig,
-                        config: {
-                          ...prevDraftConfig.config,
-                          stages: [
-                            {
-                              ...prevDraftConfig.config.stages[0],
-                              plugin: {
-                                ...prevDraftConfig.config.stages[0].plugin,
-                                properties: {
-                                  ...prevDraftConfig.config.stages[0].plugin.properties,
-                                  whitelist: list,
-                                },
-                              },
-                            },
-                            prevDraftConfig.config.stages[1],
-                          ],
-                        },
-                      };
-                    }
-                    // produce((state) => {
-                    //   state.config.stages[0].plugin.properties.whitelist = list.join();
-                    // })
-                  );
-                  handleNext();
-                }}
-                handleCancel={() => goToIngestionHome()}
-                connectionId={draftConfig.config.stages[0].name}
-              />
-            ) : (
-              <MappingLayout
-                cardSelected={cardSelected}
-                setCardSelected={setCardSelected}
-                submitMappingType={(mappingType) => {
-                  mappingType === 'custom' ? setCustomTablesSelection(true) : handleNext();
-                }}
-                handleCancel={() => goToIngestionHome()}
-              />
-            )} */}
-          </>
-        );
-      case 4:
-        return (
-          <TaskConfiguration
-            deploy={() => {
-              deployPipeline();
-            }}
-            onCancel={() => goToIngestionHome()}
-          />
-        );
-      default:
-        return;
-    }
+  const handleCancel = () => {
+    setAlert(() => {
+      return {
+        show: true,
+        title: 'Confirm exit',
+        description: 'Are you sure you want to exit?',
+        type: 'exit',
+      };
+    });
   };
-  console.log(id);
+
   return (
     <div className={classes.root}>
       <OverlaySmall
-        onCancel={() => goToIngestionHome()}
-        open={alert.show}
-        title="Pipeline name already exists"
-        description={`The pipeline with name "${draftConfig.name}" already exists, please enter a new name to create this pipeline`}
-        onSubmit={() =>
-          setAlert((prev) => {
-            return {
-              ...prev,
-              show: false,
-            };
-          })
+        onCancel={() =>
+          alert.type === 'exit'
+            ? setAlert((prev) => {
+                return {
+                  ...prev,
+                  show: false,
+                };
+              })
+            : goToIngestionHome()
         }
-        submitText="Change name"
+        open={alert.show}
+        title={alert.title}
+        description={alert.description}
+        onSubmit={() =>
+          alert.type === 'exit'
+            ? goToIngestionHome()
+            : setAlert((prev) => {
+                return {
+                  ...prev,
+                  show: false,
+                };
+              })
+        }
+        submitText={alert.type === 'exit' ? 'Exit' : 'Change name'}
         errorType
       />
       {deployLoader ? (
@@ -568,7 +373,23 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                     stepperNav={(step) => step <= stepProgress && setActiveStep(step)}
                   />
                 </div>
-                <div className={classes.content}>{Content()}</div>
+                <div className={classes.content}>
+                  <StepperContent
+                    draftConfig={draftConfig}
+                    activeStep={activeStep}
+                    steps={Steps}
+                    handleNext={handleNext}
+                    tags={tags}
+                    setTags={setTags}
+                    setDraftConfig={setDraftConfig}
+                    handleCancel={handleCancel}
+                    artifactsList={artifactsList}
+                    connectionsList={connections}
+                    cardSelected={cardSelected}
+                    setCardSelected={setCardSelected}
+                    deploy={() => deployPipeline()}
+                  />
+                </div>
               </div>
             </>
           )}

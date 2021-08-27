@@ -20,6 +20,7 @@ import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
 import ButtonComponent from '../ButtonComponent/ButtonComponent';
 import TaskInfoFields from './TaskInfoFields';
+import produce from 'immer';
 const I18N_PREFIX = 'features.TaskInfo';
 
 const styles = (): StyleRules => {
@@ -210,20 +211,24 @@ const styles = (): StyleRules => {
 };
 
 interface ITaskInfoProps extends WithStyles<typeof styles> {
-  submitValues: (values: object) => void;
+  setDraftConfig: (values: object) => void;
+  handleNext: () => void;
   handleCancel: () => void;
   draftConfig;
   tags: string[];
   setTags: (values: string[]) => void;
+  artifactsList: any[];
 }
 
 const TaskInfoView: React.FC<ITaskInfoProps> = ({
   classes,
-  submitValues,
+  setDraftConfig,
   handleCancel,
   draftConfig,
   tags,
   setTags,
+  handleNext,
+  artifactsList,
 }) => {
   const [taskName, setTaskName] = React.useState(draftConfig?.name);
   const [taskDescription, setTaskDescription] = React.useState(draftConfig?.description);
@@ -240,16 +245,26 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const formDataObject = {
-      taskName,
-      taskDescription,
-      tags: [],
-    };
+    // const formDataObject = {
+    //   taskName,
+    //   taskDescription,
+    //   tags: [],
+    // };
 
-    formDataObject.taskName = `${taskName}`;
-    formDataObject.taskDescription = `${taskDescription}`;
-    formDataObject.tags = tags;
-    submitValues(formDataObject);
+    // formDataObject.taskName = `${taskName}`;
+    // formDataObject.taskDescription = `${taskDescription}`;
+    // formDataObject.tags = tags;
+    // submitValues(formDataObject);
+    setDraftConfig(
+      produce((prevDraft) => {
+        prevDraft.name = taskName;
+        prevDraft.description = taskDescription;
+        prevDraft.artifact = artifactsList.find(
+          (artifact) => artifact.name === 'cdap-data-pipeline'
+        );
+      })
+    );
+    handleNext();
   };
 
   const handleFocus = (e: React.FormEvent) => {

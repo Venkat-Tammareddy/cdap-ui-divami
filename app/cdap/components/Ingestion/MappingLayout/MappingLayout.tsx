@@ -24,6 +24,7 @@ import NamespaceStore from 'services/NamespaceStore';
 import { ConnectionsApi } from 'api/connections';
 import { exploreConnection } from 'components/Connections/Browser/GenericBrowser/apiHelpers';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
+import produce from 'immer';
 const I18N_PREFIX = 'features.MappingLayout';
 const styles = (): StyleRules => {
   return {
@@ -195,28 +196,27 @@ const styles = (): StyleRules => {
 };
 
 interface IIngestionProps extends WithStyles<typeof styles> {
-  onSubmit: (list: string) => void;
-  onCancel: () => void;
-  connectionId: string;
+  setDraftConfig: (values: object) => void;
+  handleCancel: () => void;
+  draftConfig;
   cardSelected: string;
   setCardSelected: (type: string) => void;
-  selectedList: string;
   handleNext: () => void;
 }
 const MappingView: React.FC<IIngestionProps> = ({
   classes,
-  onCancel,
-  onSubmit,
-  connectionId,
   cardSelected,
   setCardSelected,
-  selectedList,
   handleNext,
+  setDraftConfig,
+  handleCancel,
+  draftConfig,
 }) => {
   const allTables = '/cdap_assets/img/data-base-big.svg';
   const customTable = '/cdap_assets/img/custom-selection.svg';
   const successCardTick = '/cdap_assets/img/card-section-tick.svg';
   const [customTablesSelection, setCustomTablesSelection] = React.useState(false);
+
   React.useEffect(() => {
     getTablesList();
     setLoading(true);
@@ -228,7 +228,7 @@ const MappingView: React.FC<IIngestionProps> = ({
     ConnectionsApi.exploreConnection(
       {
         context: currentNamespace,
-        connectionid: connectionId,
+        connectionid: draftConfig.config.stages[0].name,
       },
       {
         path: '/public',
@@ -238,7 +238,11 @@ const MappingView: React.FC<IIngestionProps> = ({
       (message) => {
         setItems(
           message.entities.map((item) => {
-            if (selectedList.split(',').includes(item.name)) {
+            if (
+              draftConfig.config.stages[0].plugin.properties.whitelist
+                ?.split(',')
+                .includes(item.name)
+            ) {
               return {
                 tableName: item.name,
                 selected: true,
@@ -258,6 +262,13 @@ const MappingView: React.FC<IIngestionProps> = ({
       }
     );
   };
+  const onSubmit = (list) => {
+    setDraftConfig(
+      produce((state) => {
+        state.config.stages[0].plugin.properties.whitelist = list;
+      })
+    );
+  };
   const handleSubmit = () => {
     const submitList = items
       .filter((item) => item.selected)
@@ -274,8 +285,8 @@ const MappingView: React.FC<IIngestionProps> = ({
     onSubmit('');
     handleNext();
   };
-  const handleCancel = () => {
-    customTablesSelection ? setCustomTablesSelection(false) : onCancel();
+  const onCancel = () => {
+    customTablesSelection ? setCustomTablesSelection(false) : handleCancel();
   };
   return (
     <div className={classes.root}>
@@ -400,7 +411,7 @@ const MappingView: React.FC<IIngestionProps> = ({
       )}
       {!loading && (
         <ButtonComponent
-          onCancel={handleCancel}
+          onCancel={onCancel}
           onSubmit={handleSubmit}
           disableSubmit={
             (customTablesSelection ? items.every((a) => a.selected === false) : false) ||

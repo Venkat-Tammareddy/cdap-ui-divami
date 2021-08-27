@@ -145,7 +145,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
         {graph ? (
           <Graphs items={taskDetails} metrix={taskDetails.metrics} />
         ) : (
-          <Table columnTemplate="1fr 1fr 1fr 1fr 1fr 1fr 2fr 1fr">
+          <Table columnTemplate="1fr 2fr 2fr 1fr 1fr 1fr 2fr 1fr">
             <TableHeader data-cy="table-header">
               <TableRow className={classes.header} data-cy="table-row">
                 <TableCell>Status</TableCell>
@@ -183,12 +183,14 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                       {item.status}
                     </TableCell>
                     <TableCell style={{ color: '#202124' }}>{item.runId}</TableCell>
-                    <TableCell>{humanReadableDate(item.start, false)}</TableCell>
-                    <TableCell>
+                    <TableCell style={{ color: '#202124' }}>
+                      {humanReadableDate(item.start, false)}
+                    </TableCell>
+                    <TableCell style={{ color: '#202124' }}>
                       {item.status !== 'RUNNING' &&
                         humanReadableDuration(item.end - item.start, false)}
                     </TableCell>
-                    <TableCell>
+                    <TableCell style={{ color: '#202124' }}>
                       {taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
                         (item) =>
                           item.metricName ===
@@ -201,7 +203,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                           )?.data[0].value
                         : '0'}
                     </TableCell>
-                    <TableCell>
+                    <TableCell style={{ color: '#202124' }}>
                       {taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
                         (item) =>
                           item.metricName ===
@@ -214,7 +216,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                           )?.data[0].value
                         : '0'}
                     </TableCell>
-                    <TableCell>
+                    <TableCell style={{ color: '#202124' }}>
                       {item.status === 'RUNNING' && (
                         <div
                           onClick={(e) => {

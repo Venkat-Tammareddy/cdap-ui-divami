@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Menu, MenuItem, TextField } from '@material-ui/core';
+import { Menu, MenuItem, Radio, TextField } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import Box from '@material-ui/core/Box';
@@ -206,6 +206,7 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   const searchIcon = '/cdap_assets/img/search.svg';
   const checkbox = '/cdap_assets/img/checkbox-normal.svg';
   const options = ['All', 'Selected', 'Unselected'];
+  const [radioValue, selectedRadioValue] = React.useState('all');
   const [search, setSearch] = React.useState('');
   const filteredList = tablesList.filter((item) =>
     item.tableName?.toLowerCase().includes(search.toLowerCase())
@@ -223,6 +224,10 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleRadioChange = (e) => {
+    selectedRadioValue(e.target.value);
   };
 
   return (
@@ -266,6 +271,7 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
                 handleClose();
               }}
             >
+              <Radio checked={radioValue === option} onChange={handleRadioChange} value={option} />
               {option}
             </MenuItem>
           ))}

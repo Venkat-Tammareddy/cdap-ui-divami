@@ -263,10 +263,15 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
   };
 
   const taskDetailSvg = '/cdap_assets/img/task-details.svg';
+  const taskDetailSvgWhite = '/cdap_assets/img/task-details-white.svg';
   const connSvg = '/cdap_assets/img/source-connection.svg';
+  const connSvgWhite = '/cdap_assets/img/source-conenction-white.svg';
   const targetSvg = '/cdap_assets/img/target-connection.svg';
+  const targetSvgWhite = '/cdap_assets/img/target-connection-white.svg';
   const mappingSvg = '/cdap_assets/img/target-mapping.svg';
+  const mappingSvgWhite = '/cdap_assets/img/target-mapping-white.svg';
   const configurationSvg = '/cdap_assets/img/configuration.svg';
+  const configurationSvgWhite = '/cdap_assets/img/configuration-white.svg';
 
   const Connector = withStyles({
     alternativeLabel: {
@@ -297,12 +302,13 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
   })(Tooltip);
 
   const StepperIcon = (props: StepIconProps) => {
-    const { active, completed } = props;
+    const { active, completed, icon } = props;
+    const status = active || String(icon) <= stepProgress + 1;
 
     const icons: { [index: string]: React.ReactElement } = {
       1: (
         <img
-          src={taskDetailSvg}
+          src={status ? taskDetailSvgWhite : taskDetailSvg}
           alt="img"
           style={{
             paddingLeft: '6px',
@@ -310,12 +316,30 @@ const TrackingWizard: React.FC<ITrackingWizardProps> = ({
           }}
         />
       ),
-      2: <img src={connSvg} alt="img" style={{ paddingLeft: '3px', paddingBottom: '2px' }} />,
-      3: <img src={targetSvg} alt="img" style={{ paddingLeft: '2px', paddingBottom: '3px' }} />,
-      4: <img src={mappingSvg} alt="img" style={{ paddingLeft: '4px', paddingBottom: '2px' }} />,
+      2: (
+        <img
+          src={status ? connSvgWhite : connSvg}
+          alt="img"
+          style={{ paddingLeft: '3px', paddingBottom: '2px' }}
+        />
+      ),
+      3: (
+        <img
+          src={status ? targetSvgWhite : targetSvg}
+          alt="img"
+          style={{ paddingLeft: '2px', paddingBottom: '3px' }}
+        />
+      ),
+      4: (
+        <img
+          src={status ? mappingSvgWhite : mappingSvg}
+          alt="img"
+          style={{ paddingLeft: '4px', paddingBottom: '2px' }}
+        />
+      ),
       5: (
         <img
-          src={configurationSvg}
+          src={status ? configurationSvgWhite : configurationSvg}
           alt="img"
           style={{ paddingLeft: '3px', paddingBottom: '2px' }}
         />

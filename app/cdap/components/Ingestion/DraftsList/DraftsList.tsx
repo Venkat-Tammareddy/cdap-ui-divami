@@ -89,6 +89,7 @@ const styles = (theme): StyleRules => {
       color: '#202124',
       padding: '5px 20px',
     },
+    firstColumn: {},
   };
 };
 
@@ -151,7 +152,7 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data, reFe
                   data-cy={`table-row-${item.pipeLineName}`}
                   to={`/ns/${getCurrentNamespace()}/ingestion/create/${item.id}`}
                 >
-                  <TableCell>{item.pipeLineName}</TableCell>
+                  <TableCell className={classes.firstColumn}>{item.pipeLineName}</TableCell>
                   <TableCell>{item.type}</TableCell>
                   <TableCell>{item.lastSaved}</TableCell>
                   <TableCell>

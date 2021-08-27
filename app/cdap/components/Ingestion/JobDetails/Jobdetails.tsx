@@ -66,10 +66,9 @@ const styles = (theme): StyleRules => {
     },
     jobInfo: {
       display: 'flex',
-      paddingBottom: '25px',
-      borderBottom: '1px solid #A5A5A5',
+      // borderBottom: '1px solid #A5A5A5',
       alignItems: 'center',
-      margin: '33px 28px 20px 28px',
+      margin: '33px 28px 0px 28px',
     },
     jobDetailsTop: {
       fontFamily: 'Lato',
@@ -89,6 +88,8 @@ const styles = (theme): StyleRules => {
       opacity: '0.8',
     },
     jobItem: {
+      display: 'flex',
+      gap: '10px',
       marginRight: '60px',
     },
     infoIcons: {
@@ -100,11 +101,15 @@ const styles = (theme): StyleRules => {
     connectionContainer: {
       display: 'flex',
       alignItems: 'center',
-      margin: '0px 28px 20px 28px',
+      margin: '72px 28px 20px 28px',
+      position: 'relative',
+      border: '1px solid #A5A5A5',
+      borderLeft: 'none',
     },
     tablesWrapper: {
       display: 'flex',
       width: '100%',
+      marginTop: '31px',
     },
     header: {
       paddingBottom: '16px',
@@ -139,6 +144,65 @@ const styles = (theme): StyleRules => {
     },
     table: {
       width: '100%',
+      display: 'flex',
+      flexWrap: 'wrap',
+      fontSize: '16px',
+      color: '#202124',
+      fontFamily: 'Lato',
+      margin: '0px 28px 30px 28px',
+    },
+    recordDetails: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    connInfo: {
+      display: 'flex',
+    },
+    smallInfo: {
+      paddingLeft: '6px',
+      marginBottom: '0px',
+      fontSize: '16px',
+      fontFamily: 'Lato',
+      color: '#666666',
+    },
+    taskData: {
+      fontFamily: 'Lato',
+      fontSize: '16px',
+      color: '#202124',
+      marginLeft: '8px',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    taskName: {
+      fontFamily: 'Lato',
+      position: 'absolute',
+      top: '-18px',
+      backgroundColor: '#FFFFFF',
+      fontSize: '18px',
+      color: '#202124',
+      '&:after': {
+        content: '',
+        display: 'inline-block',
+        width: '50%',
+        margin: '0 .5em 0 -55 %',
+        verticalAlign: 'middle',
+        borderBottom: '1px solid',
+      },
+      paddingRight: '20px',
+    },
+    containerx: {
+      display: 'flex',
+      marginTop: '45px',
+      width: '100%',
+    },
+    outer: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    listItem: {
+      '&::marker': {
+        color: 'red',
+      },
     },
   };
 };
@@ -157,9 +221,51 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
   const sourceIcon = '/cdap_assets/img/source-connection.svg';
   const targetIcon = '/cdap_assets/img/target-connection.svg';
   const calenderIcon = '/cdap_assets/img/schedule-task-big.svg';
+  const recordsInserted = '/cdap_assets/img/records-inserted.svg';
+  const timeIcon = '/cdap_assets/img/execution-time.svg';
+  const successSvg = '/cdap_assets/img/success.svg';
   const params = useParams();
   const taskName = (params as any).taskName;
   const jobId = (params as any).jobId;
+
+  const listt = [
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+    'fasf',
+  ];
 
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [logs, setLogs] = React.useState([]);
@@ -338,49 +444,100 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
       {displaySummary ? (
         <>
           <div className={classes.jobInfo}>
-            <img
-              className={classes.infoIcons}
-              src={
-                (jobDetails.status === 'COMPLETED' && greenTickIcon) ||
-                (jobDetails.status === 'FAILED' && failedIcon) ||
-                (jobDetails.status === 'KILLED' && failedIcon) ||
-                progressIcon
-              }
-              alt="job-details"
-              width="33px"
-              height="33px"
-            />
             <div className={classes.jobItem}>
-              <div className={classes.jobDetailsTop}>Job</div>
-              <div className={classes.jobDetailsBottom}>{jobId}</div>
-            </div>
-            <div className={classes.jobItem}>
-              <div className={classes.jobDetailsTop} style={{ color: '#19A347' }}>
-                {jobDetails.records.in ? jobDetails.records.in : 0}
+              <img
+                className={classes.infoIcons}
+                src={
+                  (jobDetails.status === 'COMPLETED' && successSvg) ||
+                  (jobDetails.status === 'FAILED' && failedIcon) ||
+                  (jobDetails.status === 'KILLED' && failedIcon) ||
+                  progressIcon
+                }
+                alt="job-details"
+              />
+              <div className={classes.jobDetails}>
+                <div className={classes.jobDetailsTop}>Job</div>
+                <div className={classes.jobDetailsBottom}>{jobId}</div>
               </div>
-              <div className={classes.jobDetailsBottom}>Records Inserted</div>
             </div>
             <div className={classes.jobItem}>
-              <div className={classes.jobDetailsTop} style={{ color: '#DB4437' }}>
-                {jobDetails.records.error ? jobDetails.records.error : 0}
+              <img src={recordsInserted} alt="records inserted" />
+              <div className={classes.recordDetails}>
+                <div className={classes.jobDetailsTop}>
+                  {jobDetails.records.in ? jobDetails.records.in : 0}
+                </div>
+                <div className={classes.jobDetailsBottom}>Records Inserted</div>
               </div>
-              <div className={classes.jobDetailsBottom}>Records with Errors </div>
             </div>
-            <img
-              className={classes.infoIcons}
-              src={timeInfoIcon}
-              alt="job-details"
-              width="33px"
-              height="33px"
-            />
             <div className={classes.jobItem}>
-              <div className={classes.jobDetailsTop}>{jobDetails.duration}</div>
-              <div className={classes.jobDetailsBottom}>Execution time</div>
+              <img src={recordsInserted} alt="records inserted" />
+              <div className={classes.jobDetails}>
+                <div className={classes.jobDetailsTop}>
+                  {jobDetails.records.error ? jobDetails.records.error : 0}
+                </div>
+                <div className={classes.jobDetailsBottom}>Records with Errors </div>
+              </div>
+            </div>
+            <div className={classes.jobItem}>
+              <img src={timeIcon} alt="time icon" />
+              <div className={classes.recordDetails}>
+                <div className={classes.jobDetailsTop}>{jobDetails.duration}</div>
+                <div className={classes.jobDetailsBottom}>Execution time</div>
+              </div>
             </div>
           </div>
           {/* <IngestionHeader title="Job Configuration" /> */}
           <div className={classes.connectionContainer}>
-            <img
+            <p className={classes.taskName}>Job Configuration</p>
+
+            <div className={classes.outer}>
+              {' '}
+              <div className={classes.containerx}>
+                <img
+                  src={sourceIcon}
+                  alt="Icon"
+                  style={{
+                    backgroundColor: '#FACE75',
+                    height: '40px',
+                    width: '40px',
+                    borderRadius: '50%',
+                    padding: '5px',
+                    fill: 'white',
+                  }}
+                />
+                <div className={classes.taskData}>
+                  <div className={classes.connInfo}>
+                    {jobDetails.jobConfig.sourceConnection}
+                    <p className={classes.smallInfo}>(Connection)</p>
+                  </div>
+                  <div className={classes.connInfo}>
+                    {jobDetails.jobConfig.sourceDb}
+                    <p className={classes.smallInfo}>(Database)</p>
+                  </div>
+                </div>
+                <img className={classes.arrow} src={arrowIcon} alt="arrow" />
+                <img
+                  src={targetIcon}
+                  alt="Icon"
+                  style={{
+                    backgroundColor: '#FACE75',
+                    height: '40px',
+                    width: '40px',
+                    borderRadius: '50%',
+                    padding: '5px',
+                  }}
+                />
+                <div className={classes.taskData}>
+                  <div className={classes.connInfo}>
+                    {jobDetails.jobConfig.targetConnection}
+                    <p className={classes.smallInfo}>(Connection)</p>
+                  </div>
+                  <div className={classes.connInfo}>
+                    {jobDetails.jobConfig.targetDb}
+                    <p className={classes.smallInfo}>(Database)</p>
+                  </div>
+                </div>
+                {/* <img
               src={sourceIcon}
               alt="Icon"
               style={{
@@ -392,8 +549,15 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                 fill: 'white',
               }}
             />
-            <div className={classes.jobNames}>
-              {jobDetails.jobConfig.sourceConnection + ' | ' + jobDetails.jobConfig.sourceDb}
+            <div className={classes.taskData}>
+              <div className={classes.connInfo}>
+                {jobDetails.jobConfig.sourceConnection}
+                <p className={classes.smallInfo}>(Connection)</p>
+              </div>
+              <div className={classes.connInfo}>
+                {jobDetails.jobConfig.sourceDb}
+                <p className={classes.smallInfo}>(Database)</p>
+              </div>
             </div>
             <img className={classes.arrow} src={arrowIcon} alt="arrow" />
             <img
@@ -407,50 +571,51 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                 padding: '5px',
               }}
             />
-            <div className={classes.jobNames}>
-              {jobDetails.jobConfig.targetConnection + ' | ' + jobDetails.jobConfig.targetDb}
-            </div>
-          </div>
-          <div className={classes.tablesWrapper}>
-            <div>
-              <IngestionHeader title="Selected tables" />
-              <div className={classes.table}>
-                <ul
-                  style={{
-                    color: '#D8D8D8',
-                    columnCount: 2,
-                  }}
-                >
-                  {jobDetails.sourceList.map((item) => {
-                    return (
-                      <li style={{ marginRight: '120px' }} key={item}>
-                        <span className={classes.selectedTableNames}>{item}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
+            <div className={classes.taskData}>
+              <div className={classes.connInfo}>
+                {jobDetails.jobConfig.sourceConnection}
+                <p className={classes.smallInfo}>(Connection)</p>
+              </div>
+              <div className={classes.connInfo}>
+                {jobDetails.jobConfig.sourceDb}
+                <p className={classes.smallInfo}>(Database)</p>
+              </div> */}
+              </div>
+              <div className={classes.tablesWrapper}>
+                <div>
+                  <IngestionHeader title="Selected tables" />
+                  <div className={classes.table}>
+                    {listt.map((item) => {
+                      return (
+                        <>
+                          <div
+                            style={{
+                              marginRight: '30px',
+                              listStyle: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                            }}
+                            key={item}
+                          >
+                            <div
+                              style={{
+                                height: '6px',
+                                width: '6px',
+                                backgroundColor: '#D8D8D8',
+                                borderRadius: '50%',
+                              }}
+                            />
+                            <span className={classes.selectedTableNames}>{item}</span>
+                          </div>
+                        </>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
             <hr className={classes.hrLine} />
-            {/* <div> */}
-            {/* <IngestionHeader title="Target Tables" />
-              <div className={classes.table}>
-                <ul
-                  style={{
-                    color: '#D8D8D8',
-                    columnCount: 2,
-                  }}
-                >
-                  {jobDetails.targetList.map((item) => {
-                    return (
-                      <li style={{ marginRight: '120px' }}>
-                        <span className={classes.jobDetailsTop}>{item}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div> */}
-            {/* </div> */}
           </div>
         </>
       ) : (

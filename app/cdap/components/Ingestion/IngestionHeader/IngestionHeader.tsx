@@ -32,22 +32,24 @@ const styles = (theme): StyleRules => {
     },
     title: {
       fontFamily: 'Lato',
-      fontSize: '20px',
+      fontSize: '18px',
       color: '#202124',
       letterSpacing: '0',
       marginRight: 'auto',
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
+      paddingLeft: '9.4px',
+      // border: '1px solid green',
     },
     title2: {
-      borderLeft: '1.8px solid #A5A5A5',
-      paddingLeft: '10px',
-      marginLeft: '10px',
+      // paddingLeft: '7px',
       fontFamily: 'Lato',
-      fontSize: '14px',
+      fontSize: '18px',
       color: '#0E0F12',
-      lineHeight: '17px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     titleDesign: {
       marginLeft: '10px',
@@ -139,6 +141,19 @@ const styles = (theme): StyleRules => {
       padding: '6px 12px 6px 12px',
       cursor: 'pointer',
     },
+    titleText: {
+      marginBottom: '0px',
+      paddingLeft: '9px',
+    },
+    lastIcon: {
+      paddingLeft: '7px',
+      paddingTop: '4px',
+    },
+    flex: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
   };
 };
 
@@ -191,23 +206,35 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Archive'];
   const [showRecords, setShowRecords] = React.useState(false);
   const [activIcon, setActivIcon] = React.useState('chart');
+  const arrowBack = '/cdap_assets/img/arrow-back.svg';
+  const arrowFront = '/cdap_assets/img/arrow-front.svg';
 
   return (
     <>
       <div className={classes.root}>
+        {title === 'Ingest Tasks' && <img src={arrowBack} alt="nav back arrow" />}
         <div className={classes.title}>
           <div onClick={() => (taskActionsBtn || browseBtn) && navToHome()}>{title}</div>
-          {taskActionsBtn && <div className={classes.title2}>Task Details</div>}
+          {taskActionsBtn && (
+            <div className={classes.title2}>
+              <img src={arrowFront} alt="nav arrow" className={classes.lastIcon} />
+              <p className={classes.titleText}>Task Details</p>
+            </div>
+          )}
           {browseBtn && (
             <>
               <div
                 className={classes.title2}
                 onClick={() => history.push(`/ns/${currentNamespace}/ingestion/task/${taskName}`)}
               >
-                {' '}
-                {taskName}
+                <img src={arrowFront} alt="nav arrow" className={classes.lastIcon} />
+                <div className={classes.titleText}>{taskName}</div>
               </div>
-              <div className={classes.title2}>{' ' + jobName}</div>
+              <div className={classes.flex}>
+                {' '}
+                <img src={arrowFront} alt="nav arrow" className={classes.lastIcon} />
+                <div className={classes.titleText}>{' ' + jobName}</div>
+              </div>
             </>
           )}
           {!taskActionsBtn && !browseBtn && (

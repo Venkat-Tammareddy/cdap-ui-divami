@@ -89,13 +89,14 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       alignItems: 'center',
       marginTop: '32px',
+      paddingBottom: '38px',
     },
     arrow: {
-      margin: '0px 12px',
+      margin: '0px 15.4px 0px 12px',
       paddingTop: '2px',
     },
     chip: {
-      border: '1px solid #E0E0E0',
+      border: '1px solid #689DF6',
       borderRadius: '16px',
       fontFamily: 'Lato',
       fontSize: '14px',
@@ -107,8 +108,7 @@ const styles = (theme): StyleRules => {
     chipContainer: {
       display: 'flex',
       alignItems: 'flex-end',
-      marginTop: '16px',
-      paddingBottom: '21px',
+      paddingTop: '8px',
     },
     title: {
       marginTop: '32px',
@@ -217,8 +217,8 @@ const styles = (theme): StyleRules => {
     hide: {
       display: 'none',
     },
-    left: {},
-    right: {},
+    left: { flex: '1' },
+    right: { marginRight: '40px' },
     scheduleContainer: {
       display: 'flex',
       alignItems: 'center',
@@ -233,7 +233,9 @@ const styles = (theme): StyleRules => {
       fontFamily: 'Lato',
       fontSize: '16px',
       color: '#202124',
-      marginLeft: '5px',
+      marginLeft: '8px',
+      display: 'flex',
+      flexDirection: 'column',
     },
     fullWidth: {
       padding: '0px 28px 0px 28px',
@@ -252,10 +254,23 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       border: '1px solid #A5A5A5',
       borderLeft: 'none',
-      gap: '350px',
       width: '100%',
       marginTop: '38px',
       position: 'relative',
+    },
+    connInfo: {
+      display: 'flex',
+    },
+    smallInfo: {
+      paddingLeft: '6px',
+      marginBottom: '0px',
+      fontSize: '16px',
+      fontFamily: 'Lato',
+      color: '#666666',
+    },
+    taskWrap: {
+      display: 'flex',
+      flexDirection: 'column',
     },
   };
 };
@@ -269,7 +284,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const scheduleTaskIcon = '/cdap_assets/img/schedule-task-big.svg';
   const successRatePie = '/cdap_assets/img/Success Rate.svg';
   const clock = '/cdap_assets/img/Time.svg';
-  const calender = '/cdap_assets/img/Schedule.svg';
+  const infographicIcon = '/cdap_assets/img/info-infographic.svg';
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [schedule, setSchedule] = React.useState(false);
   const [graph, setGraph] = React.useState(false);
@@ -654,8 +669,21 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
               <div className={classes.taskName}>{taskName}</div>
               <div className={classes.taskDate}>Deployed on {taskDetails.createdOn}</div>
             </div>
-            <div>
+            <div className={classes.taskWrap}>
               <div className={classes.description}>{taskDetails.description}</div>
+              <div
+                className={
+                  taskDetails.runs.length === 0 ? classes.chipContainer : classes.chipFullWidth
+                }
+              >
+                {taskDetails.tags.map((tag) => {
+                  return (
+                    <div className={classes.chip} key={tag}>
+                      {tag}
+                    </div>
+                  );
+                })}
+              </div>
               <div className={classes.connectionContainer}>
                 <img
                   src={sourceIcon}
@@ -670,9 +698,14 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
                   }}
                 />
                 <div className={classes.taskData}>
-                  {taskDetails.connections.sourceName}
-                  {' | '}
-                  {taskDetails.connections.sourceDb}
+                  <div className={classes.connInfo}>
+                    {taskDetails.connections.sourceName}
+                    <p className={classes.smallInfo}>(Connection)</p>
+                  </div>
+                  <div className={classes.connInfo}>
+                    {taskDetails.connections.sourceDb}
+                    <p className={classes.smallInfo}>(Database)</p>
+                  </div>
                 </div>
                 <img className={classes.arrow} src={arrowIcon} alt="arrow" />
                 <img
@@ -687,30 +720,22 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
                   }}
                 />
                 <div className={classes.taskData}>
-                  {taskDetails.connections.targetName}
-                  {' | '}
-                  {taskDetails.connections.targetDb}
+                  <div className={classes.connInfo}>
+                    {taskDetails.connections.targetName}
+                    <p className={classes.smallInfo}>(Connection)</p>
+                  </div>
+                  <div className={classes.connInfo}>
+                    {taskDetails.connections.targetDb}
+                    <p className={classes.smallInfo}>(Database)</p>
+                  </div>
                 </div>
-              </div>
-              <div
-                className={
-                  taskDetails.runs.length === 0 ? classes.chipContainer : classes.chipFullWidth
-                }
-              >
-                {taskDetails.tags.map((tag) => {
-                  return (
-                    <div className={classes.chip} key={tag}>
-                      {tag}
-                    </div>
-                  );
-                })}
               </div>
             </div>
           </div>
           <div className={classes.right}>
             {taskDetails.runs.length > 1 && (
               <div className={classes.runDetails}>
-                <img src={calenderIcon} alt="success-rate-pie" height="35.1px" width="40px" />
+                <img src={infographicIcon} alt="success-rate-pie" height="35.1px" width="40px" />
                 <div className={classes.successContainer}>
                   <div className={classes.successPercentage}>Success Rate</div>
                   <div className={classes.successPercentage}>{getSuccessRate()}%</div>

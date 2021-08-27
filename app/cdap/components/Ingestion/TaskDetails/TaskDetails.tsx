@@ -662,6 +662,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         onRun={() => runTask(taskName)}
         onTaskActions={(e) => handleTaskAtions(e)}
         navToHome={() => history.push(`/ns/${currentNamespace}/ingestion`)}
+        backArrow
       />
       <div className={taskDetails.runs.length === 0 ? classes.fullWidth : classes.container}>
         <div className={classes.taskDetailContainer}>

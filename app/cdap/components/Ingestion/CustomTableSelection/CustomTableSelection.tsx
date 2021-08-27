@@ -210,7 +210,6 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   const options = ['All', 'Selected', 'Unselected'];
   const [radioValue, selectedRadioValue] = React.useState('all');
   const [search, setSearch] = React.useState('');
-  const [logErrors, setLogErrors] = React.useState('Yes');
 
   const filteredList = tablesList.filter((item) =>
     item.tableName?.toLowerCase().includes(search.toLowerCase())
@@ -253,25 +252,6 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
           autoFocus={false}
           data-cy="connections-search"
         />
-        <RadioGroup
-          row
-          value={logErrors}
-          onChange={(e) => setLogErrors(e.target.value)}
-          className={classes.radioChoice}
-        >
-          <FormControlLabel
-            control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
-            value="Yes"
-            label={<Typography className={classes.choices}>Yes</Typography>}
-            className={classes.choices}
-          />
-          <FormControlLabel
-            control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
-            value="No"
-            label={<Typography className={classes.choices}>No</Typography>}
-            className={classes.choices}
-          />
-        </RadioGroup>
         <img
           src={filterIcon}
           alt="filter icon"

@@ -39,7 +39,6 @@ const styles = (theme): StyleRules => {
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
-      paddingLeft: '9.4px',
       // border: '1px solid green',
     },
     title2: {
@@ -144,10 +143,16 @@ const styles = (theme): StyleRules => {
     titleText: {
       marginBottom: '0px',
       paddingLeft: '9px',
+      color: '#202124',
+      fontFamily: 'Lato',
+      fontSize: '18px',
     },
     lastIcon: {
       paddingLeft: '7px',
       paddingTop: '4px',
+    },
+    backArrow: {
+      marginRight: '9.8px',
     },
     flex: {
       display: 'flex',
@@ -173,6 +178,7 @@ interface IngestionHeaderProps extends WithStyles<typeof styles> {
   graphicalView?: boolean;
   setGraph?: any;
   taskOptions?: any[];
+  backArrow?: boolean;
 }
 const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   classes,
@@ -191,6 +197,7 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   jobName,
   setGraph,
   taskOptions,
+  backArrow,
 }) => {
   const titleDesignIcon = '/cdap_assets/img/title-design-bar.svg';
   const createIcon = '/cdap_assets/img/create.svg';
@@ -212,13 +219,18 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   return (
     <>
       <div className={classes.root}>
-        {title === 'Ingest Tasks' && <img src={arrowBack} alt="nav back arrow" />}
         <div className={classes.title}>
-          <div onClick={() => (taskActionsBtn || browseBtn) && navToHome()}>{title}</div>
+          <div onClick={() => (taskActionsBtn || browseBtn) && navToHome()}>
+            {' '}
+            {backArrow && (
+              <img className={classes.backArrow} src={arrowBack} alt="nav back arrow" />
+            )}
+            {title}
+          </div>
           {taskActionsBtn && (
             <div className={classes.title2}>
               <img src={arrowFront} alt="nav arrow" className={classes.lastIcon} />
-              <p className={classes.titleText}>Task Details</p>
+              <div className={classes.titleText}>Task Details</div>
             </div>
           )}
           {browseBtn && (

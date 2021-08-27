@@ -212,9 +212,9 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
   const [displaySummary, setDisplaySummary] = React.useState(true);
   const greenTickIcon = '/cdap_assets/img/side-stepper-tick.svg';
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
-  const failedIcon = '/cdap_assets/img/error-status.svg';
+  const failedIcon = '/cdap_assets/img/error.svg';
   const arrowIcon = '/cdap_assets/img/arrow.svg';
-  const timeInfoIcon = '/cdap_assets/img/info-infographic.svg';
+  const killedIcon = '/cdap_assets/img/killed.svg';
   const infoIcon = '/cdap_assets/img/info.svg';
   const errorIcon = '/cdap_assets/img/error-status.svg';
   const warningIcon = '/cdap_assets/img/Warning.svg';
@@ -223,49 +223,10 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
   const calenderIcon = '/cdap_assets/img/schedule-task-big.svg';
   const recordsInserted = '/cdap_assets/img/records-inserted.svg';
   const timeIcon = '/cdap_assets/img/execution-time.svg';
-  const successSvg = '/cdap_assets/img/success.svg';
+  const successSvg = '/cdap_assets/img/sucess.svg';
   const params = useParams();
   const taskName = (params as any).taskName;
   const jobId = (params as any).jobId;
-
-  const listt = [
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-    'fasf',
-  ];
 
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [logs, setLogs] = React.useState([]);
@@ -421,6 +382,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
         browseBtn
         onBrowse={() => console.log('browse data')}
         navToHome={() => history.push(`/ns/${currentNamespace}/ingestion`)}
+        backArrow
       />
       <div className={classes.container}>
         <div className={classes.tabsWrapper}>
@@ -450,7 +412,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                 src={
                   (jobDetails.status === 'COMPLETED' && successSvg) ||
                   (jobDetails.status === 'FAILED' && failedIcon) ||
-                  (jobDetails.status === 'KILLED' && failedIcon) ||
+                  (jobDetails.status === 'KILLED' && killedIcon) ||
                   progressIcon
                 }
                 alt="job-details"
@@ -585,7 +547,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                 <div>
                   <IngestionHeader title="Selected tables" />
                   <div className={classes.table}>
-                    {listt.map((item) => {
+                    {jobDetails.sourceList.map((item) => {
                       return (
                         <>
                           <div

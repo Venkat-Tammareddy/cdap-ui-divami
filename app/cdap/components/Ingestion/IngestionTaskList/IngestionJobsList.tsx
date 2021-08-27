@@ -95,7 +95,6 @@ const styles = (theme): StyleRules => {
       height: '20px',
       width: '20px',
     },
-    failedTooltipInfo: {},
   };
 };
 const TextOnlyTooltip = withStyles({
@@ -121,10 +120,12 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
   taskDetails,
   setLoading,
 }) => {
-  const progressIcon = '/cdap_assets/img/Inprogress.svg';
-  const failedIcon = '/cdap_assets/img/error-status.svg';
+  const progressIcon = '/cdap_assets/img/inprogress.svg';
+  const failedIcon = '/cdap_assets/img/error.svg';
   const imgStop = '/cdap_assets/img/stop.svg';
-  const successIcon = '/cdap_assets/img/success-status.svg';
+  const successIcon = '/cdap_assets/img/sucess.svg';
+  const killedIcon = '/cdap_assets/img/killed.svg';
+
   const namespace = NamespaceStore.getState().selectedNamespace;
   const stopRun = (runId: string) => {
     setLoading();
@@ -145,7 +146,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
         {graph ? (
           <Graphs items={taskDetails} metrix={taskDetails.metrics} />
         ) : (
-          <Table columnTemplate="1fr 2fr 2fr 1fr 1fr 1fr 2fr 1fr">
+          <Table columnTemplate="2fr 2fr 2fr 1fr 1fr 1fr 2fr 1fr">
             <TableHeader data-cy="table-header">
               <TableRow className={classes.header} data-cy="table-row">
                 <TableCell>Status</TableCell>
@@ -173,7 +174,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                         src={
                           (item.status === 'COMPLETED' && successIcon) ||
                           (item.status === 'FAILED' && failedIcon) ||
-                          (item.status === 'KILLED' && failedIcon) ||
+                          (item.status === 'KILLED' && killedIcon) ||
                           progressIcon
                         }
                         alt="img"

@@ -55,7 +55,7 @@ const styles = (theme): StyleRules => {
     tabsWrapper: {
       padding: '18px 0px',
       display: 'grid',
-      gridTemplateColumns: '0.1fr 1fr 0fr 0fr',
+      gridTemplateColumns: '0.1fr 1fr 0fr 0fr 0fr',
     },
     tabContainer: {
       height: '80px',
@@ -113,6 +113,11 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       gap: '500px',
     },
+    paginationWrapper: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
     filterIcn: {
       paddingTop: '10px',
       cursor: 'pointer',
@@ -161,9 +166,12 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const { setIngestionListfn } = useContext(ingestionContext);
   const [displayDrafts, setDisplayDrafts] = React.useState(false);
   const [draftsList, setDraftsList] = React.useState([]);
+  const [tasksList, setTasksList] = React.useState([]);
   const [loader, setLoader] = React.useState(false);
   const [search, setSearch] = React.useState('');
   const namespace = getCurrentNamespace();
+  const [pageNo, setPageNo] = React.useState(1);
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [filterOptions, setFilterOptions] = React.useState([]);
@@ -185,24 +193,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const QUERY = gql`
   {
     pipelines(namespace: "${getCurrentNamespace()}") {
-      name,
-      description,
-      artifact {
-        name
-      },
-      runs {
-        runid,
-        status,
-        starting,
-        start,
-        end,
-        profileId
-      },
-      totalRuns,
-      nextRuntime {
-        id,
-        time
-      }
+      name
     }
   }
 `;
@@ -211,50 +202,70 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     errorPolicy: 'all',
     fetchPolicy: 'no-cache',
     notifyOnNetworkStatusChange: true,
+    onCompleted: (data) => {},
   });
+  React.useEffect(() => {
+    if (loading === false) {
+      setIngestionListfn(data.pipelines);
+      setTasksList(() => {
+        return data.pipelines.map((ele) => {
+          return {
+            taskName: ele.name,
+            // sourceConnectionDb: '',
+            // sourceConnection: '',
+            // targetConnection: '',
+            // targetConnectionDb: '',
+            // tags: [],
+            // runs: [],
+            // moreBtnVisible: true,
+          };
+        });
+      });
+    }
+  }, [loading]);
   if (loading || loader || networkStatus === 4) {
     return <LoadingSVGCentered />;
   }
-  const setIngestionTaskList = () => {
-    console.log('mytest', data.pipelines);
-    setIngestionListfn(data.pipelines);
-    return data.pipelines.map((ele) => {
-      return {
-        taskName: ele.name,
-        sourceConnectionDb: '',
-        sourceConnection: '',
-        targetConnection: '',
-        targetConnectionDb: '',
-        tags: [],
-        runs: [],
-        moreBtnVisible: true,
-      };
-    });
-  };
-  let bannerMessage = '';
-  if (error) {
-    const errorMap = categorizeGraphQlErrors(error);
-    // Errors thrown here will be caught by error boundary
-    // and will show error to the user within pipeline list view
+  // const setIngestionTaskList = () => {
+  //   console.log('mytest', data.pipelines);
+  //   setIngestionListfn(data.pipelines);
+  //   return tasksList.map((ele) => {
+  //     return {
+  //       taskName: ele.name,
+  //       sourceConnectionDb: '',
+  //       sourceConnection: '',
+  //       targetConnection: '',
+  //       targetConnectionDb: '',
+  //       tags: [],
+  //       runs: [],
+  //       moreBtnVisible: true,
+  //     };
+  //   });
+  // };
+  // const bannerMessage = '';
+  // if (error) {
+  //   const errorMap = categorizeGraphQlErrors(error);
+  //   // Errors thrown here will be caught by error boundary
+  //   // and will show error to the user within pipeline list view
 
-    // Each error type could have multiple error messages, we're using the first one available
-    if (errorMap.hasOwnProperty('pipelines')) {
-      throw new Error(errorMap.pipelines[0]);
-    } else if (errorMap.hasOwnProperty('network')) {
-      throw new Error(errorMap.network[0]);
-    } else if (errorMap.hasOwnProperty('generic')) {
-      throw new Error(errorMap.generic[0]);
-    } else {
-      if (Object.keys(errorMap).length > 1) {
-        // If multiple services are down
-        const message = T.translate(`${I18N_PREFIX}.graphQLMultipleServicesDown`).toString();
-        throw new Error(message);
-      } else {
-        // Pick one of the leftover errors to show in the banner;
-        bannerMessage = Object.values(errorMap)[0][0];
-      }
-    }
-  }
+  //   // Each error type could have multiple error messages, we're using the first one available
+  //   if (errorMap.hasOwnProperty('pipelines')) {
+  //     throw new Error(errorMap.pipelines[0]);
+  //   } else if (errorMap.hasOwnProperty('network')) {
+  //     throw new Error(errorMap.network[0]);
+  //   } else if (errorMap.hasOwnProperty('generic')) {
+  //     throw new Error(errorMap.generic[0]);
+  //   } else {
+  //     if (Object.keys(errorMap).length > 1) {
+  //       // If multiple services are down
+  //       const message = T.translate(`${I18N_PREFIX}.graphQLMultipleServicesDown`).toString();
+  //       throw new Error(message);
+  //     } else {
+  //       // Pick one of the leftover errors to show in the banner;
+  //       bannerMessage = Object.values(errorMap)[0][0];
+  //     }
+  //   }
+  // }
 
   const searchIcon = '/cdap_assets/img/search.svg';
   const filterIcon = '/cdap_assets/img/filter.svg';
@@ -275,22 +286,17 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
       };
     });
   };
-  // const [alert, setAlert] = React.useState(false);
+  const paginatedList = (list: any[]) => {
+    const lastIndex = pageNo * 10;
+    const firstIndex = lastIndex - 10;
+    return list.slice(firstIndex, lastIndex);
+  };
+
   return (
     <>
-      {/* <SheduleTask /> */}
-
-      <If condition={!!error && !!bannerMessage}>
+      {/* <If condition={!!error && !!bannerMessage}>
         <ErrorBanner error={bannerMessage} />
-      </If>
-      {/* <OverlaySmall
-        onCancel={undefined}
-        open={alert}
-        title="Confirm delete"
-        description={`Are you sure you want to delete this pipeline?`}
-        onSubmit={undefined}
-        submitText="Delete"
-      /> */}
+      </If> */}
       <div className={classes.root}>
         <IngestionHeader
           title="Ingest Tasks"
@@ -323,7 +329,21 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
                 DRAFTS ({draftsList.length})
               </span>
             </div>
-
+            <div className={classes.paginationWrapper}>
+              <Button onClick={() => pageNo > 1 && setPageNo((p) => p - 1)}>&lt;</Button>
+              {pageNo +
+                '/' +
+                Math.ceil(displayDrafts ? draftsList.length / 10 : tasksList.length / 10)}
+              <Button
+                onClick={() =>
+                  pageNo <
+                    Math.ceil(displayDrafts ? draftsList.length / 10 : tasksList.length / 10) &&
+                  setPageNo((p) => p + 1)
+                }
+              >
+                &gt;
+              </Button>
+            </div>
             <TextField
               variant="outlined"
               placeholder={displayDrafts ? 'Search drafts' : 'Search tasks'}
@@ -396,7 +416,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
           </div>
           {displayDrafts ? (
             <DraftsList
-              data={mapDratsList()}
+              data={paginatedList(mapDratsList())}
               searchText={search}
               reFetchDrafts={() => {
                 setLoader(true);
@@ -405,7 +425,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
           ) : (
             <IngestionTaskList
               searchText={search}
-              data={setIngestionTaskList()}
+              data={paginatedList(tasksList)}
               refetch={refetch}
             />
           )}

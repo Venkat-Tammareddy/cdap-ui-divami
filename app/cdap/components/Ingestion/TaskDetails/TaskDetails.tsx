@@ -456,6 +456,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     }).subscribe(
       (message) => {
         console.log(message);
+        setLoading(true);
       },
       (err) => {
         console.log(err);

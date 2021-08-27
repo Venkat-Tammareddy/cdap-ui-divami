@@ -23,6 +23,7 @@ import LoadingSVG from 'components/LoadingSVG';
 import TableCell from 'components/Table/TableCell';
 import IconSVG from 'components/IconSVG';
 import TaskConnections from './TaskConnections';
+import TaskTags from './TaskTags';
 
 const styles = (theme): StyleRules => {
   return {
@@ -72,26 +73,27 @@ interface IRunsProps {
   status: string;
   runId: string;
 }
-interface ITaskOptionsProps extends WithStyles<typeof styles> {
+interface ITaskRowProps extends WithStyles<typeof styles> {
   taskName: string;
-  runs: IRunsProps[];
-  setRuns: (data: any) => void;
+  // runs: IRunsProps[];
+  // setRuns: (data: any) => void;
   setDuplicate: (value: string) => void;
   sheduleTask?: (type: string, taskName: string, cronExpression: string) => void;
   setLoadingtl?;
   deletePipeline: (taskName: string) => void;
 }
-const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
+const TaskRowView: React.FC<ITaskRowProps> = ({
   classes,
   taskName,
-  runs,
-  setRuns,
+  // runs,
+  // setRuns,
   setDuplicate,
   sheduleTask,
   setLoadingtl,
   deletePipeline,
 }) => {
   const namespace = NamespaceStore.getState().selectedNamespace;
+  const [runs, setRuns] = React.useState([]);
   const latestRun = runs[0];
   const imgStop = '/cdap_assets/img/stop.svg';
   const imgMore = '/cdap_assets/img/more.svg';
@@ -99,6 +101,7 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   const runError = '/cdap_assets/img/lastrun-error.svg';
   const killedIcon = '/cdap_assets/img/killed.svg';
   const inProgress = '/cdap_assets/img/inprogress.svg';
+  const runProgress = '/cdap_assets/img/Inprogress.svg';
   const errorIcon = '/cdap_assets/img/error.svg';
   const successIcon = '/cdap_assets/img/sucess.svg';
   const [options, setOptions] = React.useState([
@@ -137,6 +140,7 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
       runid: runId,
     }).subscribe((msg) => {
       console.log('run stopped successfully');
+      setLoading(true);
     });
   };
   React.useEffect(() => {
@@ -186,7 +190,7 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
       },
       (err) => console.log(err)
     );
-  }, []);
+  }, [taskName]);
   React.useEffect(() => setLoading(false), [runs]);
   return (
     <>
@@ -214,7 +218,12 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
           </Grid>
         </Grid>
       </TableCell>
-      {/* <TableCell>
+
+      <TaskConnections taskName={taskName} />
+      <TableCell>
+        <TaskTags taskName={taskName} />
+      </TableCell>
+      <TableCell>
         <Grid container spacing={0}>
           {runs.map(
             (run, i) =>
@@ -238,19 +247,13 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
               )
           )}
         </Grid>
-      </TableCell> */}
-      <TaskConnections taskName={taskName} />
+      </TableCell>
       <TableCell>
         <Grid container spacing={0} className={classes.root}>
           <Grid item xs={8}>
             {loading ? (
               <LoadingSVG />
             ) : (
-              // <IconSVG name="icon-spinner" className="fa-lg fa-spin" data-testid="loading-icon" />
-              //   <>
-              //   <CircularProgress />
-              //   Processing...
-              // </>
               <Paper
                 className={classes.paper}
                 hidden={!(latestRun?.status === 'RUNNING')}
@@ -283,6 +286,7 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
                 keepMounted
                 anchorEl={anchorEl}
                 open={open}
+                getContentAnchorEl={null}
                 anchorOrigin={{
                   vertical: 'bottom',
                   horizontal: 'left',
@@ -329,5 +333,5 @@ const TaskOptionsView: React.FC<ITaskOptionsProps> = ({
   );
 };
 
-const TaskOptions = withStyles(styles)(TaskOptionsView);
-export default TaskOptions;
+const TaskRow = withStyles(styles)(TaskRowView);
+export default TaskRow;

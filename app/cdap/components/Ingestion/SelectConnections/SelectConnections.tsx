@@ -24,8 +24,8 @@ import Table from 'components/Table';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import { humanReadableDate } from 'services/helpers';
-import OverlaySmall from '../OverlaySmall/OverlaySmall';
 import { parseJdbcString } from '../helpers';
+import produce from 'immer';
 const I18N_PREFIX = 'features.SelectConnections';
 
 const styles = (theme): StyleRules => {
@@ -171,20 +171,24 @@ const styles = (theme): StyleRules => {
 };
 
 interface ISelectConnectionsProps extends WithStyles<typeof styles> {
-  selectionType: string;
-  connectionsList: any[];
-  submitConnection: (value: object) => void;
+  setDraftConfig: (values: object) => void;
+  handleNext: () => void;
   handleCancel: () => void;
+  artifactsList: any[];
   draftConfig;
+  connectionsList: any[];
+  activeStep: number;
 }
 
 const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   classes,
-  selectionType = 'source',
   connectionsList = [],
-  submitConnection,
   handleCancel,
   draftConfig,
+  activeStep,
+  artifactsList,
+  handleNext,
+  setDraftConfig,
 }) => {
   const [search, setSearch] = React.useState('');
   const [selectedConnection, setSelectedConnection] = React.useState<any>({});
@@ -192,7 +196,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const [sortNameType, setSortNameType] = React.useState('Down');
   const [sortDbNameType, setSortDbNameType] = React.useState('Down');
   const [header, setHeader] = React.useState('lastUsed');
-
+  const selectionType = activeStep === 1 ? 'source' : 'target';
   React.useEffect(() => {
     selectionType === 'source'
       ? setSelectedConnection(draftConfig.config.stages[0])
@@ -216,6 +220,45 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
 
   const onCancel = (e: React.FormEvent) => {
     handleCancel();
+  };
+  const handleSubmit = () => {
+    selectionType === 'source'
+      ? setDraftConfig(
+          produce((prevDraft) => {
+            prevDraft.config.connections[0].from = selectedConnection.name;
+            prevDraft.config.stages[0] = {
+              name: selectedConnection.name,
+              connectionType: selectedConnection.connectionType,
+              plugin: {
+                name: 'MultiTableDatabase',
+                type: 'batchsource',
+                artifact: artifactsList.find((artifact) => artifact.name === 'multi-table-plugins'),
+                properties: {
+                  ...selectedConnection.plugin.properties,
+                  referenceName: 'ingestion-multitable-bigquery',
+                },
+              },
+              id: selectedConnection.name,
+            };
+          })
+        )
+      : setDraftConfig(
+          produce((prevDraft) => {
+            prevDraft.config.connections[0].to = selectedConnection.name;
+            prevDraft.config.stages[1] = {
+              name: selectedConnection.name,
+              connectionType: selectedConnection.connectionType,
+              plugin: {
+                ...selectedConnection.plugin,
+                artifact: artifactsList.find((artifact) => artifact.name === 'google-cloud'),
+              },
+              id: selectedConnection.name,
+            };
+          })
+        );
+
+    handleNext();
+    setSelectedConnection({});
   };
 
   const handleSortToggle = (e) => {
@@ -399,8 +442,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
           variant="contained"
           color="primary"
           onClick={() => {
-            Object.keys(selectedConnection).length !== 0 &&
-              (submitConnection(selectedConnection), setSelectedConnection({}));
+            Object.keys(selectedConnection).length !== 0 && handleSubmit();
           }}
           className={classes.submitButton}
           type="submit"

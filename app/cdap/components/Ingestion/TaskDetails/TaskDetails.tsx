@@ -628,9 +628,8 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     return ((successRuns / totalRuns) * 100).toFixed(2);
   };
 
-  const sourceIcon = '/cdap_assets/img/source-connection.svg';
-  const targetIcon = '/cdap_assets/img/target-connection.svg';
-  const calenderIcon = '/cdap_assets/img/schedule-task-big.svg';
+  const sourceIcon = '/cdap_assets/img/source-connection-black.svg';
+  const targetIcon = '/cdap_assets/img/target-connection-black.svg';
 
   return (
     <div className={classes.root}>

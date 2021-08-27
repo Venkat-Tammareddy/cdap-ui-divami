@@ -230,10 +230,11 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
   const infoIcon = '/cdap_assets/img/info.svg';
   const errorIcon = '/cdap_assets/img/error-status.svg';
   const warningIcon = '/cdap_assets/img/Warning.svg';
-  const sourceIcon = '/cdap_assets/img/source-connection.svg';
-  const targetIcon = '/cdap_assets/img/target-connection.svg';
+  const sourceIcon = '/cdap_assets/img/source-connection-black.svg';
+  const targetIcon = '/cdap_assets/img/target-connection-black.svg';
   const calenderIcon = '/cdap_assets/img/schedule-task-big.svg';
   const recordsInserted = '/cdap_assets/img/records-inserted.svg';
+  const recordsError = '/cdap_assets/img/records-error.svg';
   const timeIcon = '/cdap_assets/img/execution-time.svg';
   const successSvg = '/cdap_assets/img/sucess.svg';
   const params = useParams();
@@ -444,7 +445,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
               </div>
             </div>
             <div className={classes.jobItem}>
-              <img src={recordsInserted} alt="records inserted" />
+              <img src={recordsError} alt="records inserted" />
               <div className={classes.jobDetails}>
                 <div className={classes.jobDetailsTop}>
                   {jobDetails.records.error ? jobDetails.records.error : 0}

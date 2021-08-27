@@ -149,7 +149,7 @@ const styles = (theme): StyleRules => {
       fontSize: '16px',
       color: '#202124',
       fontFamily: 'Lato',
-      margin: '0px 28px 30px 28px',
+      margin: '8px 0px 30px 0px',
     },
     recordDetails: {
       display: 'flex',
@@ -194,6 +194,7 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       marginTop: '45px',
       width: '100%',
+      alignItems: 'center',
     },
     outer: {
       display: 'flex',
@@ -203,6 +204,17 @@ const styles = (theme): StyleRules => {
       '&::marker': {
         color: 'red',
       },
+    },
+    tab: {},
+    iheader: {
+      display: 'flex',
+      alignItems: 'center',
+    },
+    iTitle: {
+      marginBottom: '0',
+      fontSize: '18px',
+      fontFamily: 'Lato',
+      color: '#202124',
     },
   };
 };
@@ -544,8 +556,11 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
               </div> */}
               </div>
               <div className={classes.tablesWrapper}>
-                <div>
-                  <IngestionHeader title="Selected tables" />
+                <div className={classes.tab}>
+                  {/* <IngestionHeader title="Selected tables" /> */}
+                  <div className={classes.iheader}>
+                    <p className={classes.iTitle}>Selected tables</p>
+                  </div>
                   <div className={classes.table}>
                     {jobDetails.sourceList.map((item) => {
                       return (

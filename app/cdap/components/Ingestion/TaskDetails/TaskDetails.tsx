@@ -89,7 +89,7 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       alignItems: 'center',
       marginTop: '32px',
-      paddingBottom: '38px',
+      paddingBottom: '24px',
     },
     arrow: {
       margin: '0px 15.4px 0px 12px',
@@ -248,7 +248,6 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       alignItems: 'flex-end',
       marginTop: '16px',
-      paddingBottom: '21px',
     },
     taskDetailContainer: {
       display: 'flex',

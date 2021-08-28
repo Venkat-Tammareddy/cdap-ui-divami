@@ -122,7 +122,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
     { x: 'job9', y: 99 },
     { x: 'job10', y: 150 },
   ];
-  const [value, setValue] = React.useState({});
+  const [value, setValue] = React.useState(false);
   let runIdArray = [];
   let runIdArray2 = [];
   items.runs.map((item, index) => {

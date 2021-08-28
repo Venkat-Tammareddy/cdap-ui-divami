@@ -95,6 +95,15 @@ const styles = (theme): StyleRules => {
       height: '20px',
       width: '20px',
     },
+    columnLabel: {
+      fontWeight: 'normal',
+      paddingBottom: '12px',
+    },
+    statusColumn: {
+      fontSize: '16px',
+      color: '#202124',
+      fontFamily: 'Lato',
+    },
   };
 };
 const TextOnlyTooltip = withStyles({
@@ -146,15 +155,15 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
         {graph ? (
           <Graphs items={taskDetails} metrix={taskDetails.metrics} />
         ) : (
-          <Table columnTemplate="2fr 2fr 2fr 1fr 1fr 1fr 2fr 1fr">
+          <Table columnTemplate="1.5fr 2fr 2fr 1fr 1.5fr 1.5fr 2fr 1fr">
             <TableHeader data-cy="table-header">
               <TableRow className={classes.header} data-cy="table-row">
-                <TableCell>Status</TableCell>
-                <TableCell>Job ID</TableCell>
-                <TableCell>Executed on</TableCell>
-                <TableCell>Duration</TableCell>
-                <TableCell>Records Loaded</TableCell>
-                <TableCell>Error Records</TableCell>
+                <TableCell className={classes.columnLabel}>Status</TableCell>
+                <TableCell className={classes.columnLabel}>Job ID</TableCell>
+                <TableCell className={classes.columnLabel}>Executed on</TableCell>
+                <TableCell className={classes.columnLabel}>Duration</TableCell>
+                <TableCell className={classes.columnLabel}>Records Loaded</TableCell>
+                <TableCell className={classes.columnLabel}>Error Records</TableCell>
                 <TableCell></TableCell>
                 <TableCell></TableCell>
               </TableRow>
@@ -168,7 +177,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                     data-cy={`table-row-${item.runid}`}
                     onClick={() => onTaskClick(item.runId)}
                   >
-                    <TableCell>
+                    <TableCell className={classes.statusColumn}>
                       <img
                         className={classes.statusIcon}
                         src={
@@ -183,15 +192,17 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                       />
                       {item.status}
                     </TableCell>
-                    <TableCell style={{ color: '#202124' }}>{item.runId}</TableCell>
-                    <TableCell style={{ color: '#202124' }}>
+                    <TableCell style={{ color: '#202124', fontSize: '16px', fontFamily: 'Lato' }}>
+                      {item.runId}
+                    </TableCell>
+                    <TableCell style={{ color: '#202124', fontSize: '16px', fontFamily: 'Lato' }}>
                       {humanReadableDate(item.start, false)}
                     </TableCell>
-                    <TableCell style={{ color: '#202124' }}>
+                    <TableCell style={{ color: '#202124', fontSize: '16px', fontFamily: 'Lato' }}>
                       {item.status !== 'RUNNING' &&
                         humanReadableDuration(item.end - item.start, false)}
                     </TableCell>
-                    <TableCell style={{ color: '#202124' }}>
+                    <TableCell style={{ color: '#202124', fontSize: '16px', fontFamily: 'Lato' }}>
                       {taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
                         (item) =>
                           item.metricName ===
@@ -204,7 +215,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                           )?.data[0].value
                         : '0'}
                     </TableCell>
-                    <TableCell style={{ color: '#202124' }}>
+                    <TableCell style={{ color: '#202124', fontSize: '16px', fontFamily: 'Lato' }}>
                       {taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
                         (item) =>
                           item.metricName ===
@@ -217,7 +228,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                           )?.data[0].value
                         : '0'}
                     </TableCell>
-                    <TableCell style={{ color: '#202124' }}>
+                    <TableCell style={{ color: '#202124', fontSize: '16px', fontFamily: 'Lato' }}>
                       {item.status === 'RUNNING' && (
                         <div
                           onClick={(e) => {

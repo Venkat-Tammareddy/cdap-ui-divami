@@ -21,6 +21,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import history from 'services/history';
 import NamespaceStore from 'services/NamespaceStore';
 import If from 'components/If';
+import Button from '@material-ui/core/Button';
 
 const styles = (theme): StyleRules => {
   return {
@@ -179,6 +180,7 @@ interface IngestionHeaderProps extends WithStyles<typeof styles> {
   setGraph?: any;
   taskOptions?: any[];
   backArrow?: boolean;
+  noConnection?: boolean;
 }
 const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   classes,
@@ -198,6 +200,7 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   setGraph,
   taskOptions,
   backArrow,
+  noConnection,
 }) => {
   const titleDesignIcon = '/cdap_assets/img/title-design-bar.svg';
   const createIcon = '/cdap_assets/img/create.svg';
@@ -284,6 +287,21 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
           <div className={classes.create} onClick={onBrowse}>
             <img className={classes.createIcon} src={browseIcon} alt="browse-data" />
             <span>Browse</span>
+          </div>
+        )}
+        {noConnection && (
+          <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+            <img className={classes.createIcon} src={createIcon} alt="browse-data" />
+            <p
+              style={{
+                fontSize: '16px',
+                color: '#202124',
+                fontFamily: 'Lato',
+                marginBottom: '0px',
+              }}
+            >
+              Add Connection
+            </p>
           </div>
         )}
         {graphicalView && (

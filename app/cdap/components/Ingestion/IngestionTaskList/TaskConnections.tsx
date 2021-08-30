@@ -31,7 +31,7 @@ const styles = (theme): StyleRules => {
     paper: {
       boxShadow: 'none',
       backgroundColor: 'rgb(255 255 255 / 0%)',
-      fontSize: '16px',
+      fontSize: '14px',
       color: '#202124',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',

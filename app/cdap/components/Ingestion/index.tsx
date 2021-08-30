@@ -36,7 +36,7 @@ interface IIngestionProps extends WithStyles<typeof styles> {
   test: string;
   pluginsMap: any;
 }
-export const basepath = '/ns/:namespace/ingestion';
+export const basePath = '/ns/:namespace/ingestion';
 
 const IngestionView: React.FC<IIngestionProps> = ({ classes }) => {
   const pageTitle = `${Theme.productName} | Ingestion`;
@@ -47,12 +47,12 @@ const IngestionView: React.FC<IIngestionProps> = ({ classes }) => {
       <AppProvider>
         <Switch>
           <Route
-            path={[`${basepath}/create/:id`, `${basepath}/create`]}
+            path={[`${basePath}/create/:id`, `${basePath}/create`]}
             component={CreateIngestion}
           />
-          <Route exact path={`${basepath}/task/:taskName`} component={TaskDetails} />
-          <Route path={`${basepath}/task/:taskName/job/:jobId`} component={JobDetails} />
-          <Route path={basepath} component={IngestionHome} />
+          <Route exact path={`${basePath}/task/:taskName`} component={TaskDetails} />
+          <Route path={`${basePath}/task/:taskName/job/:jobId`} component={JobDetails} />
+          <Route path={basePath} component={IngestionHome} />
           <Route
             render={() => {
               return <Redirect to={`/ns/${getCurrentNamespace()}/ingestion`} />;

@@ -192,17 +192,17 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                       />
                       {item.status}
                     </TableCell>
-                    <TableCell style={{ color: '#202124', fontSize: '16px', fontFamily: 'Lato' }}>
+                    <TableCell style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}>
                       {item.runId}
                     </TableCell>
-                    <TableCell style={{ color: '#202124', fontSize: '16px', fontFamily: 'Lato' }}>
+                    <TableCell style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}>
                       {humanReadableDate(item.start, false)}
                     </TableCell>
-                    <TableCell style={{ color: '#202124', fontSize: '16px', fontFamily: 'Lato' }}>
+                    <TableCell style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}>
                       {item.status !== 'RUNNING' &&
                         humanReadableDuration(item.end - item.start, false)}
                     </TableCell>
-                    <TableCell style={{ color: '#202124', fontSize: '16px', fontFamily: 'Lato' }}>
+                    <TableCell style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}>
                       {taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
                         (item) =>
                           item.metricName ===
@@ -215,7 +215,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                           )?.data[0].value
                         : '0'}
                     </TableCell>
-                    <TableCell style={{ color: '#202124', fontSize: '16px', fontFamily: 'Lato' }}>
+                    <TableCell style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}>
                       {taskDetails.metrics[`qid_${item.runId}`]?.series?.find(
                         (item) =>
                           item.metricName ===
@@ -228,7 +228,7 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                           )?.data[0].value
                         : '0'}
                     </TableCell>
-                    <TableCell style={{ color: '#202124', fontSize: '16px', fontFamily: 'Lato' }}>
+                    <TableCell style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}>
                       {item.status === 'RUNNING' && (
                         <div
                           onClick={(e) => {

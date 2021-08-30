@@ -362,7 +362,10 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
             <Acknowledgement gotoTasks={() => goToIngestionHome()} />
           ) : (
             <>
-              <IngestionHeader title={T.translate(`${I18N_PREFIX}.createIngest`).toString()} />
+              <IngestionHeader
+                title={T.translate(`${I18N_PREFIX}.createIngest`).toString()}
+                noConnection={activeStep == 1 || activeStep == 2}
+              />
               <div className={classes.wizardAndContentWrapper}>
                 <div className={classes.wizard}>
                   <TaskTrackingWizard

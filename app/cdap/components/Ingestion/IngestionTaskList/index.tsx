@@ -62,7 +62,7 @@ const styles = (theme): StyleRules => {
     },
     tableRow: {
       cursor: 'pointer',
-      fontSize: '16px',
+      fontSize: '14px',
       fontFamily: 'Lato',
       letterSpacing: '0',
       lineHeight: '24px',
@@ -74,7 +74,7 @@ const styles = (theme): StyleRules => {
     paper: {
       boxShadow: 'none',
       backgroundColor: 'rgb(255 255 255 / 0%)',
-      fontSize: '16px',
+      fontSize: '14px',
       color: '#202124',
       textOverflow: 'ellipsis',
     },
@@ -106,7 +106,7 @@ const styles = (theme): StyleRules => {
     taskNameText: {
       boxShadow: 'none',
       backgroundColor: 'rgb(255 255 255 / 0%)',
-      fontSize: '16px',
+      fontSize: '14px',
       color: '#202124',
       textOverflow: 'ellipsis',
       paddingLeft: '29px',

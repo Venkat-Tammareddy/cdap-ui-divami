@@ -325,11 +325,23 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     });
   };
 
+  const handleAddConnection = () => {
+    setAlert(() => {
+      return {
+        show: true,
+        title: 'Do you really want to add a new connection?',
+        description:
+          'Upon confirmation, a tab will open to add a connection. On  successful adding a connection, return to the same page and refresh to see the added connection',
+        type: 'addnewconnection',
+      };
+    });
+  };
+
   return (
     <div className={classes.root}>
       <OverlaySmall
         onCancel={() =>
-          alert.type === 'exit'
+          alert.type === 'addnewconnection' || alert.type === 'exit'
             ? setAlert((prev) => {
                 return {
                   ...prev,
@@ -342,7 +354,9 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         title={alert.title}
         description={alert.description}
         onSubmit={() =>
-          alert.type === 'exit'
+          alert.type === 'addnewconnection'
+            ? history.push('/ns/${currentNamespace}/connections/create')
+            : alert.type === 'exit'
             ? goToIngestionHome()
             : setAlert((prev) => {
                 return {
@@ -351,7 +365,13 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                 };
               })
         }
-        submitText={alert.type === 'exit' ? 'Exit' : 'Change name'}
+        submitText={
+          alert.type === 'addnewconnection'
+            ? 'Yes, Proceed'
+            : alert.type === 'exit'
+            ? 'Exit'
+            : 'Change name'
+        }
         errorType
       />
       {deployLoader ? (
@@ -364,7 +384,8 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
             <>
               <IngestionHeader
                 title={T.translate(`${I18N_PREFIX}.createIngest`).toString()}
-                noConnection={activeStep == 1 || activeStep == 2}
+                addConnection={activeStep == 1 || activeStep == 2}
+                createConnection={handleAddConnection}
               />
               <div className={classes.wizardAndContentWrapper}>
                 <div className={classes.wizard}>

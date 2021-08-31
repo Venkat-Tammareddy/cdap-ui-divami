@@ -33,6 +33,7 @@ import '../../../../../node_modules/react-vis/dist/style.css';
 import { CardContent, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import If from 'components/If';
+import { humanReadableDate } from 'services/helpers';
 const styles = (): StyleRules => {
   return {
     root: {
@@ -45,13 +46,12 @@ const styles = (): StyleRules => {
       padding: '24px',
     },
     title: {
-      fontSize: '18px',
+      fontSize: '16px',
       fontFamily: 'Lato',
       paddingLeft: '0',
       color: '#202124',
-      whitespace: 'nowrap',
-      // overflow: 'hidden',
       marginBottom: '0px',
+      textOverflow: 'ellipsis',
     },
     up: {
       display: 'flex',
@@ -111,7 +111,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
   const myData = [];
 
   const myData2 = [
-    { x: 'job1', y: 29 },
+    { x: '531eb9f3-0730-11ec-ae15-a29c59b15d41', y: 29 },
     { x: 'job2', y: 56 },
     { x: 'job3', y: 20 },
     { x: 'job4', y: 35 },
@@ -122,18 +122,30 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
     { x: 'job9', y: 99 },
     { x: 'job10', y: 150 },
   ];
-  const [value, setValue] = React.useState(false);
+  const [value, setValue] = React.useState({ x: '', y: '', time: '', test: '' });
   let runIdArray = [];
+  const [currentHoveredElement, setCurrentHoveredElement] = React.useState(null);
   let runIdArray2 = [];
+  const startTimes = [];
+  const errorRecords = [];
   items.runs.map((item, index) => {
     const obj = { x: '', y: '' };
+    const timeObj = { id: '', time: '' };
     if (item.hasOwnProperty('runId')) {
       obj.x = item.runId;
+      timeObj.id = item.runId;
       runIdArray.push(obj);
       runIdArray2.push(obj);
       console.log('PLZ WORK' + item.runId);
+      if (item.hasOwnProperty('start')) {
+        const humanDate = humanReadableDate(item.start, false);
+        timeObj.time = humanDate;
+        startTimes.push(timeObj);
+      }
     }
   });
+
+  console.log('START TIMESSS' + JSON.stringify(startTimes[0]));
 
   // Records in
   const inn = [];
@@ -166,6 +178,20 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
     return { x: item.x, y: out[index] };
   });
 
+  const arr3 = [{ x: '531eb9f3-0730-11ec-ae15-a29c59b15d41', y: 40 }];
+  const renderTime = (id) => {
+    // startTimes.forEach((item, index) => {
+    //   if (item.id === id) {
+    //     return (
+    //       <div>
+    //         <p>TIMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE</p>
+    //       </div>
+    //     );
+    //   }
+    // });
+    return <p>WE HATTTTT</p>;
+  };
+
   return (
     <div className={classes.root}>
       <FlexibleWidthXYPlot xType="ordinal" width={1280} height={300} margin={{ left: 100 }}>
@@ -180,18 +206,19 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
           style={{
             transform: 'rotate(-90)',
             textAnchor: 'end',
-            marginLeft: '10px',
           }}
         />
         <YAxis />
         <VerticalBarSeries
           barWidth={0.2}
-          data={runIdArray}
+          data={myData2}
           color="#74D091"
           onMouseover={() => alert('1')}
           style={{ cursor: 'pointer' }}
-          onValueMouseOver={(d) => {
-            setValue(d);
+          onValueMouseOver={(data, index) => {
+            data.test = 'apple';
+            setValue(data);
+            setCurrentHoveredElement(data);
           }}
         />
         {value && (
@@ -203,13 +230,25 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
             <Card className={classes.croot} variant="outlined">
               <div className={classes.container}>
                 <div className={classes.up}>
-                  <p className={classes.title}>Job 04</p>
+                  <p className={classes.title}>{value.x}</p>
                   <div className={classes.successText}>Success</div>
                 </div>
                 <div className={classes.info}>
-                  <p className={classes.jobInfo}>02 May 21, 07:30 pm</p>
-                  <p className={classes.jobInfo}>3820 Records Loaded</p>
-                  <p className={classes.jobInfo}>976 Error Records</p>
+                  <p className={classes.jobInfo}>
+                    {startTimes.map(function(object, i) {
+                      if (object.id === value.x) {
+                        return <p>{object.time}</p>;
+                      }
+                    })}
+                  </p>
+                  <p className={classes.jobInfo}>{value.y} Records Loaded</p>
+                  <p className={classes.jobInfo}>
+                    {runIdArray2.map(function(object, i) {
+                      if (object.x === value.x) {
+                        return <p>{object.y}Errors Loaded</p>;
+                      }
+                    })}
+                  </p>
                 </div>
               </div>
             </Card>

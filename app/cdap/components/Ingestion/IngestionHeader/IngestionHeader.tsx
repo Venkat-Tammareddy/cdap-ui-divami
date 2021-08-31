@@ -180,7 +180,8 @@ interface IngestionHeaderProps extends WithStyles<typeof styles> {
   setGraph?: any;
   taskOptions?: any[];
   backArrow?: boolean;
-  noConnection?: boolean;
+  addConnection?: boolean;
+  createConnection?: () => void;
 }
 const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   classes,
@@ -200,7 +201,8 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   setGraph,
   taskOptions,
   backArrow,
-  noConnection,
+  addConnection,
+  createConnection,
 }) => {
   const titleDesignIcon = '/cdap_assets/img/title-design-bar.svg';
   const createIcon = '/cdap_assets/img/create.svg';
@@ -289,8 +291,11 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
             <span>Browse</span>
           </div>
         )}
-        {noConnection && (
-          <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+        {addConnection && (
+          <div
+            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+            onClick={createConnection}
+          >
             <img className={classes.createIcon} src={createIcon} alt="browse-data" />
             <p
               style={{

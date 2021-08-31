@@ -691,7 +691,6 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
               Schedule Task
             </Box>
             <img src={tileDesignBar}></img>
-            <span>{taskName}</span>
           </div>
           <Box mb={2}>
             <Box mb={1} className={classes.scheduleSubHeader}>

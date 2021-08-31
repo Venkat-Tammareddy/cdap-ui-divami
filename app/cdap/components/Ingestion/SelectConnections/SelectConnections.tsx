@@ -78,14 +78,14 @@ const styles = (theme): StyleRules => {
       borderBottomRightRadius: '0px',
     },
     tableRow: {
-      padding: '10px 0px',
+      padding: '12px 20px',
       cursor: 'pointer',
       fontSize: '14px',
       fontFamily: 'Lato',
       borderBottom: '1px solid #DFDFDF',
     },
     tableRowSelected: {
-      padding: '10px 0px',
+      padding: '10.28px 20px',
       cursor: 'pointer',
       background: 'rgb(66,133,244,.15)',
       fontSize: '14px',
@@ -198,6 +198,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const [sortDbNameType, setSortDbNameType] = React.useState('Down');
   const [header, setHeader] = React.useState('lastUsed');
   const selectionType = activeStep === 1 ? 'source' : 'target';
+  const [showIcon, setShowIcon] = React.useState(false);
   React.useEffect(() => {
     selectionType === 'source'
       ? setSelectedConnection(draftConfig.config.stages[0])
@@ -322,6 +323,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
   const sortUpIcon = '/cdap_assets/img/sort-up-arrow.svg';
   const searchIcon = '/cdap_assets/img/search.svg';
   const noDatabase = '/cdap_assets/img/No database.svg';
+  const tickIcon = '/cdap_assets/img/card-section-tick.svg';
   const SearchIcon = () => {
     return <img src={searchIcon} alt="icon" />;
   };
@@ -360,7 +362,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
           <div className={classes.errorTitle2}>Please check with the IT team</div>
         </div>
       ) : (
-        <Table columnTemplate="1fr 1fr 2fr">
+        <Table columnTemplate="1fr 1fr 2fr 0.4fr">
           <TableHeader data-cy="table-header">
             <TableRow className={classes.header} data-cy="table-row">
               <TableCell onClick={() => setHeader('dbName')}>
@@ -398,6 +400,7 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
                   )}
                 </div>
               </TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHeader>
 
@@ -419,7 +422,9 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
                         ? classes.tableRowSelected
                         : classes.tableRow
                     }
-                    onClick={() => setSelectedConnection(conn)}
+                    onClick={() => {
+                      setSelectedConnection(conn);
+                    }}
                   >
                     <TableCell>
                       {selectionType === 'source'
@@ -431,6 +436,14 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
                     </TableCell>
                     <TableCell>{conn.name}</TableCell>
                     <TableCell>{humanReadableDate(conn.updatedTimeMillis, true)}</TableCell>
+                    <TableCell>
+                      {selectedConnection.name === conn.name && (
+                        <img
+                          src={tickIcon}
+                          style={{ margin: '0px', padding: '0px', height: '24px' }}
+                        />
+                      )}
+                    </TableCell>
                   </TableRow>
                 );
               })

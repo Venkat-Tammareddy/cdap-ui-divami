@@ -65,6 +65,7 @@ const styles = (theme): StyleRules => {
       position: 'absolute',
       padding: '30px 40px',
       fontFamily: 'Lato',
+      overflowY: 'auto',
     },
     heading: {
       fontSize: '20px',
@@ -202,6 +203,7 @@ interface SheduleTaskProps extends WithStyles<typeof styles> {
   taskName?: string;
   selectItem?: any;
   setLoadingtl?;
+  scheduleSuccess?: () => void;
 }
 
 const SheduleTask: React.FC<SheduleTaskProps> = ({
@@ -211,6 +213,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
   taskName,
   selectItem,
   setLoadingtl,
+  scheduleSuccess,
 }) => {
   const tileDesignBar = '/cdap_assets/img/title-design-bar.svg';
   const calendar = '/cdap_assets/img/calendar.svg';
@@ -398,6 +401,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
             (message) => {
               // setLoading(false);
               console.log('shedule', message);
+              scheduleSuccess();
             },
             (err) => {
               console.log(err);
@@ -405,6 +409,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
           );
         } else {
           setLoading(false);
+          scheduleSuccess();
         }
       },
       (err) => {
@@ -480,7 +485,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
               <Box mb={2}>
                 <Grid container spacing={1}>
                   {Object.keys(sheduleObj.weekDays).map((item, index) => (
-                    <Grid item xs={3}>
+                    <Grid item xs={3} key={index}>
                       <Checkbox
                         checked={sheduleObj.weekDays[item]}
                         onChange={(e) => onWeekDayChecked(e, item)}
@@ -686,6 +691,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
               Schedule Task
             </Box>
             <img src={tileDesignBar}></img>
+            <span>{taskName}</span>
           </div>
           <Box mb={2}>
             <Box mb={1} className={classes.scheduleSubHeader}>
@@ -693,7 +699,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
             </Box>
             <Grid container className={classes.radioContainer}>
               {recurOptions.map((item, index) => (
-                <Grid item xs={4} className={classes.radioButtons}>
+                <Grid item xs={4} className={classes.radioButtons} key={index}>
                   <Radio
                     onClick={(e) => {
                       onItemChecked(item);

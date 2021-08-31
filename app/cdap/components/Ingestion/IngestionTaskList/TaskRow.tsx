@@ -104,6 +104,7 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
   const runProgress = '/cdap_assets/img/Inprogress.svg';
   const errorIcon = '/cdap_assets/img/error.svg';
   const successIcon = '/cdap_assets/img/sucess.svg';
+  const deployedIcon = '/cdap_assets/img/not started.svg';
   const [options, setOptions] = React.useState([
     'Run Task',
     'Update Schedule',
@@ -201,11 +202,13 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
               <img
                 // src={(item.status === 'RUNNING' && progressIcon) || myimg}
                 src={
-                  (latestRun?.status === 'RUNNING' && inProgress) ||
-                  (latestRun?.status === 'COMPLETED' && successIcon) ||
-                  (latestRun?.status === 'FAILED' && errorIcon) ||
-                  (latestRun?.status === 'KILLED' && killedIcon) ||
-                  inProgress
+                  runs.length === 0
+                    ? deployedIcon
+                    : (latestRun?.status === 'RUNNING' && inProgress) ||
+                      (latestRun?.status === 'COMPLETED' && successIcon) ||
+                      (latestRun?.status === 'FAILED' && errorIcon) ||
+                      (latestRun?.status === 'KILLED' && killedIcon) ||
+                      inProgress
                 }
                 alt="img"
                 height="27.2px"

@@ -62,7 +62,7 @@ const styles = (theme): StyleRules => {
     },
 
     header: {
-      padding: '10px 20px',
+      padding: '10px 0px',
       color: '#19A347',
       fontSize: '16px',
       fontFamily: 'Lato',
@@ -78,14 +78,14 @@ const styles = (theme): StyleRules => {
       borderBottomRightRadius: '0px',
     },
     tableRow: {
-      padding: '10px 20px',
+      padding: '10px 0px',
       cursor: 'pointer',
       fontSize: '14px',
       fontFamily: 'Lato',
       borderBottom: '1px solid #DFDFDF',
     },
     tableRowSelected: {
-      padding: '10px 20px',
+      padding: '10px 0px',
       cursor: 'pointer',
       background: 'rgb(66,133,244,.15)',
       fontSize: '14px',
@@ -133,6 +133,7 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       flexDirection: 'row',
       height: '50px',
+      marginLeft: '8px',
     },
     flexHeader: {
       display: 'flex',

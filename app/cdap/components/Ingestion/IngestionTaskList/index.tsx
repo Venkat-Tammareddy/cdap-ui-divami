@@ -192,6 +192,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
           // sheduleString={sheduleString}
           taskName={sheduleObj.taskName}
           selectItem={sheduleObj.selectItem}
+          scheduleSuccess={() => setLoading(false)}
         />
       </If>
       <div className={classes.root}>

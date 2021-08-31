@@ -315,40 +315,6 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     metrics: {},
   });
   React.useEffect(() => {
-    MyPipelineApi.scheduleDetails({
-      namespace: NamespaceStore.getState().selectedNamespace,
-      appId: taskName,
-      scheduleId: 'dataPipelineSchedule',
-    }).subscribe(
-      (message) => {
-        console.log('Shedulemessage', message);
-        setLoading(false);
-        setSheduleString(message.trigger.cronExpression);
-        if (message.status == 'SUSPENDED' && message.trigger.cronExpression == '0 * * * *') {
-          setTaskOptions((prev) => {
-            const options = prev.slice(0);
-            options[1] = 'Shedule';
-            return options;
-          });
-        } else if (message.status == 'SUSPENDED') {
-          setTaskOptions((prev) => {
-            const options = prev.slice(0);
-            options[1] = 'Reshedule';
-            return options;
-          });
-        } else {
-          setTaskOptions((prev) => {
-            const options = prev.slice(0);
-            options[1] = 'Suspend';
-            return options;
-          });
-        }
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
-
     MyPipelineApi.get({ namespace: currentNamespace, appId: taskName }).subscribe((data) => {
       console.log('get', data);
       const draftObj = JSON.parse(data.configuration);
@@ -390,6 +356,41 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       );
     });
   }, []);
+  React.useEffect(() => {
+    MyPipelineApi.scheduleDetails({
+      namespace: NamespaceStore.getState().selectedNamespace,
+      appId: taskName,
+      scheduleId: 'dataPipelineSchedule',
+    }).subscribe(
+      (message) => {
+        console.log('Shedulemessage', message);
+        setLoading(false);
+        setSheduleString(message.trigger.cronExpression);
+        if (message.status == 'SUSPENDED' && message.trigger.cronExpression == '0 * * * *') {
+          setTaskOptions((prev) => {
+            const options = prev.slice(0);
+            options[1] = 'Shedule';
+            return options;
+          });
+        } else if (message.status == 'SUSPENDED') {
+          setTaskOptions((prev) => {
+            const options = prev.slice(0);
+            options[1] = 'Reshedule';
+            return options;
+          });
+        } else {
+          setTaskOptions((prev) => {
+            const options = prev.slice(0);
+            options[1] = 'Suspend';
+            return options;
+          });
+        }
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }, [loading]);
   const getMetrics = (runs, connectionName) => {
     const postBody = {};
     runs.forEach((run) => {
@@ -639,6 +640,8 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           sheduleString={sheduleString}
           taskName={taskName}
           selectItem={setSelectedItem()}
+          setLoadingtl={setLoading}
+          scheduleSuccess={() => setLoading(false)}
         />
       </If>
       {duplicate && (

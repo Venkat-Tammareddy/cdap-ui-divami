@@ -84,6 +84,7 @@ const styles = (): StyleRules => {
       position: 'absolute',
       padding: '18px 12px',
       fontFamily: 'Lato',
+      overflowY: 'auto',
     },
     heading: {
       fontSize: '20px',
@@ -355,7 +356,6 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
   React.useEffect(() => {
     MyPipelineApi.get({ namespace: currentNamespace, appId: duplicateTaskName }).subscribe(
       (data) => {
-        console.log('tharun', data);
         const draftObj = JSON.parse(data.configuration);
         setTaskDetails(
           produce((prev) => {

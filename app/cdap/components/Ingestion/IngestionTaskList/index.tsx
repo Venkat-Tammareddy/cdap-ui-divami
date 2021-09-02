@@ -36,6 +36,7 @@ import setStringtoTime from './stringToTime';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
 import { MyPipelineApi } from 'api/pipeline';
 import OverlaySmall from '../OverlaySmall/OverlaySmall';
+import Button from '@material-ui/core/Button';
 
 const styles = (theme): StyleRules => {
   return {
@@ -111,6 +112,19 @@ const styles = (theme): StyleRules => {
       textOverflow: 'ellipsis',
       paddingLeft: '29px',
     },
+    emptyContainer: {
+      height: '100%',
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    emptyMsg: {
+      fontSize: '18px',
+      color: '#202124',
+      fontFamily: 'Lato',
+    },
   };
 };
 
@@ -141,6 +155,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
   const inProgress = '/cdap_assets/img/inprogress.svg';
   const errorIcon = '/cdap_assets/img/error.svg';
   const successIcon = '/cdap_assets/img/sucess.svg';
+  const noTaskIcon = '/cdap_assets/img/No Task.svg';
   const closeSchedule = () => {
     // setLoading(true);
     setSchedule(false);
@@ -171,6 +186,36 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
       refetch();
     });
     setAlert(null);
+  };
+
+  const renderEmptyList = () => {
+    return (
+      <div className={classes.emptyContainer}>
+        <img src={noTaskIcon} alt="no task Icon" />
+        <p className={classes.emptyMsg} style={{ marginTop: '20px', marginBottom: '0px' }}>
+          There are no configured tasks to list,
+        </p>
+        <p
+          className={classes.emptyMsg}
+          style={{ marginTop: '0px', paddingTop: '0px', marginBottom: '0px' }}
+        >
+          create a task to ingest data
+        </p>
+        <Button
+          variant="contained"
+          style={{
+            backgroundColor: '#4285F4',
+            color: 'white',
+            fontSize: '14px',
+            fontFamily: 'Lato',
+            marginTop: '20px',
+          }}
+          onClick={() => history.push('ingestion/create')}
+        >
+          CREATE TASK
+        </Button>
+      </div>
+    );
   };
   return (
     <>
@@ -204,45 +249,48 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
             }}
           />
         )}
-        <Table columnTemplate="2fr 2fr 2fr 1fr 1fr 1fr">
-          <TableHeader data-cy="table-header">
-            <TableRow className={classes.header} data-cy="table-row">
-              <TableCell>{'Task status & name'}</TableCell>
-              <TableCell>{'Source Database & Connection'}</TableCell>
-              <TableCell>{'Target Database & Connection'}</TableCell>
-              <TableCell>{'Tags'}</TableCell>
-              <TableCell>{'Last 3 runs status'}</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody data-cy="table-body">
-            {filteredList.map((item, index) => {
-              return (
-                <TableRow
-                  key={item.taskName}
-                  className={classes.tableRow}
-                  data-cy={`table-row-${item.taskName}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    history.push(`/ns/${currentNamespace}/ingestion/task/${item.taskName}`);
-                  }}
-                >
-                  <TaskRow
-                    setLoadingtl={setLoading}
-                    taskName={item.taskName}
-                    sheduleTask={(type, taskName, cronExpression) =>
-                      sheduleTask(type, taskName, cronExpression)
-                    }
-                    deletePipeline={(taskName) => {
-                      setAlert(taskName);
+        {filteredList.length === 0 && renderEmptyList()}
+        {filteredList.length > 0 && (
+          <Table columnTemplate="2fr 2fr 2fr 1fr 1fr 1fr">
+            <TableHeader data-cy="table-header">
+              <TableRow className={classes.header} data-cy="table-row">
+                <TableCell>{'Task status & name'}</TableCell>
+                <TableCell>{'Source Database & Connection'}</TableCell>
+                <TableCell>{'Target Database & Connection'}</TableCell>
+                <TableCell>{'Tags'}</TableCell>
+                <TableCell>{'Last 3 runs status'}</TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody data-cy="table-body">
+              {filteredList.map((item, index) => {
+                return (
+                  <TableRow
+                    key={item.taskName}
+                    className={classes.tableRow}
+                    data-cy={`table-row-${item.taskName}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      history.push(`/ns/${currentNamespace}/ingestion/task/${item.taskName}`);
                     }}
-                    setDuplicate={(value) => setDuplicate(value)}
-                  />
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                  >
+                    <TaskRow
+                      setLoadingtl={setLoading}
+                      taskName={item.taskName}
+                      sheduleTask={(type, taskName, cronExpression) =>
+                        sheduleTask(type, taskName, cronExpression)
+                      }
+                      deletePipeline={(taskName) => {
+                        setAlert(taskName);
+                      }}
+                      setDuplicate={(value) => setDuplicate(value)}
+                    />
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </>
   );

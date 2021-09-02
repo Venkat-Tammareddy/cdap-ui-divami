@@ -237,6 +237,9 @@ const IngestionJobsList: React.FC<IngestJobsListProps> = ({
                             console.log('stop');
                           }}
                         >
+                          <p style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}>
+                            Ingesting data...
+                          </p>
                           <img src={imgStop} alt="img" height="20px" width="20px" />
                           <span className={classes.marginLeft}>Stop</span>
                         </div>

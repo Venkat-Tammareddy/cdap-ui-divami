@@ -21,6 +21,7 @@ import {
   XAxis,
   YAxis,
   VerticalGridLines,
+  makeVisFlexible,
   LineSeries,
   FlexibleWidthXYPlot,
   Hint,
@@ -40,7 +41,6 @@ const styles = (): StyleRules => {
       overflowX: 'auto',
       scrollBarWidth: 'thin',
       height: '500px',
-      width: '1280px',
     },
     croot: {
       padding: '24px',
@@ -51,6 +51,8 @@ const styles = (): StyleRules => {
       paddingLeft: '0',
       color: '#202124',
       marginBottom: '0px',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
       textOverflow: 'ellipsis',
     },
     up: {
@@ -96,35 +98,11 @@ interface GraphsProps extends WithStyles<typeof styles> {
   metrix: any;
 }
 const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
-  // const myData = [
-  //   { x: 'job1', y: 45 },
-  //   { x: 'job2', y: 77 },
-  //   { x: 'job3', y: 15 },
-  //   { x: 'job4', y: 20 },
-  //   { x: 'job5', y: 25 },
-  //   { x: 'job6', y: 30 },
-  //   { x: 'job7', y: 80 },
-  //   { x: 'job8', y: 42 },
-  //   { x: 'job9', y: 99 },
-  //   { x: 'job10', y: 90 },
-  // ];
-  const myData = [];
-
-  const myData2 = [
-    { x: '531eb9f3-0730-11ec-ae15-a29c59b15d41', y: 29 },
-    { x: 'job2', y: 56 },
-    { x: 'job3', y: 20 },
-    { x: 'job4', y: 35 },
-    { x: 'job5', y: 40 },
-    { x: 'job6', y: 45 },
-    { x: 'job7', y: 60 },
-    { x: 'job8', y: 47 },
-    { x: 'job9', y: 99 },
-    { x: 'job10', y: 150 },
-  ];
   const [value, setValue] = React.useState({ x: '', y: '', time: '', test: '' });
   let runIdArray = [];
   const [currentHoveredElement, setCurrentHoveredElement] = React.useState(null);
+  const [show, setShow] = React.useState(false);
+
   let runIdArray2 = [];
   const startTimes = [];
   const errorRecords = [];
@@ -136,7 +114,6 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
       timeObj.id = item.runId;
       runIdArray.push(obj);
       runIdArray2.push(obj);
-      console.log('PLZ WORK' + item.runId);
       if (item.hasOwnProperty('start')) {
         const humanDate = humanReadableDate(item.start, false);
         timeObj.time = humanDate;
@@ -145,9 +122,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
     }
   });
 
-  console.log('START TIMESSS' + JSON.stringify(startTimes[0]));
-
-  // Records in
+  // Records in and Records out for Hint
   const inn = [];
   const out = [];
   const Ins = items.runs.map((item, index) => {
@@ -174,27 +149,38 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
     return { x: item.x, y: inn[index] };
   });
 
+  // Show only first 100 runs
+  if (runIdArray.length > 100) {
+    runIdArray.length = 100;
+  }
+
   runIdArray2 = runIdArray2.map((item, index) => {
     return { x: item.x, y: out[index] };
   });
 
-  const arr3 = [{ x: '531eb9f3-0730-11ec-ae15-a29c59b15d41', y: 40 }];
-  const renderTime = (id) => {
-    // startTimes.forEach((item, index) => {
-    //   if (item.id === id) {
-    //     return (
-    //       <div>
-    //         <p>TIMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE</p>
-    //       </div>
-    //     );
-    //   }
-    // });
-    return <p>WE HATTTTT</p>;
-  };
+  // Show only first 100 runs
+  if (runIdArray2.length > 100) {
+    runIdArray2.length = 100;
+  }
+
+  // Use flexible width graph
+  const FPlot = makeVisFlexible(XYPlot);
+
+  const testData = [
+    { x: 'job1', y: '2' },
+    { x: 'job2', y: '132' },
+    { x: 'job3', y: '712' },
+    { x: 'job4', y: '62' },
+    { x: 'job5', y: '142' },
+    { x: 'job6', y: '112' },
+    { x: 'job7', y: '352' },
+    { x: 'job8', y: '662' },
+    { x: 'jobe', y: '102' },
+  ];
 
   return (
     <div className={classes.root}>
-      <FlexibleWidthXYPlot xType="ordinal" width={1280} height={300} margin={{ left: 100 }}>
+      <XYPlot height={300} width={1366} xType="ordinal" margin={{ left: 100 }}>
         <HorizontalGridLines />
         <XAxis />
         <ChartLabel
@@ -210,18 +196,20 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
         />
         <YAxis />
         <VerticalBarSeries
-          barWidth={0.2}
-          data={myData2}
+          barWidth={0.4}
+          data={testData}
           color="#74D091"
-          onMouseover={() => alert('1')}
           style={{ cursor: 'pointer' }}
           onValueMouseOver={(data, index) => {
-            data.test = 'apple';
             setValue(data);
             setCurrentHoveredElement(data);
+            setShow(true);
+          }}
+          onValueMouseOut={(data, index) => {
+            setShow(false);
           }}
         />
-        {value && (
+        {show && (
           <Hint
             value={value}
             align={{ vertical: 'bottom', horizontal: 'right' }}
@@ -234,21 +222,17 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
                   <div className={classes.successText}>Success</div>
                 </div>
                 <div className={classes.info}>
-                  <p className={classes.jobInfo}>
-                    {startTimes.map(function(object, i) {
-                      if (object.id === value.x) {
-                        return <p>{object.time}</p>;
-                      }
-                    })}
-                  </p>
-                  <p className={classes.jobInfo}>{value.y} Records Loaded</p>
-                  <p className={classes.jobInfo}>
-                    {runIdArray2.map(function(object, i) {
-                      if (object.x === value.x) {
-                        return <p>{object.y}Errors Loaded</p>;
-                      }
-                    })}
-                  </p>
+                  {startTimes.map(function(object, i) {
+                    if (object.id === value.x) {
+                      return <p className={classes.jobInfo}>{object.time}</p>;
+                    }
+                  })}
+                  <p className={classes.jobInfo}>{value.y} &nbsp; Records Loaded</p>
+                  {runIdArray2.map(function(object, i) {
+                    if (object.x === value.x) {
+                      return <p className={classes.jobInfo}>{object.y} &nbsp; Error Records</p>;
+                    }
+                  })}
                 </div>
               </div>
             </Card>
@@ -270,7 +254,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
             setValue(d);
           }}
         />
-      </FlexibleWidthXYPlot>
+      </XYPlot>
     </div>
   );
 };

@@ -24,6 +24,7 @@ import TableCell from 'components/Table/TableCell';
 import IconSVG from 'components/IconSVG';
 import TaskConnections from './TaskConnections';
 import TaskTags from './TaskTags';
+import history from 'services/history';
 
 const styles = (theme): StyleRules => {
   return {
@@ -215,6 +216,9 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
           </Grid>
           <Grid item xs={11}>
             <Paper className={classes.taskNameText}>{taskName}</Paper>
+            <Paper className={classes.taskNameText}>
+              {latestRun?.status ? latestRun?.status : 'DEPLOYED'}
+            </Paper>
           </Grid>
         </Grid>
       </TableCell>
@@ -230,6 +234,9 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
               i < 3 && (
                 <Grid item xs={2} key={i}>
                   <Paper className={classes.paper}>
+                    {runs.length === 0 && (
+                      <p style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}> - -</p>
+                    )}
                     <img
                       src={
                         (run.status === 'RUNNING' && runProgress) ||
@@ -241,6 +248,12 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
                       alt="img"
                       height="20px"
                       width="20px"
+                      onClick={(e) => {
+                        alert(1);
+                        e.stopPropagation();
+                        console.log('RUN IDDD' + JSON.stringify(run));
+                        history.push(`/task/${taskName}/job/${run.runId}`);
+                      }}
                     />
                   </Paper>
                 </Grid>

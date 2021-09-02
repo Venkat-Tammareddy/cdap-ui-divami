@@ -319,9 +319,9 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
               <div className={classes.smallContainer}>
                 <div className={classes.red}></div>
                 <p className={classes.txt}>Errors</p>
-                <p className={classes.viewTxt}>View by</p>
               </div>
             </div>
+            <p className={classes.viewTxt}>View by</p>
             <div className={classes.buttons}>
               <div
                 className={activIcon === 'chart' ? classes.active : classes.listIcons}

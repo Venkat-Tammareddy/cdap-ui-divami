@@ -27,14 +27,9 @@ import { getCurrentNamespace } from 'services/NamespaceStore';
 import { gql } from 'apollo-boost';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
 import { useQuery } from '@apollo/react-hooks';
-import { categorizeGraphQlErrors } from 'services/helpers';
-import If from 'components/If';
-import ErrorBanner from 'components/ErrorBanner';
 import { MyPipelineApi } from 'api/pipeline';
 import { humanReadableDate } from 'services/helpers';
-import { MyMetadataApi } from 'api/metadata';
 import { ingestionContext } from 'components/Ingestion/ingestionContext';
-import OverlaySmall from '../OverlaySmall/OverlaySmall';
 import Pagination from '@material-ui/lab/Pagination';
 
 const I18N_PREFIX = 'features.PipelineList.DeployedPipelineView';
@@ -209,7 +204,20 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const QUERY = gql`
   {
     pipelines(namespace: "${getCurrentNamespace()}") {
-      name
+      name,
+      runs {
+        runid,
+        status,
+        starting,
+        start,
+        end,
+        profileId
+      },
+      totalRuns,
+      nextRuntime {
+        id,
+        time
+      }
     }
   }
 `;

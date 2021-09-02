@@ -37,6 +37,7 @@ import DuplicateTask from '../DuplicateTask/DuplicateTask';
 import { isNumeric } from 'services/helpers';
 import { wholeArrayIsNumeric } from 'services/helpers';
 import moment from 'moment';
+import OverlaySmall from '../OverlaySmall/OverlaySmall';
 
 const styles = (theme): StyleRules => {
   return {
@@ -293,13 +294,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const taskName = (params as any).taskName;
   const [duplicate, setDuplicate] = React.useState(false);
   const [sheduleString, setSheduleString] = React.useState('');
-  const [taskOptions, setTaskOptions] = React.useState([
-    'Run Task',
-    'update Schedule',
-    'Task Configuration',
-    'Duplicate',
-    'Delete',
-  ]);
+  const [taskOptions, setTaskOptions] = React.useState(['Update Schedule', 'Duplicate', 'Delete']);
   const [taskDetails, setTaskDetails] = React.useState({
     taskName,
     description: '',
@@ -355,33 +350,35 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         })
       );
     });
+    fetchScheduleDetails();
   }, []);
-  React.useEffect(() => {
+
+  const fetchScheduleDetails = () => {
     MyPipelineApi.scheduleDetails({
       namespace: NamespaceStore.getState().selectedNamespace,
       appId: taskName,
       scheduleId: 'dataPipelineSchedule',
     }).subscribe(
       (message) => {
-        console.log('Shedulemessage', message);
+        console.log('ScheduleMessage', message);
         setLoading(false);
         setSheduleString(message.trigger.cronExpression);
         if (message.status == 'SUSPENDED' && message.trigger.cronExpression == '0 * * * *') {
           setTaskOptions((prev) => {
             const options = prev.slice(0);
-            options[1] = 'Shedule';
+            options[0] = 'Schedule';
             return options;
           });
         } else if (message.status == 'SUSPENDED') {
           setTaskOptions((prev) => {
             const options = prev.slice(0);
-            options[1] = 'Reshedule';
+            options[0] = 'Reschedule';
             return options;
           });
         } else {
           setTaskOptions((prev) => {
             const options = prev.slice(0);
-            options[1] = 'Suspend';
+            options[0] = 'Suspend';
             return options;
           });
         }
@@ -390,7 +387,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         console.log(err);
       }
     );
-  }, [loading]);
+  };
   const getMetrics = (runs, connectionName) => {
     const postBody = {};
     runs.forEach((run) => {
@@ -468,15 +465,14 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   };
 
   const closeSchedule = () => {
-    setLoading(true);
     setSchedule(false);
   };
-  const handleTaskAtions = (option) => {
-    if (option == 'Shedule') {
+  const handleTaskActions = (option) => {
+    if (option == 'Schedule') {
       setSchedule(true);
     }
 
-    if (option == 'Reshedule') {
+    if (option == 'Reschedule') {
       setSchedule(true);
     }
     if (option == 'Suspend') {
@@ -487,15 +483,20 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         scheduleId: 'dataPipelineSchedule',
       }).subscribe(
         (message) => {
-          console.log('shedule', message);
+          console.log('schedule', message);
+          fetchScheduleDetails();
         },
         (err) => {
           console.log(err);
+          fetchScheduleDetails();
         }
       );
     }
     if (option === 'Duplicate') {
       setDuplicate(true);
+    }
+    if (option === 'Delete') {
+      setAlert(true);
     }
   };
 
@@ -629,19 +630,38 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     return ((successRuns / totalRuns) * 100).toFixed(2);
   };
 
+  const [alert, setAlert] = React.useState(false);
+  const deletePipeline = () => {
+    MyPipelineApi.delete({ namespace: currentNamespace, appId: taskName }).subscribe((msg) => {
+      console.log(taskName, 'deleted successfully');
+      history.push(`/ns/${currentNamespace}/ingestion`);
+      setAlert(false);
+    });
+  };
+
   const sourceIcon = '/cdap_assets/img/source-connection-black.svg';
   const targetIcon = '/cdap_assets/img/target-connection-black.svg';
 
   return (
     <div className={classes.root}>
+      <OverlaySmall
+        onCancel={() => setAlert(false)}
+        open={alert}
+        title="Confirm delete"
+        description={`Are you sure you want to delete pipeline ${taskName}?`}
+        onSubmit={() => deletePipeline()}
+        submitText="Delete"
+      />
       <If condition={schedule}>
         <SheduleTask
           closeSchedule={closeSchedule}
-          sheduleString={sheduleString}
           taskName={taskName}
           selectItem={setSelectedItem()}
           setLoadingtl={setLoading}
-          scheduleSuccess={() => setLoading(false)}
+          scheduleSuccess={() => {
+            fetchScheduleDetails();
+            setLoading(false);
+          }}
         />
       </If>
       {duplicate && (
@@ -649,6 +669,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           duplicateTaskName={taskName}
           closePopup={(isDuplicated) => {
             setDuplicate(false);
+            isDuplicated && history.push(`/ns/${currentNamespace}/ingestion`);
           }}
         />
       )}
@@ -661,7 +682,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         taskOptions={taskOptions}
         runBtn={taskDetails.runs.length !== 0}
         onRun={() => runTask(taskName)}
-        onTaskActions={(e) => handleTaskAtions(e)}
+        onTaskActions={(e) => handleTaskActions(e)}
         navToHome={() => history.push(`/ns/${currentNamespace}/ingestion`)}
         backArrow
       />

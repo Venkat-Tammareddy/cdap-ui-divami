@@ -199,7 +199,6 @@ const initialWeekDays = {
 };
 interface SheduleTaskProps extends WithStyles<typeof styles> {
   closeSchedule: () => void;
-  sheduleString?: string;
   taskName?: string;
   selectItem?: any;
   setLoadingtl?;
@@ -209,7 +208,6 @@ interface SheduleTaskProps extends WithStyles<typeof styles> {
 const SheduleTask: React.FC<SheduleTaskProps> = ({
   classes,
   closeSchedule,
-  sheduleString,
   taskName,
   selectItem,
   setLoadingtl,

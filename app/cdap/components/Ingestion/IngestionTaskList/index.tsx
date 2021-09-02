@@ -156,13 +156,14 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
   const errorIcon = '/cdap_assets/img/error.svg';
   const successIcon = '/cdap_assets/img/sucess.svg';
   const noTaskIcon = '/cdap_assets/img/No Task.svg';
+  const [refetchSchedule, setRefetchSchedule] = React.useState(false);
+
   const closeSchedule = () => {
     // setLoading(true);
     setSchedule(false);
   };
   const sheduleTask = (type, taskName, cronExpression) => {
-    setLoading(true);
-    if (type == 'Suspend') {
+    if (type === 'Suspend') {
       MyPipelineApi.suspend({
         namespace: NamespaceStore.getState().selectedNamespace,
         appId: taskName,
@@ -170,6 +171,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
       }).subscribe(
         (message) => {
           console.log('shedule', message);
+          setRefetchSchedule(true);
         },
         (err) => {
           console.log(err);
@@ -234,9 +236,11 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
         <SheduleTask
           closeSchedule={closeSchedule}
           setLoadingtl={setLoading}
-          // sheduleString={sheduleString}
           taskName={sheduleObj.taskName}
           selectItem={sheduleObj.selectItem}
+          scheduleSuccess={() => {
+            setRefetchSchedule(true);
+          }}
         />
       </If>
       <div className={classes.root}>
@@ -284,6 +288,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
                         setAlert(taskName);
                       }}
                       setDuplicate={(value) => setDuplicate(value)}
+                      refetchSchedule={refetchSchedule}
                     />
                   </TableRow>
                 );

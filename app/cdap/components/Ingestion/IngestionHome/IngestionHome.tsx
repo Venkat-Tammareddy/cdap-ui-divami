@@ -27,14 +27,10 @@ import { getCurrentNamespace } from 'services/NamespaceStore';
 import { gql } from 'apollo-boost';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
 import { useQuery } from '@apollo/react-hooks';
-import { categorizeGraphQlErrors } from 'services/helpers';
-import If from 'components/If';
-import ErrorBanner from 'components/ErrorBanner';
 import { MyPipelineApi } from 'api/pipeline';
 import { humanReadableDate } from 'services/helpers';
-import { MyMetadataApi } from 'api/metadata';
 import { ingestionContext } from 'components/Ingestion/ingestionContext';
-import OverlaySmall from '../OverlaySmall/OverlaySmall';
+import Pagination from '@material-ui/lab/Pagination';
 
 const I18N_PREFIX = 'features.PipelineList.DeployedPipelineView';
 
@@ -42,15 +38,29 @@ const styles = (theme): StyleRules => {
   return {
     root: {
       height: '100%',
+      '& .MuiPaginationItem-root': {
+        height: '24px',
+        minWidth: '24px',
+        fontFamily: 'Lato',
+        fontSize: '14px',
+        lineHeight: '24px',
+        '&:focus': {
+          outline: 'none',
+        },
+      },
     },
     content: {
       height: 'calc(100% - 50px)', // 100% - height of EntityTopPanel
       padding: '15px 50px',
+      display: 'flex',
+      flexDirection: 'column',
     },
     tabbleViewWrpr: {
       padding: '0px 18px',
-      height: 'calc(100% - 112px)',
+      // height: 'calc(100% - 112px)',
       borderTop: '1px solid #A5A5A5',
+      display: 'flex',
+      flexDirection: 'column',
     },
     tabsWrapper: {
       padding: '18px 0px',
@@ -115,8 +125,9 @@ const styles = (theme): StyleRules => {
     },
     paginationWrapper: {
       display: 'flex',
-      justifyContent: 'center',
+      justifyContent: 'flex-end',
       alignItems: 'center',
+      margin: '19.5px 0px',
     },
     filterIcn: {
       paddingTop: '10px',
@@ -193,16 +204,28 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const QUERY = gql`
   {
     pipelines(namespace: "${getCurrentNamespace()}") {
-      name
+      name,
+      runs {
+        runid,
+        status,
+        starting,
+        start,
+        end,
+        profileId
+      },
+      totalRuns,
+      nextRuntime {
+        id,
+        time
+      }
     }
   }
 `;
 
-  const { loading, error, data, refetch, networkStatus } = useQuery(QUERY, {
+  const { loading, data, refetch, networkStatus } = useQuery(QUERY, {
     errorPolicy: 'all',
     fetchPolicy: 'no-cache',
     notifyOnNetworkStatusChange: true,
-    onCompleted: (data) => {},
   });
   React.useEffect(() => {
     if (loading === false) {
@@ -291,6 +314,9 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     const firstIndex = lastIndex - 10;
     return list.slice(firstIndex, lastIndex);
   };
+  // const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  //   setPageNo(value);
+  // };
 
   return (
     <>
@@ -308,7 +334,10 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
             <div>
               <span
                 className={classes.tabs}
-                onClick={() => setDisplayDrafts(false)}
+                onClick={() => {
+                  setPageNo(1);
+                  setDisplayDrafts(false);
+                }}
                 style={{
                   borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none',
                   opacity: displayDrafts ? '0.7' : '',
@@ -320,7 +349,10 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
             <div>
               <span
                 className={classes.tabs}
-                onClick={() => setDisplayDrafts(true)}
+                onClick={() => {
+                  setPageNo(1);
+                  setDisplayDrafts(true);
+                }}
                 style={{
                   borderBottom: displayDrafts ? '4px solid #4285F4' : 'none',
                   opacity: !displayDrafts ? '0.7' : '',
@@ -329,21 +361,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
                 DRAFTS ({draftsList.length})
               </span>
             </div>
-            <div className={classes.paginationWrapper}>
-              <Button onClick={() => pageNo > 1 && setPageNo((p) => p - 1)}>&lt;</Button>
-              {pageNo +
-                '/' +
-                Math.ceil(displayDrafts ? draftsList.length / 10 : tasksList.length / 10)}
-              <Button
-                onClick={() =>
-                  pageNo <
-                    Math.ceil(displayDrafts ? draftsList.length / 10 : tasksList.length / 10) &&
-                  setPageNo((p) => p + 1)
-                }
-              >
-                &gt;
-              </Button>
-            </div>
+
             <TextField
               variant="outlined"
               placeholder={displayDrafts ? 'Search drafts' : 'Search tasks'}
@@ -429,6 +447,16 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
               refetch={refetch}
             />
           )}
+          <div className={classes.paginationWrapper}>
+            <Pagination
+              count={Math.ceil(displayDrafts ? draftsList.length / 10 : tasksList.length / 10)}
+              color="primary"
+              page={pageNo}
+              onChange={(event, value) => {
+                setPageNo(value);
+              }}
+            />
+          </div>
         </div>
       </div>
     </>

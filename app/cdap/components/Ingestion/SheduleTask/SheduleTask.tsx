@@ -65,6 +65,7 @@ const styles = (theme): StyleRules => {
       position: 'absolute',
       padding: '30px 40px',
       fontFamily: 'Lato',
+      overflowY: 'auto',
     },
     heading: {
       fontSize: '20px',
@@ -198,19 +199,19 @@ const initialWeekDays = {
 };
 interface SheduleTaskProps extends WithStyles<typeof styles> {
   closeSchedule: () => void;
-  sheduleString?: string;
   taskName?: string;
   selectItem?: any;
   setLoadingtl?;
+  scheduleSuccess?: () => void;
 }
 
 const SheduleTask: React.FC<SheduleTaskProps> = ({
   classes,
   closeSchedule,
-  sheduleString,
   taskName,
   selectItem,
   setLoadingtl,
+  scheduleSuccess,
 }) => {
   const tileDesignBar = '/cdap_assets/img/title-design-bar.svg';
   const calendar = '/cdap_assets/img/calendar.svg';
@@ -398,6 +399,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
             (message) => {
               // setLoading(false);
               console.log('shedule', message);
+              scheduleSuccess();
             },
             (err) => {
               console.log(err);
@@ -405,6 +407,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
           );
         } else {
           setLoading(false);
+          scheduleSuccess();
         }
       },
       (err) => {
@@ -480,7 +483,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
               <Box mb={2}>
                 <Grid container spacing={1}>
                   {Object.keys(sheduleObj.weekDays).map((item, index) => (
-                    <Grid item xs={3}>
+                    <Grid item xs={3} key={index}>
                       <Checkbox
                         checked={sheduleObj.weekDays[item]}
                         onChange={(e) => onWeekDayChecked(e, item)}
@@ -693,7 +696,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
             </Box>
             <Grid container className={classes.radioContainer}>
               {recurOptions.map((item, index) => (
-                <Grid item xs={4} className={classes.radioButtons}>
+                <Grid item xs={4} className={classes.radioButtons} key={index}>
                   <Radio
                     onClick={(e) => {
                       onItemChecked(item);

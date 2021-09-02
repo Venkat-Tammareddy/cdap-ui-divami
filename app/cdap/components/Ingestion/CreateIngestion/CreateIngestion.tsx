@@ -36,6 +36,7 @@ import { useParams } from 'react-router';
 import OverlaySmall from '../OverlaySmall/OverlaySmall';
 import StepperContent from './StepperContent/StepperContent';
 import Steps from './Steps/Steps';
+import produce from 'immer';
 
 const styles = (theme): StyleRules => {
   return {
@@ -174,9 +175,33 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
     if (id) {
       MyPipelineApi.getDraftDetails({ context: currentNamespace, draftId: id }).subscribe(
         (data) => {
+          console.log(data);
           setDraftId(id);
           setDraftConfig(data);
           setDeployLoader(false);
+          data.config.stages.length === 1 &&
+            setDraftConfig(
+              produce((draft) => {
+                draft.config.stages[1] = {
+                  name: '',
+                  connectionType: '',
+                  id: '',
+                  plugin: {
+                    name: '',
+                    type: '',
+                    artifact: {},
+                    properties: {
+                      referenceName: '',
+                      connectionString: '',
+                      jdbcPluginName: '',
+                      user: '',
+                      password: '',
+                      whitelist: '',
+                    },
+                  },
+                };
+              })
+            );
         }
       );
     } else {

@@ -215,7 +215,6 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const options = ['Run Task', 'Update Schedule', 'Task Configuration', 'Duplicate', 'Archive'];
   const [showRecords, setShowRecords] = React.useState(false);
   const [activIcon, setActivIcon] = React.useState('chart');
   const arrowBack = '/cdap_assets/img/arrow-back.svg';

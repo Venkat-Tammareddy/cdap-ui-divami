@@ -62,7 +62,7 @@ const styles = (theme): StyleRules => {
     },
 
     header: {
-      padding: '10px 20px',
+      padding: '10px 0px',
       color: '#19A347',
       fontSize: '16px',
       fontFamily: 'Lato',
@@ -133,6 +133,7 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       flexDirection: 'row',
       height: '50px',
+      marginLeft: '8px',
     },
     flexHeader: {
       display: 'flex',

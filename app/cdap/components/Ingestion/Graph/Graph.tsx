@@ -196,8 +196,8 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
         />
         <YAxis />
         <VerticalBarSeries
-          barWidth={0.4}
-          data={testData}
+          barWidth={0.2}
+          data={runIdArray}
           color="#74D091"
           style={{ cursor: 'pointer' }}
           onValueMouseOver={(data, index) => {

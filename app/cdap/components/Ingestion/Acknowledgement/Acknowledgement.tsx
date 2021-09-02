@@ -24,6 +24,7 @@ import { ingestionContext } from 'components/Ingestion/ingestionContext';
 import { MyPipelineApi } from 'api/pipeline';
 import NamespaceStore from 'services/NamespaceStore';
 import history from 'services/history';
+import setStringtoTime from '../IngestionTaskList/stringToTime';
 
 const styles = (): StyleRules => {
   return {
@@ -129,6 +130,7 @@ const AcknowledgementView: React.FC<IAcknowledgementProps> = ({
 }) => {
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [toggleSchedule, setToggleSchedule] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const { draftObj }: any = useContext(ingestionContext);
   console.log('draftObj', draftObj);
   const handleSchedule = () => {
@@ -155,7 +157,16 @@ const AcknowledgementView: React.FC<IAcknowledgementProps> = ({
   return (
     <div className={classes.root}>
       <If condition={toggleSchedule}>
-        <SheduleTask closeSchedule={closeSchedule} />
+        <SheduleTask
+          closeSchedule={closeSchedule}
+          setLoadingtl={setLoading}
+          // sheduleString={sheduleString}
+          taskName={draftObj.name}
+          selectItem={setStringtoTime(draftObj.config.schedule)}
+          scheduleSuccess={() =>
+            history.replace(`/ns/${currentNamespace}/ingestion/task/${draftObj.name}`)
+          }
+        />
       </If>
       <div className={classes.ackMessage}>
         <img src={ackIcon} alt="ack icon" height="92px" width="130px" />
@@ -211,7 +222,13 @@ const AcknowledgementView: React.FC<IAcknowledgementProps> = ({
               <p className={classes.optionText}>Go to Task List</p>
             </CardContent>
           </Card>
-          <Card className={classes.optionCard} onMouseOver={toggleCursor}>
+          <Card
+            className={classes.optionCard}
+            onMouseOver={toggleCursor}
+            onClick={() =>
+              history.replace(`/ns/${currentNamespace}/ingestion/task/${draftObj.name}`)
+            }
+          >
             <CardContent>
               <img
                 src={configIcon}

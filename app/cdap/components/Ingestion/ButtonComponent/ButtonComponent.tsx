@@ -40,6 +40,9 @@ const styles = (): StyleRules => {
       lineHeight: '24px',
       fontFamily: 'Lato',
       paddingRight: '0px',
+      '&:focus': {
+        outline: 'none',
+      },
     },
     submitButton: {
       backgroundColor: '#4285F4',
@@ -47,6 +50,9 @@ const styles = (): StyleRules => {
       lineHeight: '24px',
       fontSize: '14px',
       fontFamily: 'Lato',
+      '&:focus': {
+        outline: 'none',
+      },
     },
   };
 };

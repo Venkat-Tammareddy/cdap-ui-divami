@@ -65,8 +65,10 @@ const styles = (theme): StyleRules => {
       backgroundColor: 'rgb(255 255 255 / 0%)',
       fontSize: '14px',
       color: '#202124',
-      textOverflow: 'ellipsis',
       paddingLeft: '11px',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
     },
   };
 };
@@ -224,7 +226,9 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
             </Paper>
           </Grid>
           <Grid item xs={11}>
-            <Paper className={classes.taskNameText}>{taskName}</Paper>
+            <Paper className={classes.taskNameText} title={taskName}>
+              {taskName}
+            </Paper>
             <Paper className={classes.taskNameText}>
               {latestRun?.status ? latestRun?.status : 'DEPLOYED'}
             </Paper>

@@ -83,6 +83,7 @@ const styles = (): StyleRules => {
     hnt: {
       width: '261px',
       height: '181px',
+      marginLeft: '0px',
     },
     jobInfo: {
       fontFamily: 'Lato',
@@ -166,21 +167,44 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
   // Use flexible width graph
   const FPlot = makeVisFlexible(XYPlot);
 
-  const testData = [
-    { x: 'job1', y: '2' },
-    { x: 'job2', y: '132' },
-    { x: 'job3', y: '712' },
-    { x: 'job4', y: '62' },
-    { x: 'job5', y: '142' },
-    { x: 'job6', y: '112' },
-    { x: 'job7', y: '352' },
-    { x: 'job8', y: '662' },
-    { x: 'jobe', y: '102' },
-  ];
+  // const testData = [
+  //   { x: 'job1', y: 1000 },
+  //   { x: 'job2', y: 82 },
+  //   { x: 'job3', y: 412 },
+  //   { x: 'job4', y: 62 },
+  //   { x: 'job5', y: 142 },
+  //   { x: 'job6', y: 92 },
+  //   { x: 'job7', y: 52 },
+  //   { x: 'job8', y: 102 },
+  //   { x: 'jobe', y: 100 },
+  //   { x: 'job4a', y: 62 },
+  //   { x: 'job5a', y: 142 },
+  //   { x: 'job6a', y: 92 },
+  //   { x: 'job7a', y: 52 },
+  //   { x: 'job8a', y: 102 },
+  //   { x: 'jobea', y: 100 },
+  //   { x: 'job4a', y: 62 },
+  //   { x: 'job5a', y: 142 },
+  //   { x: 'job6a', y: 92 },
+  //   { x: 'job7a', y: 52 },
+  //   { x: 'job8a', y: 102 },
+  //   { x: 'jobea', y: 100 },
+  // ];
+  // const testData404 = [
+  //   { x: 'job1', y: 1000 },
+  //   { x: 'job2', y: 82 },
+  //   { x: 'job3', y: 412 },
+  //   { x: 'job4', y: 62 },
+  //   { x: 'job5', y: 142 },
+  //   { x: 'job6', y: 92 },
+  //   { x: 'job7', y: 52 },
+  //   { x: 'job8', y: 102 },
+  //   { x: 'jobe', y: 100 },
+  // ];
 
   return (
     <div className={classes.root}>
-      <XYPlot height={300} width={1366} xType="ordinal" margin={{ left: 100 }}>
+      <FPlot height={300} xType="ordinal" margin={{ left: 100 }}>
         <HorizontalGridLines />
         <XAxis />
         <ChartLabel
@@ -196,7 +220,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
         />
         <YAxis />
         <VerticalBarSeries
-          barWidth={0.2}
+          barWidth={0.3}
           data={runIdArray}
           color="#74D091"
           style={{ cursor: 'pointer' }}
@@ -246,7 +270,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
           style={{ cursor: 'pointer' }}
         />
         <VerticalBarSeries
-          barWidth={0.2}
+          barWidth={0.3}
           data={runIdArray2}
           color="#DB4437"
           style={{ cursor: 'pointer' }}
@@ -254,7 +278,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
             setValue(d);
           }}
         />
-      </XYPlot>
+      </FPlot>
     </div>
   );
 };

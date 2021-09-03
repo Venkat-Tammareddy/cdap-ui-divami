@@ -66,7 +66,7 @@ const styles = (theme): StyleRules => {
       fontSize: '14px',
       color: '#202124',
       textOverflow: 'ellipsis',
-      paddingLeft: '29px',
+      paddingLeft: '11px',
     },
   };
 };
@@ -237,11 +237,11 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
         <TaskTags taskName={taskName} />
       </TableCell>
       <TableCell>
-        <Grid container spacing={0}>
+        <Grid container spacing={0} style={{}}>
           {runs.map(
             (run, i) =>
               i < 3 && (
-                <Grid item xs={2} key={i}>
+                <Grid item xs={2} key={i} style={{ marginLeft: '0px' }}>
                   <Paper className={classes.paper}>
                     {runs.length === 0 && (
                       <p style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}> - -</p>

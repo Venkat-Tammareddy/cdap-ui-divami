@@ -31,6 +31,8 @@ import { MyPipelineApi } from 'api/pipeline';
 import { humanReadableDate } from 'services/helpers';
 import { ingestionContext } from 'components/Ingestion/ingestionContext';
 import Pagination from '@material-ui/lab/Pagination';
+import { CheckboxNormal, CheckedIcon } from '../CustomTableSelection/CustomTableSelection';
+import TasksFilter from './TasksFilter';
 
 const I18N_PREFIX = 'features.PipelineList.DeployedPipelineView';
 
@@ -129,10 +131,6 @@ const styles = (theme): StyleRules => {
       alignItems: 'center',
       margin: '19.5px 0px',
     },
-    filterIcn: {
-      paddingTop: '10px',
-      cursor: 'pointer',
-    },
     paper: {
       //   border: '1px solid green',
       boxShadow: 'none',
@@ -140,34 +138,6 @@ const styles = (theme): StyleRules => {
       fontSize: '14px',
       color: '#202124',
       textOverflow: 'ellipsis',
-    },
-    checkbox: {
-      margin: '0',
-    },
-    filterTitle: {
-      fontFamily: 'Lato',
-      color: '#202124',
-      fontSize: '18px',
-      letterSpacing: '0',
-      marginLeft: '19px',
-      marginTop: '20px',
-      marginBottom: '2',
-    },
-    applyButton: {
-      marginLeft: '62px',
-      width: '80px',
-      fontSize: '14px',
-      marginTop: '6px',
-    },
-    menuItem: {
-      height: '34px',
-      paddingTop: '11px',
-      fontSize: '16px',
-      fontFamily: 'Lato',
-    },
-    hrLine: {
-      width: '90%',
-      borderTop: '1px solid #A5A5A5',
     },
   };
 };
@@ -182,10 +152,12 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const [search, setSearch] = React.useState('');
   const namespace = getCurrentNamespace();
   const [pageNo, setPageNo] = React.useState(1);
-
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const [filterOptions, setFilterOptions] = React.useState([]);
+  const [filterOptions, setFilterOptions] = React.useState([
+    'DEPLOYED',
+    'COMPLETED',
+    'FAILED',
+    'KILLED',
+  ]);
   React.useEffect(() => {
     MyPipelineApi.getDrafts({
       context: namespace,
@@ -206,18 +178,8 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     pipelines(namespace: "${getCurrentNamespace()}") {
       name,
       runs {
-        runid,
         status,
-        starting,
-        start,
-        end,
-        profileId
       },
-      totalRuns,
-      nextRuntime {
-        id,
-        time
-      }
     }
   }
 `;
@@ -234,13 +196,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
         return data.pipelines.map((ele) => {
           return {
             taskName: ele.name,
-            // sourceConnectionDb: '',
-            // sourceConnection: '',
-            // targetConnection: '',
-            // targetConnectionDb: '',
-            // tags: [],
-            // runs: [],
-            // moreBtnVisible: true,
+            status: ele.runs?.length ? ele.runs[0]?.status : 'DEPLOYED',
           };
         });
       });
@@ -291,13 +247,10 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   // }
 
   const searchIcon = '/cdap_assets/img/search.svg';
-  const filterIcon = '/cdap_assets/img/filter.svg';
 
   const SearchIcon = () => {
     return <img src={searchIcon} alt="icon" />;
   };
-
-  const options = ['All', 'Running', 'Success', 'Failed', 'Killed'];
 
   const mapDratsList = () => {
     return draftsList.map((ele) => {
@@ -317,6 +270,8 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   // const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
   //   setPageNo(value);
   // };
+  const filteredList = tasksList.filter((item) => filterOptions.includes(item.status));
+  console.log('filter', filteredList);
 
   return (
     <>
@@ -374,62 +329,13 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
               data-cy="connections-search"
             />
             <Paper className={classes.paper}>
-              <img
-                src={filterIcon}
-                className={classes.filterIcn}
-                alt="get a good browser"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  e.nativeEvent.stopImmediatePropagation();
-                  setAnchorEl(e.currentTarget);
+              <TasksFilter
+                filters={filterOptions}
+                applyFilters={(list) => {
+                  setFilterOptions(list);
+                  refetch();
                 }}
               />
-              <Menu
-                keepMounted
-                anchorEl={anchorEl}
-                open={open}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                onClose={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  e.nativeEvent.stopImmediatePropagation();
-                  setAnchorEl(null);
-                }}
-                PaperProps={{
-                  style: {
-                    height: '327px',
-                    width: '204px',
-                  },
-                }}
-              >
-                <p className={classes.filterTitle}>Filter by Status</p>
-                {options.map((option) => (
-                  <MenuItem
-                    key={option}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      e.nativeEvent.stopImmediatePropagation();
-                      // optionSelect(option);
-                    }}
-                    className={classes.menuItem}
-                  >
-                    <Checkbox className={classes.checkbox} /> {option}
-                  </MenuItem>
-                ))}
-                <hr className={classes.hrLine} />
-                <Button variant="contained" color="primary" className={classes.applyButton}>
-                  APPLY
-                </Button>
-              </Menu>
             </Paper>
           </div>
           {displayDrafts ? (
@@ -443,13 +349,13 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
           ) : (
             <IngestionTaskList
               searchText={search}
-              data={paginatedList(tasksList)}
+              data={paginatedList(filteredList)}
               refetch={refetch}
             />
           )}
           <div className={classes.paginationWrapper}>
             <Pagination
-              count={Math.ceil(displayDrafts ? draftsList.length / 10 : tasksList.length / 10)}
+              count={Math.ceil(displayDrafts ? draftsList.length / 10 : filteredList.length / 10)}
               color="primary"
               page={pageNo}
               onChange={(event, value) => {

@@ -38,6 +38,7 @@ const styles = (theme): StyleRules => {
     },
     flex: {
       display: 'flex',
+      flexWrap: 'wrap',
     },
   };
 };

@@ -197,6 +197,15 @@ interface IIngestionProps extends WithStyles<typeof styles> {
   handleChange: (tableName: string) => void;
 }
 
+const checkBoxActiv = '/cdap_assets/img/check-box-active.svg';
+const checkbox = '/cdap_assets/img/checkbox-normal.svg';
+export const CheckedIcon = () => {
+  return <img src={checkBoxActiv} alt="icon" height="18px" width="18px" />;
+};
+export const CheckboxNormal = () => {
+  return <img src={checkbox} alt="icon" height="18px" width="18px" />;
+};
+
 const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   classes,
   tablesList = [],
@@ -204,9 +213,7 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const filterIcon = '/cdap_assets/img/filter.svg';
-  const checkBoxActiv = '/cdap_assets/img/check-box-active.svg';
   const searchIcon = '/cdap_assets/img/search.svg';
-  const checkbox = '/cdap_assets/img/checkbox-normal.svg';
   const options = ['All', 'Selected', 'Unselected'];
   const [radioValue, selectedRadioValue] = React.useState('all');
   const [search, setSearch] = React.useState('');
@@ -214,15 +221,8 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   const filteredList = tablesList.filter((item) =>
     item.tableName?.toLowerCase().includes(search.toLowerCase())
   );
-  const CheckedIcon = () => {
-    return <img src={checkBoxActiv} alt="icon" height="18px" width="18px" />;
-  };
   const SearchIconn = () => {
     return <img src={searchIcon} alt="icon" height="18px" width="18px" />;
-  };
-
-  const CheckboxNormal = () => {
-    return <img src={checkbox} alt="icon" height="18px" width="18px" />;
   };
 
   const handleClose = () => {

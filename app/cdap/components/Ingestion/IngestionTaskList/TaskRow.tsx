@@ -238,35 +238,36 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
       </TableCell>
       <TableCell>
         <Grid container spacing={0}>
-          {runs.map(
-            (run, i) =>
-              i < 3 && (
-                <Grid item xs={2} key={i}>
-                  <Paper className={classes.paper}>
-                    {runs.length === 0 && (
-                      <p style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}> - -</p>
-                    )}
-                    <img
-                      src={
-                        (run.status === 'RUNNING' && runProgress) ||
-                        (run.status === 'COMPLETED' && runSuccess) ||
-                        (run.status === 'FAILED' && runError) ||
-                        (run.status === 'KILLED' && runError) ||
-                        runProgress
-                      }
-                      alt="img"
-                      height="20px"
-                      width="20px"
-                      onClick={(e) => {
-                        alert(1);
-                        e.stopPropagation();
-                        console.log('RUN IDDD' + JSON.stringify(run));
-                        history.push(`/task/${taskName}/job/${run.runId}`);
-                      }}
-                    />
-                  </Paper>
-                </Grid>
-              )
+          {!runs.length ? (
+            <p style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}> - -</p>
+          ) : (
+            runs.map(
+              (run, i) =>
+                i < 3 && (
+                  <Grid item xs={2} key={i}>
+                    <Paper className={classes.paper}>
+                      <img
+                        src={
+                          (run.status === 'RUNNING' && runProgress) ||
+                          (run.status === 'COMPLETED' && runSuccess) ||
+                          (run.status === 'FAILED' && runError) ||
+                          (run.status === 'KILLED' && runError) ||
+                          runProgress
+                        }
+                        alt="img"
+                        height="20px"
+                        width="20px"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          history.push(
+                            `/ns/${namespace}/ingestion/task/${taskName}/job/${run.runId}`
+                          );
+                        }}
+                      />
+                    </Paper>
+                  </Grid>
+                )
+            )
           )}
         </Grid>
       </TableCell>

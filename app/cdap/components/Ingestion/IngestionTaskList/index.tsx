@@ -119,6 +119,7 @@ const styles = (theme): StyleRules => {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
+      marginTop: '10%',
     },
     emptyMsg: {
       fontSize: '18px',

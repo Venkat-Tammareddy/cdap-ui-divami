@@ -66,7 +66,7 @@ const styles = (theme): StyleRules => {
       fontSize: '14px',
       color: '#202124',
       textOverflow: 'ellipsis',
-      paddingLeft: '29px',
+      paddingLeft: '11px',
     },
   };
 };

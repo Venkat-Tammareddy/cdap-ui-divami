@@ -91,7 +91,11 @@ const styles = (theme): StyleRules => {
       color: '#202124',
       padding: '5px 20px',
     },
-    firstColumn: {},
+    firstColumn: {
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+    },
   };
 };
 
@@ -149,7 +153,9 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data, reFe
                   data-cy={`table-row-${item.pipeLineName}`}
                   to={`/ns/${getCurrentNamespace()}/ingestion/create/${item.id}`}
                 >
-                  <TableCell className={classes.firstColumn}>{item.pipeLineName}</TableCell>
+                  <TableCell className={classes.firstColumn} title={item.pipeLineName}>
+                    {item.pipeLineName}
+                  </TableCell>
                   <TableCell>{item.type}</TableCell>
                   <TableCell>{item.lastSaved}</TableCell>
                   <TableCell>

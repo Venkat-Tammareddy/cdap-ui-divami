@@ -258,7 +258,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
         id: ele.id,
         pipeLineName: ele.name,
         type: 'Batch',
-        lastSaved: humanReadableDate(ele.updatedTimeMillis),
+        lastSaved: humanReadableDate(ele.updatedTimeMillis, true),
       };
     });
   };

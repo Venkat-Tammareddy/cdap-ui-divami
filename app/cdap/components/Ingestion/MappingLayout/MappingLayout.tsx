@@ -297,24 +297,7 @@ const MappingView: React.FC<IIngestionProps> = ({
           <h3 className={classes.emptyList}>There are no tables available ...</h3>
         )
       ) : customTablesSelection ? (
-        <CustomTableSelection
-          tablesList={items}
-          handleChange={(tableName) => {
-            setItems((prev) => {
-              const index = prev.findIndex((item) => item.tableName === tableName);
-              return [
-                ...prev.slice(0, index),
-                {
-                  ...prev[index],
-                  tableName,
-                  selected: !prev[index].selected,
-                },
-                ...prev.slice(index + 1),
-              ];
-            });
-            console.log(items);
-          }}
-        />
+        <CustomTableSelection tablesList={items} setItems={setItems} />
       ) : (
         <>
           <Typography className={classes.title}>How Would You Like to Proceed?</Typography>

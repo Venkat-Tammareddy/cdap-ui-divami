@@ -542,7 +542,7 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
         submitText="Change name"
         errorType
       />
-      <div className={classes.sdleTskWrapper}>
+      <div className={classes.sdleTskWrapper} data-cy="duplicate-container">
         <div className={classes.headerWrapper}>
           <IngestionHeader title="Duplicate Task" />
         </div>
@@ -564,23 +564,7 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
         )}
         <div className={classes.container}>
           {customTablesSelection ? (
-            <CustomTableSelection
-              tablesList={items}
-              handleChange={(tableName) => {
-                setItems((prev) => {
-                  const index = prev.findIndex((item) => item.tableName === tableName);
-                  return [
-                    ...prev.slice(0, index),
-                    {
-                      ...prev[index],
-                      tableName,
-                      selected: !prev[index].selected,
-                    },
-                    ...prev.slice(index + 1),
-                  ];
-                });
-              }}
-            />
+            <CustomTableSelection tablesList={items} setItems={setItems} />
           ) : (
             <>
               <TaskInfoFields

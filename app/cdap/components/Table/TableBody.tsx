@@ -36,7 +36,11 @@ const TableBodyView: React.FC<React.PropsWithChildren<ITableBodyProps>> = ({
     return cloneElement(child, { columnTemplate });
   });
 
-  return <div className={classes.gridBody}>{childrenClone}</div>;
+  return (
+    <div data-cy="table-body" className={classes.gridBody}>
+      {childrenClone}
+    </div>
+  );
 };
 
 const TableBody = withStyles(styles)(TableBodyView);

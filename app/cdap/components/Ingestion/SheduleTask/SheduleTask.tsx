@@ -683,7 +683,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
         <LoadingSVGCentered />
       </If>
       <div className={classes.root}>
-        <div className={classes.sdleTskWrapper}>
+        <div className={classes.sdleTskWrapper} data-cy="schedule-wrapper">
           <div className={classes.heading}>
             <Box component="span" mr={2} className={classes.scheduleHeader}>
               Schedule Task

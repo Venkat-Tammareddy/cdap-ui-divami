@@ -223,8 +223,8 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
   return (
     <>
       <div className={classes.root}>
-        <div className={classes.title}>
-          <div onClick={() => (taskActionsBtn || browseBtn) && navToHome()}>
+        <div className={classes.title} data-cy="ingest-title">
+          <div onClick={() => (taskActionsBtn || browseBtn) && navToHome()} data-cy="ingest-tasks">
             {' '}
             {backArrow && (
               <img className={classes.backArrow} src={arrowBack} alt="nav back arrow" />
@@ -232,7 +232,7 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
             {title}
           </div>
           {taskActionsBtn && (
-            <div className={classes.title2}>
+            <div className={classes.title2} data-cy="ingest-tasks-2">
               <img src={arrowFront} alt="nav arrow" className={classes.lastIcon} />
               <div className={classes.titleText}>Task Details</div>
             </div>
@@ -242,6 +242,7 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
               <div
                 className={classes.title2}
                 onClick={() => history.push(`/ns/${currentNamespace}/ingestion/task/${taskName}`)}
+                data-cy="ingest-tasks-1"
               >
                 <img src={arrowFront} alt="nav arrow" className={classes.lastIcon} />
                 <div className={classes.titleText}>{taskName}</div>
@@ -275,6 +276,7 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
             onClick={(e) => {
               setAnchorEl(e.currentTarget);
             }}
+            data-cy="task-actions"
           >
             <img
               className={classes.createIcon}

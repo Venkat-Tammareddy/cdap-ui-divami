@@ -16,12 +16,11 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { FormControlLabel, Menu, MenuItem, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import Box from '@material-ui/core/Box';
-import { Button, Radio, Typography } from '@material-ui/core';
-import { RadioGroup } from '@material-ui/core';
+import CustomTableFilter from './CustomTableFilter';
 
 const styles = (): StyleRules => {
   return {
@@ -153,14 +152,12 @@ const styles = (): StyleRules => {
       letterSpacing: '0.45px',
       fontFamily: 'Lato',
       marginBottom: '0px',
-      paddingTop: '7px',
       flex: '1',
     },
     headerContainer: {
       display: 'flex',
       flexDirection: 'row',
       height: '50px',
-      justifyContent: 'center',
       alignItems: 'center',
     },
     box: {
@@ -169,10 +166,7 @@ const styles = (): StyleRules => {
     gridbox: {
       borderBottom: '1px solid #D4D4D4',
     },
-    filterIcon: {
-      marginLeft: '10px',
-      cursor: 'pointer',
-    },
+
     checkboxes: { margin: '0', padding: '0' },
     labelText: {
       margin: '0',
@@ -186,6 +180,12 @@ const styles = (): StyleRules => {
       lineHeight: '24px',
       cursor: 'pointer',
     },
+    selectAll: {
+      textDecoration: 'underline',
+      color: '#4285F4',
+      marginRight: '10px',
+      cursor: 'pointer',
+    },
   };
 };
 interface ITableItem {
@@ -194,7 +194,7 @@ interface ITableItem {
 }
 interface IIngestionProps extends WithStyles<typeof styles> {
   tablesList: ITableItem[];
-  handleChange: (tableName: string) => void;
+  setItems: (items: any) => void;
 }
 
 const checkBoxActiv = '/cdap_assets/img/check-box-active.svg';
@@ -209,34 +209,56 @@ export const CheckboxNormal = () => {
 const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   classes,
   tablesList = [],
-  handleChange,
+  setItems,
 }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const filterIcon = '/cdap_assets/img/filter.svg';
   const searchIcon = '/cdap_assets/img/search.svg';
-  const options = ['All', 'Selected', 'Unselected'];
-  const [radioValue, selectedRadioValue] = React.useState('all');
   const [search, setSearch] = React.useState('');
+  const [radioValue, setRadioValue] = React.useState('All');
 
-  const filteredList = tablesList.filter((item) =>
-    item.tableName?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredList = tablesList
+    .filter((item) => item.tableName?.toLowerCase().includes(search.toLowerCase()))
+    .filter((item) => {
+      return (
+        (radioValue === 'Selected' && item.selected) ||
+        (radioValue === 'Unselected' && !item.selected) ||
+        (radioValue === 'All' && true)
+      );
+    });
   const SearchIconn = () => {
     return <img src={searchIcon} alt="icon" height="18px" width="18px" />;
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleChange = (tableName: string) => {
+    setItems((prev) => {
+      const index = prev.findIndex((item) => item.tableName === tableName);
+      return [
+        ...prev.slice(0, index),
+        {
+          ...prev[index],
+          tableName,
+          selected: !prev[index].selected,
+        },
+        ...prev.slice(index + 1),
+      ];
+    });
   };
-
-  const handleRadioChange = (e) => {
-    selectedRadioValue(e.target.value);
-  };
-
   return (
     <div className={classes.container}>
       <div className={classes.headerContainer}>
         <p className={classes.headerText}>Select Tables to Ingest</p>
+        <div
+          className={classes.selectAll}
+          onClick={() => {
+            setItems((prev) => {
+              return prev.map((item) => ({
+                tableName: item.tableName,
+                selected: true,
+              }));
+            });
+          }}
+        >
+          Select All
+        </div>
         <TextField
           variant="outlined"
           placeholder="Search tables"
@@ -252,36 +274,10 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
           autoFocus={false}
           data-cy="connections-search"
         />
-        <img
-          src={filterIcon}
-          alt="filter icon"
-          height="17.1px"
-          width="18px"
-          className={classes.filterIcon}
-          onClick={(e) => setAnchorEl(e.currentTarget)}
-        />
-        <Menu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          {options.map((option) => (
-            <MenuItem
-              key={option}
-              onClick={(e) => {
-                handleClose();
-              }}
-            >
-              <Radio checked={radioValue === option} onChange={handleRadioChange} value={option} />
-              {option}
-            </MenuItem>
-          ))}
-        </Menu>
+        <CustomTableFilter radioValue={radioValue} setRadioValue={setRadioValue} />
       </div>
       <Box className={classes.box}>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} data-cy="checkboxes">
           {filteredList.length === 0 ? (
             <h3 className={classes.emptyList}>
               {search.length === 0 ? '' : `There are no tables matching your search '${search}'`}

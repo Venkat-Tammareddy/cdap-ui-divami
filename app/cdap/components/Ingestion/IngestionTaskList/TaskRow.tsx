@@ -307,6 +307,7 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
                   e.nativeEvent.stopImmediatePropagation();
                   setAnchorEl(e.currentTarget);
                 }}
+                data-cy="options-img"
               />
               <Menu
                 id="long-menu"
@@ -334,6 +335,7 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
                     width: '20ch',
                   },
                 }}
+                data-cy="options-popover"
               >
                 {options.map((option) => (
                   <MenuItem

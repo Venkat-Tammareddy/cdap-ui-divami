@@ -418,7 +418,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
       </div>
       {displaySummary ? (
         <>
-          <div className={classes.jobInfo}>
+          <div className={classes.jobInfo} data-cy="job-info">
             <div className={classes.jobItem}>
               <img
                 className={classes.infoIcons}
@@ -462,7 +462,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
             </div>
           </div>
           {/* <IngestionHeader title="Job Configuration" /> */}
-          <div className={classes.connectionContainer}>
+          <div className={classes.connectionContainer} data-cy="job-details-container">
             <p className={classes.taskName}>Job Configuration</p>
 
             <div className={classes.outer}>

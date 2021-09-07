@@ -343,10 +343,9 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
       setTaskDetails(
         produce((draft) => {
           draft.tags = metaData.find((item) => item.scope === 'USER').tags;
-          draft.createdOn = humanReadableDate(
-            metaData.find((item) => item.scope === 'SYSTEM').properties['creation-time'],
-            false
-          );
+          draft.createdOn = metaData.find((item) => item.scope === 'SYSTEM').properties[
+            'creation-time'
+          ];
         })
       );
     });
@@ -687,11 +686,13 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
         backArrow
       />
       <div className={taskDetails.runs.length === 0 ? classes.fullWidth : classes.container}>
-        <div className={classes.taskDetailContainer}>
+        <div className={classes.taskDetailContainer} data-cy="task-details-container">
           <div className={taskDetails.runs.length === 0 ? classes.leftFullWidth : classes.left}>
             <div className={classes.flexContainer}>
               <div className={classes.taskName}>{taskName}</div>
-              <div className={classes.taskDate}>Deployed on {taskDetails.createdOn}</div>
+              <div className={classes.taskDate}>
+                Deployed on {humanReadableDate(parseInt(taskDetails.createdOn), true)}
+              </div>
             </div>
             <div className={classes.taskWrap}>
               <div className={classes.description}>{taskDetails.description}</div>
@@ -766,7 +767,9 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
                 </div>
                 <div className={classes.scheduleContainer}>
                   <div className={classes.runDetailsTop}>Schedule Run</div>
-                  <div className={classes.runDetailsBottom}>Every Month</div>
+                  <div className={classes.runDetailsBottom}>
+                    {setSelectedItem()?.item ? setSelectedItem()?.item : '--'}
+                  </div>
                 </div>
                 <div className={classes.runDetailsItem}>
                   <div className={classes.runDetailsTop}>Next Run</div>

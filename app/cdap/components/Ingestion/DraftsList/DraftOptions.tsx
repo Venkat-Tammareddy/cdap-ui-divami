@@ -76,6 +76,7 @@ const DraftOptionsView: React.FC<IDraftOptionsProps> = ({ classes, draftId, dele
           e.stopPropagation();
           setAnchorEl(e.currentTarget);
         }}
+        data-cy="draft-options"
       />
       <Menu
         id="long-menu"

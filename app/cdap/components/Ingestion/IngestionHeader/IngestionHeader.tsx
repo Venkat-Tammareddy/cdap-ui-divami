@@ -160,6 +160,18 @@ const styles = (theme): StyleRules => {
       justifyContent: 'center',
       alignItems: 'center',
     },
+    yellow: {
+      height: '12px',
+      width: '12px',
+      backgroundColor: '#ffc107 ',
+      borderRadius: '50%',
+    },
+    blue: {
+      height: '12px',
+      width: '12px',
+      backgroundColor: '#007bff',
+      borderRadius: '50%',
+    },
   };
 };
 
@@ -315,11 +327,19 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
             <div className={showRecords ? classes.showThese : classes.hideThese}>
               <div className={classes.smallContainer}>
                 <div className={classes.green}></div>
-                <p className={classes.txt}>Records Loaded</p>
+                <p className={classes.txt}>Completed</p>
               </div>
               <div className={classes.smallContainer}>
                 <div className={classes.red}></div>
-                <p className={classes.txt}>Errors</p>
+                <p className={classes.txt}>Failed</p>
+              </div>
+              <div className={classes.smallContainer}>
+                <div className={classes.yellow}></div>
+                <p className={classes.txt}>Killed</p>
+              </div>
+              <div className={classes.smallContainer}>
+                <div className={classes.blue}></div>
+                <p className={classes.txt}>Running</p>
               </div>
             </div>
             <p className={classes.viewTxt}>View by</p>

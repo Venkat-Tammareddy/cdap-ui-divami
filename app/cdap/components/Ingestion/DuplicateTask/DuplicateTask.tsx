@@ -74,6 +74,9 @@ const styles = (): StyleRules => {
         color: '#DB4437',
         fontSize: '12px',
       },
+      '& .MuiOutlinedInput-input': {
+        textIndent: '10px',
+      },
     },
     sdleTskWrapper: {
       width: '680px',

@@ -140,7 +140,6 @@ const styles = (): StyleRules => {
       '&::placeholder': {
         fontFamily: 'Lato',
         color: '#666666',
-        paddingLeft: '11px',
         opacity: '0.5',
       },
       height: '50px',
@@ -185,6 +184,7 @@ const styles = (): StyleRules => {
       color: '#4285F4',
       marginRight: '10px',
       cursor: 'pointer',
+      fontSize: '14px',
     },
   };
 };
@@ -225,7 +225,7 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
       );
     });
   const SearchIconn = () => {
-    return <img src={searchIcon} alt="icon" height="18px" width="18px" />;
+    return <img src={searchIcon} alt="icon" />;
   };
 
   const handleChange = (tableName: string) => {

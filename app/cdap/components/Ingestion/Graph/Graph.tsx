@@ -33,10 +33,11 @@ import {
   HorizontalGridLines,
 } from 'react-vis';
 import '../../../../../node_modules/react-vis/dist/style.css';
-import { CardContent, Typography } from '@material-ui/core';
+import { Button, CardContent, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import If from 'components/If';
 import { humanReadableDate } from 'services/helpers';
+import { json } from 'body-parser';
 const styles = (): StyleRules => {
   return {
     root: {
@@ -93,6 +94,33 @@ const styles = (): StyleRules => {
       color: '#202124;',
       marginBottom: '0',
     },
+    failedText: {
+      fontFamily: 'Lato',
+      backgroundColor: '#F8888A',
+      borderRadius: '16px',
+      color: '#FFFFFF',
+      padding: '2px 10px 5px 10px',
+      fontSize: '14px',
+      marginBottom: '9.5px',
+    },
+    killedText: {
+      fontFamily: 'Lato',
+      backgroundColor: 'yellow',
+      borderRadius: '16px',
+      color: '#FFFFFF',
+      padding: '2px 10px 5px 10px',
+      fontSize: '14px',
+      marginBottom: '9.5px',
+    },
+    runningText: {
+      fontFamily: 'Lato',
+      backgroundColor: 'blue',
+      borderRadius: '16px',
+      color: '#FFFFFF',
+      padding: '2px 10px 5px 10px',
+      fontSize: '14px',
+      marginBottom: '9.5px',
+    },
   };
 };
 
@@ -101,7 +129,7 @@ interface GraphsProps extends WithStyles<typeof styles> {
   metrix: any;
 }
 const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
-  const [value, setValue] = React.useState({ x: '', y: '', time: '', test: '' });
+  const [value, setValue] = React.useState({ x: '', y: '', time: '', test: '', status: '' });
   let runIdArray = [];
   const [currentHoveredElement, setCurrentHoveredElement] = React.useState(null);
   const [show, setShow] = React.useState(false);
@@ -111,6 +139,12 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
   const errorRecords = [];
   const durationArray = [];
   const colorCodes = [];
+  const jobIdMap = new Map();
+  items.runs.forEach((item, index) => {
+    if (item.hasOwnProperty('runId')) {
+      jobIdMap.set(index, item.runId);
+    }
+  });
 
   items.runs.map((item, index) => {
     const obj = {
@@ -202,8 +236,8 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
   const FPlot = makeVisFlexible(XYPlot);
 
   const testData = [
-    { x: 'job1', y: 1000, size: 20, fill: 'red' },
-    { x: 'job2', y: 82, size: 40, fill: 'green' },
+    { x: 'job1', y: 1000, size: 20, fill: '#F8888A' },
+    { x: 'job2', y: 82, size: 40, fill: '#74D091' },
     { x: 'job3', y: 412, size: 31 },
     { x: 'job4', y: 62, size: 54 },
     { x: 'job5', y: 142, size: 10 },
@@ -233,11 +267,17 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
       colorCodes.forEach((item2) => {
         if (item.x === item2.x) {
           if (item2.y === 'FAILED') {
-            item.fill = 'red';
+            item.fill = '#F8888A';
+            item.status = 'FAILED';
           } else if (item2.y === 'COMPLETED') {
-            item.fill = 'green';
+            item.fill = '#74D091';
+            item.status = 'COMPLETED';
+          } else if (item2.y === 'KILLED') {
+            item.fill = 'yellow';
+            item.status = 'KILLED';
           } else {
-            item.fill = 'red';
+            item.fill = '#4485f5';
+            item.status = 'RUNNING';
           }
         }
       });
@@ -248,13 +288,19 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
 
   finalData = generateData();
 
+  finalData.forEach((item, index) => {
+    item.x = index;
+  });
+
+  console.log('FINAL DATAAA' + JSON.stringify(finalData));
+
   return (
     <div className={classes.root}>
       <FPlot height={300} xType="ordinal" margin={{ left: 100 }}>
         <HorizontalGridLines />
         <XAxis />
         <ChartLabel
-          text="Records"
+          text="Durations (sec)"
           className="alt-y-label"
           includeMargin={false}
           xPercent={-0.03}
@@ -264,59 +310,74 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
             textAnchor: 'end',
           }}
         />
+        <ChartLabel
+          text="Job"
+          className="alt-y-label"
+          includeMargin={false}
+          xPercent={1}
+          yPercent={1.2}
+          style={{
+            // transform: 'rotate(-90)',
+            textAnchor: 'end',
+          }}
+        />
         <YAxis />
-        {/* <VerticalBarSeries
-          barWidth={0.1}
-          data={durationArray}
-          color="#74D091"
-          style={{ cursor: 'pointer' }}
-          onValueMouseOver={(data, index) => {
-            setValue(data);
-            setCurrentHoveredElement(data);
-            setShow(true);
-          }}
-          onValueMouseOut={(data, index) => {
-            setShow(false);
-          }}
-        /> */}
-
-        <LineSeries data={finalData} />
+        <LineSeries data={finalData} stroke="grey" />
         <MarkSeries
           data={finalData}
           colorType="literal"
           strokeType="literal"
           size={5}
-          fill="orange"
           fillType="literal"
           onValueMouseOver={(data, index) => {
             setValue(data);
             setCurrentHoveredElement(data);
             setShow(true);
+            console.log('arghhhh' + JSON.stringify(value));
           }}
+          style={{ cursor: 'pointer' }}
         />
         {show && (
           <Hint value={value} className={classes.hnt}>
-            <Card className={classes.croot} variant="outlined">
+            <Card
+              className={classes.croot}
+              variant="outlined"
+              style={{ border: '1px solid black', cursor: 'pointer' }}
+            >
               <div className={classes.container}>
                 <div className={classes.up}>
-                  <p className={classes.title}>{value.x}</p>
-                  <div className={classes.successText}>Success</div>
+                  <p className={classes.title} style={{ cursor: 'pointer' }}>
+                    {jobIdMap.get(value.x)}
+                  </p>
+                  <div
+                    className={
+                      value.status === 'FAILED'
+                        ? classes.failedText
+                        : value.status === 'COMPLETED'
+                        ? classes.successText
+                        : value.status === 'KILLED'
+                        ? classes.killedText
+                        : classes.runningText
+                    }
+                  >
+                    {value.status}
+                  </div>
                 </div>
                 <div className={classes.info}>
                   {startTimes.map(function(object, i) {
-                    if (object.id === value.x) {
+                    if (object.id === jobIdMap.get(value.x)) {
                       return <p className={classes.jobInfo}>{object.time}</p>;
                     }
                   })}
                   <p className={classes.jobInfo}>
                     {runIdArray.map(function(object, i) {
-                      if (object.x === value.x) {
+                      if (object.x === jobIdMap.get(value.x)) {
                         return <p className={classes.jobInfo}>{object.y} &nbsp; Records Loaded</p>;
                       }
                     })}
                   </p>
                   {runIdArray2.map(function(object, i) {
-                    if (object.x === value.x) {
+                    if (object.x === jobIdMap.get(value.x)) {
                       return <p className={classes.jobInfo}>{object.y} &nbsp; Error Records</p>;
                     }
                   })}
@@ -325,22 +386,6 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
             </Card>
           </Hint>
         )}
-
-        {/* <VerticalBarSeries
-          barWidth={0.1}
-          data={runIdArray}
-          color="transparent"
-          style={{ cursor: 'pointer' }}
-        />
-        <VerticalBarSeries
-          barWidth={0.3}
-          data={runIdArray2}
-          color="#DB4437"
-          style={{ cursor: 'pointer' }}
-          onValueMouseOver={(d) => {
-            setValue(d);
-          }}
-        /> */}
       </FPlot>
     </div>
   );

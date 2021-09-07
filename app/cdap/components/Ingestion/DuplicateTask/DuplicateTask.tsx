@@ -300,7 +300,13 @@ const styles = (): StyleRules => {
       paddingTop: '2px',
     },
     headerWrapper: {
+      display: 'flex',
       borderBottom: '1px solid rgba(165, 165, 165, .5)',
+    },
+    emptyList: {
+      textAlign: 'center',
+      margin: '30px 30px',
+      marginBottom: 'auto',
     },
   };
 };
@@ -521,6 +527,7 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
   };
 
   const arrowIcon = '/cdap_assets/img/arrow.svg';
+  const arrowBack = '/cdap_assets/img/arrow-back.svg';
   const [alert, setAlert] = React.useState({
     show: false,
     message: '',
@@ -534,19 +541,28 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
         open={alert.show}
         title="Pipeline name already exists"
         description={`The pipeline with name "${taskName}" already exists, please enter a new name to create this pipeline`}
-        onSubmit={() =>
+        onSubmit={() => {
           setAlert((prev) => {
             return {
               ...prev,
               show: false,
             };
-          })
-        }
+          });
+          setCustomTableSelection(false);
+        }}
         submitText="Change name"
         errorType
       />
       <div className={classes.sdleTskWrapper} data-cy="duplicate-container">
         <div className={classes.headerWrapper}>
+          {customTablesSelection && (
+            <img
+              src={arrowBack}
+              alt="back arrow"
+              style={{ paddingLeft: '8px', marginRight: '-22px', cursor: 'pointer' }}
+              onClick={() => setCustomTableSelection(false)}
+            />
+          )}
           <IngestionHeader title="Duplicate Task" />
         </div>
 
@@ -567,7 +583,11 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
         )}
         <div className={classes.container}>
           {customTablesSelection ? (
-            <CustomTableSelection tablesList={items} setItems={setItems} />
+            items.length ? (
+              <CustomTableSelection tablesList={items} setItems={setItems} />
+            ) : (
+              <h3 className={classes.emptyList}>There are no tables available ...</h3>
+            )
           ) : (
             <>
               <TaskInfoFields
@@ -665,7 +685,12 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
           <ButtonComponent
             onCancel={() => closePopup(false)}
             onSubmit={handleSubmit}
-            disableSubmit={taskNameError.error || taskName.length === 0 || taskTagError.error}
+            disableSubmit={
+              taskNameError.error ||
+              taskName.length === 0 ||
+              taskTagError.error ||
+              (customTablesSelection && !items.length)
+            }
             submitText={
               extraction === 'Yes' && customTablesSelection === false
                 ? 'Next'

@@ -191,6 +191,7 @@ const styles = (): StyleRules => {
     emptyList: {
       textAlign: 'center',
       margin: '30px 30px',
+      marginBottom: 'auto',
     },
   };
 };
@@ -259,6 +260,7 @@ const MappingView: React.FC<IIngestionProps> = ({
       },
       (err) => {
         console.log('TablesList-err', err);
+        setLoading(false);
       }
     );
   };
@@ -398,7 +400,8 @@ const MappingView: React.FC<IIngestionProps> = ({
           onSubmit={handleSubmit}
           disableSubmit={
             (customTablesSelection ? items.every((a) => a.selected === false) : false) ||
-            cardSelected === 'none'
+            cardSelected === 'none' ||
+            items.length === 0
           }
           submitText="CONTINUE"
         />

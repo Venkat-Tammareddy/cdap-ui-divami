@@ -163,7 +163,7 @@ const styles = (theme): StyleRules => {
     yellow: {
       height: '12px',
       width: '12px',
-      backgroundColor: '#ffc107 ',
+      backgroundColor: '#ffc107',
       borderRadius: '50%',
     },
     blue: {

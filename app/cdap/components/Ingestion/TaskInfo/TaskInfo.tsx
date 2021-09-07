@@ -175,6 +175,7 @@ const styles = (): StyleRules => {
       display: 'flex',
       flexDirection: 'row',
       flex: '1 1 0%',
+      marginBottom: '20px',
     },
     info: {
       display: 'flex',

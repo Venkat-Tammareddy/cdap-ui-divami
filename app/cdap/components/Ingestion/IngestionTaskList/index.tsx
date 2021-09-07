@@ -130,17 +130,11 @@ const styles = (theme): StyleRules => {
 };
 
 interface IngestTaskListProps extends WithStyles<typeof styles> {
-  searchText: String;
   data: any[];
   refetch: () => void;
 }
 
-const IngestionTaskList: React.FC<IngestTaskListProps> = ({
-  classes,
-  searchText,
-  data,
-  refetch,
-}) => {
+const IngestionTaskList: React.FC<IngestTaskListProps> = ({ classes, data, refetch }) => {
   const myimg = '/cdap_assets/img/idle-status.svg';
   const progressIcon = '/cdap_assets/img/Inprogress.svg';
   const [duplicate, setDuplicate] = React.useState<string | null>(null);
@@ -149,9 +143,6 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
   // const [taskList, setTaskList] = React.useState(data);
   const [schedule, setSchedule] = React.useState(false);
   const [sheduleObj, setSheduleObj] = React.useState({ taskName: '', selectItem: {} });
-  const filteredList = data.filter((item) =>
-    item.taskName?.toLowerCase().includes(searchText?.toLowerCase())
-  );
   const [alert, setAlert] = React.useState<string | null>(null);
   const inProgress = '/cdap_assets/img/inprogress.svg';
   const errorIcon = '/cdap_assets/img/error.svg';
@@ -254,8 +245,8 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
             }}
           />
         )}
-        {filteredList.length === 0 && renderEmptyList()}
-        {filteredList.length > 0 && (
+        {data.length === 0 && renderEmptyList()}
+        {data.length > 0 && (
           <Table columnTemplate="2fr 2fr 2fr 1fr 1fr 1fr">
             <TableHeader data-cy="table-header">
               <TableRow className={classes.header} data-cy="table-row">
@@ -268,7 +259,7 @@ const IngestionTaskList: React.FC<IngestTaskListProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody data-cy="table-body">
-              {filteredList.map((item, index) => {
+              {data.map((item, index) => {
                 return (
                   <TableRow
                     key={item.taskName}

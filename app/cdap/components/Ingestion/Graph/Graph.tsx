@@ -22,8 +22,10 @@ import {
   YAxis,
   VerticalGridLines,
   makeVisFlexible,
+  MarkSeries,
   LineSeries,
   FlexibleWidthXYPlot,
+  DiscreteColorLegend,
   Hint,
   VerticalBarSeries,
   LabelSeries,
@@ -43,7 +45,7 @@ const styles = (): StyleRules => {
       height: '500px',
     },
     croot: {
-      padding: '24px',
+      padding: '20px',
     },
     title: {
       fontSize: '16px',
@@ -107,18 +109,50 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
   let runIdArray2 = [];
   const startTimes = [];
   const errorRecords = [];
+  const durationArray = [];
+  const colorCodes = [];
+
   items.runs.map((item, index) => {
-    const obj = { x: '', y: '' };
-    const timeObj = { id: '', time: '' };
+    const obj = {
+      x: '',
+      y: '',
+    };
+    const timeObj = {
+      id: '',
+      time: '',
+    };
+    const durationObj = {
+      x: '',
+      y: 0,
+      fill: '',
+    };
+    const colorObj = {
+      x: '',
+      y: '',
+    };
     if (item.hasOwnProperty('runId')) {
       obj.x = item.runId;
       timeObj.id = item.runId;
+      durationObj.x = item.runId;
+      colorObj.x = item.runId;
       runIdArray.push(obj);
       runIdArray2.push(obj);
       if (item.hasOwnProperty('start')) {
         const humanDate = humanReadableDate(item.start, false);
         timeObj.time = humanDate;
         startTimes.push(timeObj);
+        if (item.hasOwnProperty('end')) {
+          const duration = item.end - item.start;
+          durationObj.y = duration;
+          durationArray.push(durationObj);
+        }
+      }
+
+      // Get job Status
+      if (item.hasOwnProperty('status')) {
+        const curStatus = item.status;
+        colorObj.y = curStatus;
+        colorCodes.push(colorObj);
       }
     }
   });
@@ -167,40 +201,52 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
   // Use flexible width graph
   const FPlot = makeVisFlexible(XYPlot);
 
-  // const testData = [
-  //   { x: 'job1', y: 1000 },
-  //   { x: 'job2', y: 82 },
-  //   { x: 'job3', y: 412 },
-  //   { x: 'job4', y: 62 },
-  //   { x: 'job5', y: 142 },
-  //   { x: 'job6', y: 92 },
-  //   { x: 'job7', y: 52 },
-  //   { x: 'job8', y: 102 },
-  //   { x: 'jobe', y: 100 },
-  //   { x: 'job4a', y: 62 },
-  //   { x: 'job5a', y: 142 },
-  //   { x: 'job6a', y: 92 },
-  //   { x: 'job7a', y: 52 },
-  //   { x: 'job8a', y: 102 },
-  //   { x: 'jobea', y: 100 },
-  //   { x: 'job4a', y: 62 },
-  //   { x: 'job5a', y: 142 },
-  //   { x: 'job6a', y: 92 },
-  //   { x: 'job7a', y: 52 },
-  //   { x: 'job8a', y: 102 },
-  //   { x: 'jobea', y: 100 },
-  // ];
-  // const testData404 = [
-  //   { x: 'job1', y: 1000 },
-  //   { x: 'job2', y: 82 },
-  //   { x: 'job3', y: 412 },
-  //   { x: 'job4', y: 62 },
-  //   { x: 'job5', y: 142 },
-  //   { x: 'job6', y: 92 },
-  //   { x: 'job7', y: 52 },
-  //   { x: 'job8', y: 102 },
-  //   { x: 'jobe', y: 100 },
-  // ];
+  const testData = [
+    { x: 'job1', y: 1000, size: 20, fill: 'red' },
+    { x: 'job2', y: 82, size: 40, fill: 'green' },
+    { x: 'job3', y: 412, size: 31 },
+    { x: 'job4', y: 62, size: 54 },
+    { x: 'job5', y: 142, size: 10 },
+    { x: 'job6', y: 92, size: 65 },
+    { x: 'job7', y: 52, size: 53 },
+    { x: 'job8', y: 102, size: 25 },
+    { x: 'jobe', y: 100, size: 50 },
+    { x: 'job4a', y: 62, size: 41 },
+    { x: 'job7a', y: 52, size: 51 },
+    { x: 'job8a', y: 102, size: 50 },
+    { x: 'jobea', y: 100, size: 15 },
+    { x: 'job5a', y: 142, size: 35 },
+    { x: 'job82a', y: 102, size: 12 },
+  ];
+
+  const finalLineData = [];
+  let finalData = [];
+  durationArray.forEach((item) => {
+    finalLineData.push(item);
+  });
+
+  const generateData = () => {
+    // colorCodes; // x-> id, y -> status
+    // finalLineData; // x->id, y-> duration, fill
+
+    finalLineData.forEach((item) => {
+      colorCodes.forEach((item2) => {
+        if (item.x === item2.x) {
+          if (item2.y === 'FAILED') {
+            item.fill = 'red';
+          } else if (item2.y === 'COMPLETED') {
+            item.fill = 'green';
+          } else {
+            item.fill = 'red';
+          }
+        }
+      });
+    });
+
+    return finalLineData;
+  };
+
+  finalData = generateData();
 
   return (
     <div className={classes.root}>
@@ -219,9 +265,9 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
           }}
         />
         <YAxis />
-        <VerticalBarSeries
-          barWidth={0.3}
-          data={runIdArray}
+        {/* <VerticalBarSeries
+          barWidth={0.1}
+          data={durationArray}
           color="#74D091"
           style={{ cursor: 'pointer' }}
           onValueMouseOver={(data, index) => {
@@ -232,13 +278,24 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
           onValueMouseOut={(data, index) => {
             setShow(false);
           }}
+        /> */}
+
+        <LineSeries data={finalData} />
+        <MarkSeries
+          data={finalData}
+          colorType="literal"
+          strokeType="literal"
+          size={5}
+          fill="orange"
+          fillType="literal"
+          onValueMouseOver={(data, index) => {
+            setValue(data);
+            setCurrentHoveredElement(data);
+            setShow(true);
+          }}
         />
         {show && (
-          <Hint
-            value={value}
-            align={{ vertical: 'bottom', horizontal: 'right' }}
-            className={classes.hnt}
-          >
+          <Hint value={value} className={classes.hnt}>
             <Card className={classes.croot} variant="outlined">
               <div className={classes.container}>
                 <div className={classes.up}>
@@ -251,7 +308,13 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
                       return <p className={classes.jobInfo}>{object.time}</p>;
                     }
                   })}
-                  <p className={classes.jobInfo}>{value.y} &nbsp; Records Loaded</p>
+                  <p className={classes.jobInfo}>
+                    {runIdArray.map(function(object, i) {
+                      if (object.x === value.x) {
+                        return <p className={classes.jobInfo}>{object.y} &nbsp; Records Loaded</p>;
+                      }
+                    })}
+                  </p>
                   {runIdArray2.map(function(object, i) {
                     if (object.x === value.x) {
                       return <p className={classes.jobInfo}>{object.y} &nbsp; Error Records</p>;
@@ -263,7 +326,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
           </Hint>
         )}
 
-        <VerticalBarSeries
+        {/* <VerticalBarSeries
           barWidth={0.1}
           data={runIdArray}
           color="transparent"
@@ -277,7 +340,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
           onValueMouseOver={(d) => {
             setValue(d);
           }}
-        />
+        /> */}
       </FPlot>
     </div>
   );

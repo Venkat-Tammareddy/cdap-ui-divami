@@ -204,7 +204,7 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
   React.useEffect(() => setLoading(false), [runs]);
   return (
     <>
-      <TableCell>
+      <TableCell style={{ overflow: 'hidden' }}>
         <Grid container spacing={0}>
           <Grid className={classes.gridItem} item xs={1}>
             <Paper className={classes.paper}>

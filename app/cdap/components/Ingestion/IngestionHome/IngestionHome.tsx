@@ -270,7 +270,9 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   // const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
   //   setPageNo(value);
   // };
-  const filteredList = tasksList.filter((item) => filterOptions.includes(item.status));
+  const filteredList = tasksList
+    .filter((item) => filterOptions.includes(item.status))
+    .filter((item) => item.taskName?.toLowerCase().includes(search?.toLowerCase()));
   console.log('filter', filteredList);
 
   return (
@@ -347,11 +349,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
               }}
             />
           ) : (
-            <IngestionTaskList
-              searchText={search}
-              data={paginatedList(filteredList)}
-              refetch={refetch}
-            />
+            <IngestionTaskList data={paginatedList(filteredList)} refetch={refetch} />
           )}
           <div className={classes.paginationWrapper}>
             <Pagination

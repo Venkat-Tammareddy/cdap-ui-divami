@@ -43,7 +43,6 @@ const styles = (): StyleRules => {
     root: {
       overflowX: 'auto',
       scrollBarWidth: 'thin',
-      height: '500px',
     },
     croot: {
       padding: '20px',
@@ -62,7 +61,7 @@ const styles = (): StyleRules => {
       display: 'flex',
       borderBottom: '2px solid grey',
       // marginTop: '-10px',
-      gap: '85px',
+      gap: '10px',
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -105,7 +104,7 @@ const styles = (): StyleRules => {
     },
     killedText: {
       fontFamily: 'Lato',
-      backgroundColor: 'yellow',
+      backgroundColor: '#ffc107',
       borderRadius: '16px',
       color: '#FFFFFF',
       padding: '2px 10px 5px 10px',
@@ -142,7 +141,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
   const jobIdMap = new Map();
   items.runs.forEach((item, index) => {
     if (item.hasOwnProperty('runId')) {
-      jobIdMap.set(index, item.runId);
+      jobIdMap.set(index + 1, item.runId);
     }
   });
 
@@ -273,7 +272,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
             item.fill = '#74D091';
             item.status = 'COMPLETED';
           } else if (item2.y === 'KILLED') {
-            item.fill = 'yellow';
+            item.fill = '#ffc107';
             item.status = 'KILLED';
           } else {
             item.fill = '#4485f5';
@@ -289,7 +288,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
   finalData = generateData();
 
   finalData.forEach((item, index) => {
-    item.x = index;
+    item.x = index + 1;
   });
 
   console.log('FINAL DATAAA' + JSON.stringify(finalData));
@@ -322,7 +321,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
           }}
         />
         <YAxis />
-        <LineSeries data={finalData} stroke="grey" />
+        <LineSeries data={finalData} />
         <MarkSeries
           data={finalData}
           colorType="literal"
@@ -339,16 +338,16 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
         />
         {show && (
           <Hint value={value} className={classes.hnt}>
-            <Card
-              className={classes.croot}
-              variant="outlined"
-              style={{ border: '1px solid black', cursor: 'pointer' }}
-            >
+            <Card className={classes.croot} variant="outlined">
               <div className={classes.container}>
                 <div className={classes.up}>
-                  <p className={classes.title} style={{ cursor: 'pointer' }}>
+                  <div
+                    className={classes.title}
+                    title={jobIdMap.get(value.x)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     {jobIdMap.get(value.x)}
-                  </p>
+                  </div>
                   <div
                     className={
                       value.status === 'FAILED'

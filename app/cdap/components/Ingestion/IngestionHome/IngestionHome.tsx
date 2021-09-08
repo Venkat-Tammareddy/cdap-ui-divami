@@ -275,6 +275,10 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
     .filter((item) => item.taskName?.toLowerCase().includes(search?.toLowerCase()));
   console.log('filter', filteredList);
 
+  const filteredDraft = mapDratsList().filter((item) =>
+    item.pipeLineName?.toLowerCase().includes(search?.toLowerCase())
+  );
+
   return (
     <>
       {/* <If condition={!!error && !!bannerMessage}>
@@ -293,6 +297,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
                 className={classes.tabs}
                 onClick={() => {
                   setPageNo(1);
+                  setSearch('');
                   setDisplayDrafts(false);
                 }}
                 style={{
@@ -308,6 +313,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
                 className={classes.tabs}
                 onClick={() => {
                   setPageNo(1);
+                  setSearch('');
                   setDisplayDrafts(true);
                 }}
                 style={{
@@ -323,6 +329,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
               variant="outlined"
               placeholder={displayDrafts ? 'Search drafts' : 'Search tasks'}
               className={classes.search}
+              value={search}
               onChange={(e) => setSearch(e.target.value)}
               InputProps={{
                 startAdornment: <SearchIcon />,
@@ -342,8 +349,8 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
           </div>
           {displayDrafts ? (
             <DraftsList
-              data={paginatedList(mapDratsList())}
-              searchText={search}
+              data={paginatedList(filteredDraft)}
+              // searchText={search}
               reFetchDrafts={() => {
                 setLoader(true);
               }}
@@ -353,7 +360,9 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
           )}
           <div className={classes.paginationWrapper}>
             <Pagination
-              count={Math.ceil(displayDrafts ? draftsList.length / 10 : filteredList.length / 10)}
+              count={Math.ceil(
+                displayDrafts ? filteredDraft.length / 10 : filteredList.length / 10
+              )}
               color="primary"
               page={pageNo}
               onChange={(event, value) => {

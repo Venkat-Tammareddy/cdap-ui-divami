@@ -535,7 +535,12 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
   });
   return (
     <div className={classes.root}>
-      {loading && <LoadingSVGCentered />}
+      {loading && (
+        <div>
+          <div style={{ height: '50px', backgroundColor: 'rgba(255, 255, 255, 0.7)' }}></div>
+          <LoadingSVGCentered />
+        </div>
+      )}
       <OverlaySmall
         onCancel={() => closePopup(false)}
         open={alert.show}

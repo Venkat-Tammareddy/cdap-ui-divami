@@ -100,16 +100,16 @@ const styles = (theme): StyleRules => {
 };
 
 interface DraftsListProps extends WithStyles<typeof styles> {
-  searchText: String;
+  // searchText: String;
   data: any[];
   reFetchDrafts: () => void;
 }
 
-const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data, reFetchDrafts }) => {
+const DraftsList: React.FC<DraftsListProps> = ({ classes, data, reFetchDrafts }) => {
   const [alert, setAlert] = React.useState<string | null>(null);
-  const filteredList = data.filter((item) =>
-    item.pipeLineName.toLowerCase().includes(searchText.toLowerCase())
-  );
+  // const filteredList = data.filter((item) =>
+  //   item.pipeLineName.toLowerCase().includes(searchText.toLowerCase())
+  // );
   const namespace = NamespaceStore.getState().selectedNamespace;
   const deleteDraft = () => {
     MyPipelineApi.deleteDraft({
@@ -145,7 +145,7 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, searchText, data, reFe
             </TableRow>
           </TableHeader>
           <TableBody data-cy="table-body">
-            {filteredList.map((item) => {
+            {data.map((item) => {
               return (
                 <TableRow
                   key={item.id}

@@ -84,7 +84,7 @@ const DraftOptionsView: React.FC<IDraftOptionsProps> = ({ classes, draftId, dele
         anchorEl={anchorEl}
         open={open}
         anchorOrigin={{
-          vertical: 'bottom',
+          vertical: 'top',
           horizontal: 'left',
         }}
         transformOrigin={{
@@ -101,7 +101,7 @@ const DraftOptionsView: React.FC<IDraftOptionsProps> = ({ classes, draftId, dele
           style: {
             maxHeight: 48 * 4.5,
             width: '20ch',
-            marginTop: '40px',
+            marginTop: '20px',
           },
         }}
       >

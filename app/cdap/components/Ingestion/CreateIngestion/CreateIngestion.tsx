@@ -381,7 +381,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         onSubmit={() =>
           alert.type === 'addnewconnection'
             ? history.push('/ns/${currentNamespace}/connections/create')
-            : alert.type === 'exit'
+            : alert.type === 'exit' || alert.type === 'error'
             ? goToIngestionHome()
             : setAlert((prev) => {
                 return {
@@ -393,7 +393,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
         submitText={
           alert.type === 'addnewconnection'
             ? 'Yes, Proceed'
-            : alert.type === 'exit'
+            : alert.type === 'exit' || alert.type === 'error'
             ? 'Exit'
             : 'Change name'
         }

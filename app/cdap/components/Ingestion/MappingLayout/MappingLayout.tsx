@@ -262,7 +262,7 @@ const MappingView: React.FC<IIngestionProps> = ({
       },
       (err) => {
         console.log('TablesList-err', err);
-        setAlert(err);
+        setAlert(JSON.stringify(err.response));
         setLoading(false);
       }
     );

@@ -203,6 +203,7 @@ interface IIngestionProps extends WithStyles<typeof styles> {
   cardSelected: string;
   setCardSelected: (type: string) => void;
   handleNext: () => void;
+  setAlert: (error: string) => void;
 }
 const MappingView: React.FC<IIngestionProps> = ({
   classes,
@@ -212,6 +213,7 @@ const MappingView: React.FC<IIngestionProps> = ({
   setDraftConfig,
   handleCancel,
   draftConfig,
+  setAlert,
 }) => {
   const allTables = '/cdap_assets/img/data-base-big.svg';
   const customTable = '/cdap_assets/img/custom-selection.svg';
@@ -260,6 +262,7 @@ const MappingView: React.FC<IIngestionProps> = ({
       },
       (err) => {
         console.log('TablesList-err', err);
+        setAlert(err);
         setLoading(false);
       }
     );

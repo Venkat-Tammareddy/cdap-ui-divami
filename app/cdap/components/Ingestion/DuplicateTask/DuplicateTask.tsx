@@ -694,7 +694,8 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
               taskNameError.error ||
               taskName.length === 0 ||
               taskTagError.error ||
-              (customTablesSelection && !items.length)
+              (customTablesSelection && !items.length) ||
+              (customTablesSelection ? items.every((a) => a.selected === false) : false)
             }
             submitText={
               extraction === 'Yes' && customTablesSelection === false

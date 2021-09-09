@@ -52,7 +52,7 @@ const styles = (theme): StyleRules => {
     optionsIcon: {
       //   border: '2px solid blue',
       padding: '6px 12px',
-      borderRadius: '99px',
+      borderRadius: '13px',
       '&:hover': {
         backgroundColor: '#A5A5A5',
       },

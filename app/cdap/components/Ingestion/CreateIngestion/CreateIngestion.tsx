@@ -437,6 +437,16 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
                     cardSelected={cardSelected}
                     setCardSelected={setCardSelected}
                     deploy={() => deployPipeline()}
+                    setAlert={(error) =>
+                      setAlert(() => {
+                        return {
+                          show: true,
+                          title: 'Failed connecting source database',
+                          description: `Error:${error}`,
+                          type: 'error',
+                        };
+                      })
+                    }
                   />
                 </div>
               </div>

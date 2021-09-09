@@ -316,7 +316,7 @@ const TaskRowView: React.FC<ITaskRowProps> = ({
                 open={open}
                 getContentAnchorEl={null}
                 anchorOrigin={{
-                  vertical: 'bottom',
+                  vertical: 'top',
                   horizontal: 'left',
                 }}
                 transformOrigin={{

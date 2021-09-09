@@ -227,7 +227,7 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
   const SearchIconn = () => {
     return <img src={searchIcon} alt="icon" />;
   };
-
+  const isSelectAll = tablesList.every((item) => item.selected);
   const handleChange = (tableName: string) => {
     setItems((prev) => {
       const index = prev.findIndex((item) => item.tableName === tableName);
@@ -252,12 +252,12 @@ const CustomTableSelectionView: React.FC<IIngestionProps> = ({
             setItems((prev) => {
               return prev.map((item) => ({
                 tableName: item.tableName,
-                selected: true,
+                selected: isSelectAll ? false : true,
               }));
             });
           }}
         >
-          Select All
+          {isSelectAll ? 'Select None' : ' Select All'}
         </div>
         <TextField
           variant="outlined"

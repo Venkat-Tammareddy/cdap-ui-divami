@@ -340,6 +340,7 @@ const TaskInfoFieldsView: React.FC<ITaskInfoFieldsProps> = ({
               root: classes.label,
             },
           }}
+          onFocus={handleFocus}
           multiline={true}
           rows={8}
           className={classes.taskDescription}

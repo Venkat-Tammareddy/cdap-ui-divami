@@ -272,12 +272,16 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
     const currentElement = e.target as HTMLInputElement;
     const name = currentElement.name;
     if (name === 'taskName') {
-      setInfoMessage('Enter task name');
-      setSecondInfoMessage('without spaces');
+      setInfoMessage('Task Name');
+      setSecondInfoMessage('Please ensure that there are no spaces in the task name. ');
     }
     if (name === 'Tags') {
-      setInfoMessage('Enter multiple tags');
-      setSecondInfoMessage('with spaces');
+      setInfoMessage('Tags');
+      setSecondInfoMessage('Please enter tag label and click enter to add multiple tags.');
+    }
+    if (name === 'taskDescription') {
+      setInfoMessage('Description');
+      setSecondInfoMessage('Please briefly describe the objectives of the task. ');
     }
   };
 
@@ -302,7 +306,9 @@ const TaskInfoView: React.FC<ITaskInfoProps> = ({
           <img src={infoIcon} alt="some icon text" height="75.4px" width="74px" />
           <div className={classes.infoContainer}>
             <p className={classes.infoText}>{infoMessage}</p>
-            <p className={classes.infoText}>{secondInfoMessage}</p>
+            <p className={classes.infoText} style={{ fontSize: '14px', lineHeight: '20px' }}>
+              {secondInfoMessage}
+            </p>
           </div>
         </div>
       </div>

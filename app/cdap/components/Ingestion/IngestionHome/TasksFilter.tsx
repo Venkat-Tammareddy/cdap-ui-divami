@@ -109,6 +109,7 @@ const TasksFilterView: React.FC<ITasksFilterProps> = ({ classes, filters, applyF
           style: {
             height: '327px',
             width: '204px',
+            marginTop: '20px',
           },
         }}
       >

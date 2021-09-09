@@ -337,7 +337,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
               autoFocus={false}
               data-cy="connections-search"
             />
-            <Paper className={classes.paper}>
+            <Paper className={classes.paper} hidden={displayDrafts}>
               <TasksFilter
                 filters={filterOptions}
                 applyFilters={(list) => {

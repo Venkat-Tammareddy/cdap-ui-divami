@@ -24,7 +24,7 @@ import NamespaceStore from 'services/NamespaceStore';
 import TableCell from 'components/Table/TableCell';
 import TableBody from 'components/Table/TableBody';
 import { getCurrentNamespace } from 'services/NamespaceStore';
-import { Paper, Menu, MenuItem } from '@material-ui/core';
+import { Paper, Menu, MenuItem, Button } from '@material-ui/core';
 import history from 'services/history';
 import DraftOptions from './DraftOptions';
 import OverlaySmall from '../OverlaySmall/OverlaySmall';
@@ -96,6 +96,20 @@ const styles = (theme): StyleRules => {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
     },
+    emptyContainer: {
+      height: '100%',
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: '10%',
+    },
+    emptyMsg: {
+      fontSize: '18px',
+      color: '#202124',
+      fontFamily: 'Lato',
+    },
   };
 };
 
@@ -124,6 +138,36 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, data, reFetchDrafts })
       }
     );
   };
+  const noTaskIcon = '/cdap_assets/img/No Task.svg';
+  const renderEmptyList = () => {
+    return (
+      <div className={classes.emptyContainer}>
+        <img src={noTaskIcon} alt="no task Icon" />
+        <p className={classes.emptyMsg} style={{ marginTop: '20px', marginBottom: '0px' }}>
+          There are no configured tasks you saved as drafts,
+        </p>
+        <p
+          className={classes.emptyMsg}
+          style={{ marginTop: '0px', paddingTop: '0px', marginBottom: '0px' }}
+        >
+          create a task to ingest data
+        </p>
+        <Button
+          variant="contained"
+          style={{
+            backgroundColor: '#4285F4',
+            color: 'white',
+            fontSize: '14px',
+            fontFamily: 'Lato',
+            marginTop: '20px',
+          }}
+          onClick={() => history.push('ingestion/create')}
+        >
+          CREATE TASK
+        </Button>
+      </div>
+    );
+  };
   return (
     <>
       <div className={classes.root}>
@@ -135,37 +179,43 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, data, reFetchDrafts })
           onSubmit={() => deleteDraft()}
           submitText="Delete"
         />
-        <Table columnTemplate="2fr 2fr 1fr">
-          <TableHeader data-cy="table-header">
-            <TableRow className={classes.header} data-cy="table-row">
-              <TableCell>{'Pipeline name'}</TableCell>
-              {/* <TableCell>{'Type'}</TableCell> */}
-              <TableCell>{'Last saved'}</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody data-cy="table-body">
-            {data.map((item) => {
-              return (
-                <TableRow
-                  key={item.id}
-                  className={classes.tableRow}
-                  data-cy={`table-row-${item.pipeLineName}`}
-                  to={`/ns/${getCurrentNamespace()}/ingestion/create/${item.id}`}
-                >
-                  <TableCell className={classes.firstColumn} title={item.pipeLineName}>
-                    {item.pipeLineName}
-                  </TableCell>
-                  {/* <TableCell>{item.type}</TableCell> */}
-                  <TableCell>{item.lastSaved}</TableCell>
-                  <TableCell>
-                    <DraftOptions draftId={item.id} deleteDraft={(draftId) => setAlert(draftId)} />
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        {data.length === 0 && renderEmptyList()}
+        {data.length > 0 && (
+          <Table columnTemplate="2fr 2fr 1fr">
+            <TableHeader data-cy="table-header">
+              <TableRow className={classes.header} data-cy="table-row">
+                <TableCell>{'Pipeline name'}</TableCell>
+                {/* <TableCell>{'Type'}</TableCell> */}
+                <TableCell>{'Last saved'}</TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody data-cy="table-body">
+              {data.map((item) => {
+                return (
+                  <TableRow
+                    key={item.id}
+                    className={classes.tableRow}
+                    data-cy={`table-row-${item.pipeLineName}`}
+                    to={`/ns/${getCurrentNamespace()}/ingestion/create/${item.id}`}
+                  >
+                    <TableCell className={classes.firstColumn} title={item.pipeLineName}>
+                      {item.pipeLineName}
+                    </TableCell>
+                    {/* <TableCell>{item.type}</TableCell> */}
+                    <TableCell>{item.lastSaved}</TableCell>
+                    <TableCell>
+                      <DraftOptions
+                        draftId={item.id}
+                        deleteDraft={(draftId) => setAlert(draftId)}
+                      />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </>
   );

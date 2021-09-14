@@ -25,6 +25,7 @@ import {
   Radio,
   RadioGroup,
   Typography,
+  Dialog,
 } from '@material-ui/core';
 import TaskInfo from '../TaskInfo/TaskInfo';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -45,6 +46,8 @@ const I18N_PREFIX = 'features.TaskInfo';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
 import Alert from 'components/Alert';
 import OverlaySmall from '../OverlaySmall/OverlaySmall';
+import Button from '@material-ui/core/Button';
+import Duplicatepopup from '../commonUtils/Duplicatepopup';
 
 const styles = (): StyleRules => {
   return {
@@ -196,18 +199,12 @@ const styles = (): StyleRules => {
       color: '#666666',
       fontSize: '12px',
       height: '15px',
-      letterSpacing: '0.19px',
-      marginTop: '10px',
-      marginLeft: '16px',
       marginBottom: '0',
-      display: 'none',
     },
     errorInputInfo: {
       color: '#DB4437',
       display: 'flex',
-      justifyContent: 'flex-end',
       fontFamily: 'Lato',
-      marginTop: '10px',
       marginBottom: '0px',
       fontSize: '12px',
       letterSpacing: '0.19px',
@@ -526,6 +523,10 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
     }
   };
 
+  const taskSpaceError = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`).toString();
+  const taskLengthErrorMessage = T.translate(
+    `${I18N_PREFIX}.Errors.taskNameLengthError`
+  ).toString();
   const arrowIcon = '/cdap_assets/img/arrow.svg';
   const arrowBack = '/cdap_assets/img/arrow-back.svg';
   const [alert, setAlert] = React.useState({
@@ -541,7 +542,16 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
           <LoadingSVGCentered />
         </div>
       )}
-      <OverlaySmall
+      <Duplicatepopup
+        open={alert.show}
+        taskName={taskName}
+        onSubmit={(newName) => {
+          setTaskName(newName);
+          deployPipeline();
+        }}
+        onClose={() => closePopup(false)}
+      />
+      {/* <OverlaySmall
         onCancel={() => closePopup(false)}
         open={alert.show}
         title="Pipeline name already exists"
@@ -557,7 +567,7 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
         }}
         submitText="Change name"
         errorType
-      />
+      /> */}
       <div className={classes.sdleTskWrapper} data-cy="duplicate-container">
         <div className={classes.headerWrapper}>
           {customTablesSelection && (

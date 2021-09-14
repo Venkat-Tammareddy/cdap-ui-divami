@@ -181,11 +181,11 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, data, reFetchDrafts })
         />
         {data.length === 0 && renderEmptyList()}
         {data.length > 0 && (
-          <Table columnTemplate="2fr 2fr 2fr 1fr">
+          <Table columnTemplate="2fr 2fr 1fr">
             <TableHeader data-cy="table-header">
               <TableRow className={classes.header} data-cy="table-row">
                 <TableCell>{'Pipeline name'}</TableCell>
-                <TableCell>{'Type'}</TableCell>
+                {/* <TableCell>{'Type'}</TableCell> */}
                 <TableCell>{'Last saved'}</TableCell>
                 <TableCell></TableCell>
               </TableRow>
@@ -202,7 +202,7 @@ const DraftsList: React.FC<DraftsListProps> = ({ classes, data, reFetchDrafts })
                     <TableCell className={classes.firstColumn} title={item.pipeLineName}>
                       {item.pipeLineName}
                     </TableCell>
-                    <TableCell>{item.type}</TableCell>
+                    {/* <TableCell>{item.type}</TableCell> */}
                     <TableCell>{item.lastSaved}</TableCell>
                     <TableCell>
                       <DraftOptions

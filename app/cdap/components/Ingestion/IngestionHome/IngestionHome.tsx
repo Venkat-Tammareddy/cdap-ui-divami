@@ -40,6 +40,7 @@ const styles = (theme): StyleRules => {
   return {
     root: {
       height: '100%',
+      overflowY: 'auto',
       '& .MuiPaginationItem-root': {
         height: '24px',
         minWidth: '24px',
@@ -152,6 +153,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   const [search, setSearch] = React.useState('');
   const namespace = getCurrentNamespace();
   const [pageNo, setPageNo] = React.useState(1);
+  const scrollRef = React.useRef<HTMLDivElement>();
   const [filterOptions, setFilterOptions] = React.useState([
     'DEPLOYED',
     'COMPLETED',
@@ -280,99 +282,97 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   );
 
   return (
-    <>
-      {/* <If condition={!!error && !!bannerMessage}>
-        <ErrorBanner error={bannerMessage} />
-      </If> */}
-      <div className={classes.root}>
-        <IngestionHeader
-          title="Ingest Tasks"
-          createBtn
-          onCreate={() => history.push('ingestion/create')}
-        />
-        <div className={classes.tabbleViewWrpr}>
-          <div className={classes.tabsWrapper}>
-            <div>
-              <span
-                className={classes.tabs}
-                onClick={() => {
-                  setPageNo(1);
-                  setSearch('');
-                  setDisplayDrafts(false);
-                }}
-                style={{
-                  borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none',
-                  opacity: displayDrafts ? '0.7' : '',
-                }}
-              >
-                TASKS ({data.pipelines.length})
-              </span>
-            </div>
-            <div>
-              <span
-                className={classes.tabs}
-                onClick={() => {
-                  setPageNo(1);
-                  setSearch('');
-                  setDisplayDrafts(true);
-                }}
-                style={{
-                  borderBottom: displayDrafts ? '4px solid #4285F4' : 'none',
-                  opacity: !displayDrafts ? '0.7' : '',
-                }}
-              >
-                DRAFTS ({draftsList.length})
-              </span>
-            </div>
+    <div className={classes.root} ref={scrollRef}>
+      <IngestionHeader
+        title="Ingest Tasks"
+        createBtn
+        onCreate={() => history.push('ingestion/create')}
+      />
+      <div className={classes.tabbleViewWrpr}>
+        <div className={classes.tabsWrapper}>
+          <div>
+            <span
+              className={classes.tabs}
+              onClick={() => {
+                setPageNo(1);
+                setSearch('');
+                setDisplayDrafts(false);
+              }}
+              style={{
+                borderBottom: !displayDrafts ? '4px solid #4285F4' : 'none',
+                opacity: displayDrafts ? '0.7' : '',
+              }}
+            >
+              TASKS ({data.pipelines.length})
+            </span>
+          </div>
+          <div>
+            <span
+              className={classes.tabs}
+              onClick={() => {
+                setPageNo(1);
+                setSearch('');
+                setDisplayDrafts(true);
+              }}
+              style={{
+                borderBottom: displayDrafts ? '4px solid #4285F4' : 'none',
+                opacity: !displayDrafts ? '0.7' : '',
+              }}
+            >
+              DRAFTS ({draftsList.length})
+            </span>
+          </div>
 
-            <TextField
-              variant="outlined"
-              placeholder={displayDrafts ? 'Search drafts' : 'Search tasks'}
-              className={classes.search}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              InputProps={{
-                startAdornment: <SearchIcon />,
-              }}
-              autoFocus={false}
-              data-cy="connections-search"
-            />
-            <Paper className={classes.paper} hidden={displayDrafts}>
-              <TasksFilter
-                filters={filterOptions}
-                applyFilters={(list) => {
-                  setFilterOptions(list);
-                  refetch();
-                }}
-              />
-            </Paper>
-          </div>
-          {displayDrafts ? (
-            <DraftsList
-              data={paginatedList(filteredDraft)}
-              // searchText={search}
-              reFetchDrafts={() => {
-                setLoader(true);
+          <TextField
+            variant="outlined"
+            placeholder={displayDrafts ? 'Search drafts' : 'Search tasks'}
+            className={classes.search}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            InputProps={{
+              startAdornment: <SearchIcon />,
+            }}
+            autoFocus={false}
+            data-cy="connections-search"
+          />
+          <Paper className={classes.paper} hidden={displayDrafts}>
+            <TasksFilter
+              filters={filterOptions}
+              applyFilters={(list) => {
+                setFilterOptions(list);
+                refetch();
               }}
             />
-          ) : (
-            <IngestionTaskList data={paginatedList(filteredList)} refetch={refetch} />
-          )}
-          <div className={classes.paginationWrapper}>
-            <Pagination
-              count={Math.ceil(
-                displayDrafts ? filteredDraft.length / 10 : filteredList.length / 10
-              )}
-              color="primary"
-              page={pageNo}
-              onChange={(event, value) => {
-                setPageNo(value);
-              }}
-            />
-          </div>
+          </Paper>
+        </div>
+        {displayDrafts ? (
+          <DraftsList
+            data={paginatedList(filteredDraft)}
+            // searchText={search}
+            reFetchDrafts={() => {
+              setLoader(true);
+            }}
+          />
+        ) : (
+          <IngestionTaskList data={paginatedList(filteredList)} refetch={refetch} />
+        )}
+        <div className={classes.paginationWrapper}>
+          <Pagination
+            count={Math.ceil(displayDrafts ? filteredDraft.length / 10 : filteredList.length / 10)}
+            color="primary"
+            page={pageNo}
+            onChange={(event, value) => {
+              setPageNo(value);
+              scrollRef.current.scrollTo(0, 0);
+            }}
+            style={{
+              marginTop: 'auto',
+            }}
+            hidden={displayDrafts ? filteredDraft.length <= 10 : filteredList.length <= 10}
+          />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

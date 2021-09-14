@@ -105,11 +105,13 @@ const styles = (theme): StyleRules => {
       lineHeight: '24px',
       padding: '0px 12px',
       marginRight: '6px',
+      marginTop: '6px',
     },
     chipContainer: {
       display: 'flex',
       alignItems: 'flex-end',
       paddingTop: '8px',
+      flexWrap: 'wrap',
     },
     title: {
       marginTop: '32px',
@@ -249,6 +251,7 @@ const styles = (theme): StyleRules => {
       display: 'flex',
       alignItems: 'flex-end',
       marginTop: '16px',
+      flexWrap: 'wrap',
     },
     taskDetailContainer: {
       display: 'flex',

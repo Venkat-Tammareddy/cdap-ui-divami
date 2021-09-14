@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
-import { Grid, Menu, MenuItem, Paper } from '@material-ui/core';
+import { Grid, Menu, MenuItem, Paper, Popover } from '@material-ui/core';
 import { MyMetadataApi } from 'api/metadata';
 import NamespaceStore from 'services/NamespaceStore';
 
@@ -41,6 +41,7 @@ const styles = (theme): StyleRules => {
       flexWrap: 'wrap',
     },
     chip: {
+      display: 'inline',
       border: '1px solid #689DF6',
       borderRadius: '16px',
       fontFamily: 'Lato',
@@ -49,6 +50,9 @@ const styles = (theme): StyleRules => {
       lineHeight: '24px',
       padding: '0px 12px',
       marginRight: '6px',
+      textOverflow: 'ellipsis',
+      overflowX: 'hidden',
+      marginBottom: '6px',
     },
   };
 };
@@ -59,9 +63,8 @@ interface ITaskTagsProps extends WithStyles<typeof styles> {
 const TaskTagsView: React.FC<ITaskTagsProps> = ({ classes, taskName }) => {
   const namespace = NamespaceStore.getState().selectedNamespace;
   const [tags, setTags] = React.useState([]);
-  const [viewMore, setViewMore] = React.useState(true);
+  // const [viewMore, setViewMore] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [what, setWhat] = React.useState(false);
   const open = Boolean(anchorEl);
   React.useEffect(() => {
     MyMetadataApi.getTags({
@@ -71,9 +74,9 @@ const TaskTagsView: React.FC<ITaskTagsProps> = ({ classes, taskName }) => {
     }).subscribe((tags) => {
       console.log(tags);
       setTags(tags.tags.filter((tag) => tag.scope === 'USER').map((tag) => tag.name));
-      {
-        tags.tags.length < 1 && setViewMore(false);
-      }
+      // {
+      //   tags.tags.length < 1 && setViewMore(false);
+      // }
     });
   }, [taskName]);
 
@@ -83,87 +86,60 @@ const TaskTagsView: React.FC<ITaskTagsProps> = ({ classes, taskName }) => {
         {tags.length === 0 && (
           <p style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}>- -</p>
         )}
-        {viewMore ? (
-          <>
-            <Paper className={classes.paper}>{tags[0]}</Paper>
-            {tags.length > 1 ? (
+        <>
+          <Paper className={classes.paper}>{tags[0]}</Paper>
+          {tags.length > 1 && (
+            <>
               <Paper
                 className={classes.paperCount}
                 onClick={(e) => {
                   e.stopPropagation();
                   setAnchorEl(e.currentTarget);
-                  setViewMore(false);
                 }}
               >
                 +{tags.length - 1} more
               </Paper>
-            ) : (
-              ''
-            )}
-          </>
-        ) : (
-          // <div className={classes.flex}>
-          //   {tags.map((tag, index) => (
-          //     <Paper key={tag} className={classes.paper}>
-          //       {(index ? ', ' : '') + tag}
-          //     </Paper>
-          //   ))}
-          // </div>
-
-          <Menu
-            id="long-menu"
-            keepMounted
-            anchorEl={anchorEl}
-            open={open}
-            getContentAnchorEl={null}
-            // anchorOrigin={{
-            //   vertical: 'top',
-            //   horizontal: 'left',
-            // }}
-            // transformOrigin={{
-            //   vertical: 'top',
-            //   horizontal: 'right',
-            // }}
-            onClose={(e: React.MouseEvent<HTMLButtonElement>) => {
-              e.preventDefault();
-              e.stopPropagation();
-              e.nativeEvent.stopImmediatePropagation();
-              setAnchorEl(null);
-            }}
-            PaperProps={{
-              style: {
-                height: '200px',
-                width: '20ch',
-                marginTop: '100px',
-              },
-            }}
-            data-cy="options-popover"
-          >
-            {tags.map((option) => (
-              <MenuItem
-                key={option}
-                onClick={(e) => {
+              <Popover
+                id="long-menu"
+                keepMounted
+                anchorEl={anchorEl}
+                open={open}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                onClose={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.preventDefault();
                   e.stopPropagation();
                   e.nativeEvent.stopImmediatePropagation();
-                  // setAnchorEl(null);
+                  setAnchorEl(null);
                 }}
-                className={classes.menuItem}
+                PaperProps={{
+                  style: {
+                    maxHeight: '200px',
+                    maxWidth: '150px',
+                    marginTop: '-24px',
+                    padding: '10px',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                  },
+                }}
+                data-cy="options-popover"
               >
-                <div className={classes.chip} key={option}>
-                  {option}
-                </div>
-              </MenuItem>
-            ))}
-          </Menu>
-        )}
-
-        {/* <Paper className={classes.paper}>{tags[0]}</Paper>
-        {tags.length > 1 ? (
-          <Paper className={classes.paperCount}>+{tags.length - 1} more</Paper>
-        ) : (
-          ''
-        )} */}
+                {tags.map((option) => (
+                  <div className={classes.chip} key={option} title={option}>
+                    {option}
+                  </div>
+                ))}
+              </Popover>
+            </>
+          )}
+        </>
       </Grid>
     </Grid>
   );

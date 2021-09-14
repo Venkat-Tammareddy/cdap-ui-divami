@@ -49,8 +49,9 @@ const styles = (): StyleRules => {
 interface IDuplicatepopupProps extends WithStyles<typeof styles> {
   open: boolean;
   taskName: string;
-  onSubmit: (taskName: string) => void;
+  onSubmit: () => void;
   onClose: () => void;
+  setTaskName: (taskName: string) => void;
 }
 
 const DuplicatepopupView: React.FC<IDuplicatepopupProps> = ({
@@ -59,11 +60,11 @@ const DuplicatepopupView: React.FC<IDuplicatepopupProps> = ({
   taskName,
   onSubmit,
   onClose,
+  setTaskName,
 }) => {
-  const [taskName2, setTaskName2] = React.useState(taskName);
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
-    errorMsg: '',
+    errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`).toString(),
   });
   const taskSpaceError = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`).toString();
   const taskLengthErrorMessage = T.translate(
@@ -92,7 +93,7 @@ const DuplicatepopupView: React.FC<IDuplicatepopupProps> = ({
       }
     }
     setTaskNameError(taskNameError);
-    setTaskName2(inputValue.value);
+    setTaskName(inputValue.value);
   };
   return (
     <Dialog
@@ -128,7 +129,7 @@ const DuplicatepopupView: React.FC<IDuplicatepopupProps> = ({
           label="Task Name*"
           variant="outlined"
           style={{ width: '350px' }}
-          value={taskName2}
+          value={taskName}
           onChange={(e) => handleTaskNameChange(e)}
         />
         <p className={taskNameError.error ? classes.errorInputInfo : classes.inputInfo}>
@@ -137,8 +138,8 @@ const DuplicatepopupView: React.FC<IDuplicatepopupProps> = ({
         <div style={{ marginTop: 'auto' }}>
           <ButtonComponent
             submitText="Deploy"
-            onCancel={() => onClose()}
-            onSubmit={() => onSubmit(taskName2)}
+            onCancel={onClose}
+            onSubmit={onSubmit}
             disableSubmit={taskName === '' || taskNameError.error}
           />
         </div>

@@ -545,10 +545,16 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
       <Duplicatepopup
         open={alert.show}
         taskName={taskName}
-        onSubmit={(newName) => {
-          setTaskName(newName);
+        onSubmit={() => {
+          setAlert((prev) => {
+            return {
+              ...prev,
+              show: false,
+            };
+          });
           deployPipeline();
         }}
+        setTaskName={setTaskName}
         onClose={() => closePopup(false)}
       />
       {/* <OverlaySmall

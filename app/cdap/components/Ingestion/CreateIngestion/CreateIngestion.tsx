@@ -37,6 +37,7 @@ import OverlaySmall from '../OverlaySmall/OverlaySmall';
 import StepperContent from './StepperContent/StepperContent';
 import Steps from './Steps/Steps';
 import produce from 'immer';
+import Duplicatepopup from '../commonUtils/Duplicatepopup';
 
 const styles = (theme): StyleRules => {
   return {
@@ -364,6 +365,27 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
 
   return (
     <div className={classes.root}>
+      <Duplicatepopup
+        open={alert.show && alert.type === 'duplicate-name'}
+        taskName={draftConfig.name}
+        onSubmit={() => {
+          setAlert((prev) => {
+            return {
+              ...prev,
+              show: false,
+            };
+          });
+          deployPipeline();
+        }}
+        setTaskName={(newName) =>
+          setDraftConfig(
+            produce((prev) => {
+              prev.name = newName;
+            })
+          )
+        }
+        onClose={() => handleCancel()}
+      />
       <OverlaySmall
         onCancel={() =>
           alert.type === 'addnewconnection' || alert.type === 'exit'
@@ -375,7 +397,7 @@ const CreateIngestionView: React.FC<ICreateIngestionProps> = ({ classes }) => {
               })
             : goToIngestionHome()
         }
-        open={alert.show}
+        open={alert.show && alert.type !== 'duplicate-name'}
         title={alert.title}
         description={alert.description}
         onSubmit={() =>

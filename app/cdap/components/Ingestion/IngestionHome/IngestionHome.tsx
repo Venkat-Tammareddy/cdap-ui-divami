@@ -368,6 +368,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
               onChange={(event, value) => {
                 setPageNo(value);
               }}
+              hidden={displayDrafts ? filteredDraft.length <= 10 : filteredList.length <= 10}
             />
           </div>
         </div>

@@ -864,14 +864,14 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
           <div className={classes.cardsContainer}>
             <div className={classes.card} onClick={() => runTask(taskName)}>
               <div className={classes.cardDescription}>
-                I would like to extract all columns from all tables without any custom selection.
+                The run task will initiate adhoc requests to run.
               </div>
               <div className={classes.cardTitle}>Run Task</div>
               <img className={classes.cardRunIcon} src={runTaskIcon} alt="run-task" />
             </div>
             <div className={classes.card} onClick={toggleSchedule}>
               <div className={classes.cardDescription}>
-                I would like to extract the tables and columns I am interested in.
+                The Schedule allows user to configure the time and frequency of the task's run.
               </div>
               <div className={classes.cardTitle}>Schedule Task</div>
               <img className={classes.cardScheduleIcon} src={scheduleTaskIcon} alt="run-task" />

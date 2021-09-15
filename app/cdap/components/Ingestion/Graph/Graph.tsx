@@ -313,7 +313,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
           text="Job"
           className="alt-y-label"
           includeMargin={false}
-          xPercent={1}
+          xPercent={0.5}
           yPercent={1.2}
           style={{
             // transform: 'rotate(-90)',

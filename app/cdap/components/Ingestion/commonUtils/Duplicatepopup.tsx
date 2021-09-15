@@ -64,7 +64,7 @@ const DuplicatepopupView: React.FC<IDuplicatepopupProps> = ({
 }) => {
   const [taskNameError, setTaskNameError] = React.useState({
     error: false,
-    errorMsg: T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`).toString(),
+    errorMsg: '',
   });
   const taskSpaceError = T.translate(`${I18N_PREFIX}.Errors.taskNameFormatError`).toString();
   const taskLengthErrorMessage = T.translate(
@@ -87,9 +87,7 @@ const DuplicatepopupView: React.FC<IDuplicatepopupProps> = ({
         taskNameError.errorMsg = T.translate(`${I18N_PREFIX}.Errors.errorWithOutEx`).toString();
       } else {
         taskNameError.error = false;
-        taskNameError.errorMsg = T.translate(
-          `${I18N_PREFIX}.Errors.taskNameFormatError`
-        ).toString();
+        taskNameError.errorMsg = '';
       }
     }
     setTaskNameError(taskNameError);
@@ -108,7 +106,7 @@ const DuplicatepopupView: React.FC<IDuplicatepopupProps> = ({
           height: '240px',
           display: 'flex',
           flexDirection: 'column',
-          margin: '50px',
+          margin: '40px',
         }}
       >
         <div
@@ -122,13 +120,13 @@ const DuplicatepopupView: React.FC<IDuplicatepopupProps> = ({
             color: '#202124',
           }}
         >
-          <p>Sorry! There is already a task with this name.</p>
+          <p style={{ marginBottom: '0px' }}>Sorry! There is already a task with this name.</p>
           <p>Please rename it.</p>
         </div>
         <TextField
           label="Task Name*"
           variant="outlined"
-          style={{ width: '350px' }}
+          style={{ width: '380px', marginTop: '30px' }}
           value={taskName}
           onChange={(e) => handleTaskNameChange(e)}
         />

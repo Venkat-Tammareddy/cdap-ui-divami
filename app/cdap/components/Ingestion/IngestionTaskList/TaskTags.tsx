@@ -132,7 +132,14 @@ const TaskTagsView: React.FC<ITaskTagsProps> = ({ classes, taskName }) => {
                 data-cy="options-popover"
               >
                 {tags.map((option) => (
-                  <div className={classes.chip} key={option} title={option}>
+                  <div
+                    className={classes.chip}
+                    key={option}
+                    title={option}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
                     {option}
                   </div>
                 ))}

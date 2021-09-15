@@ -221,7 +221,7 @@ const styles = (theme): StyleRules => {
       display: 'none',
     },
     left: { flex: '1' },
-    right: { marginRight: '40px' },
+    right: { marginRight: '60px', marginTop: '10px' },
     scheduleContainer: {
       display: 'flex',
       alignItems: 'center',
@@ -774,10 +774,10 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
                     {setSelectedItem()?.item ? setSelectedItem()?.item : '--'}
                   </div>
                 </div>
-                <div className={classes.runDetailsItem}>
+                {/* <div className={classes.runDetailsItem}>
                   <div className={classes.runDetailsTop}>Next Run</div>
                   <div className={classes.runDetailsBottom}>12 Jun 21, 09:30 pm</div>
-                </div>
+                </div> */}
               </div>
             )}
           </div>

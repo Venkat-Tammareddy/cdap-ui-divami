@@ -50,10 +50,11 @@ const styles = (): StyleRules => {
       display: 'flex',
       marginBottom: '0',
       color: '#202124',
+      marginRight: '20px',
+      marginLeft: '20px',
     },
     options: {
       display: 'flex',
-      gap: '40px',
       justifyContent: 'center',
       marginTop: '40px',
     },
@@ -67,6 +68,7 @@ const styles = (): StyleRules => {
       textAlign: 'center',
       border: '1px solid #aaaaac',
       borderRadius: '4px',
+      marginRight: '40px',
     },
     optionIcon: {
       marginTop: '20px',
@@ -96,7 +98,6 @@ const styles = (): StyleRules => {
     test: {
       display: 'flex',
       flexDirection: 'row',
-      gap: '20px',
       justifyContent: 'center',
       alignItems: 'center',
     },

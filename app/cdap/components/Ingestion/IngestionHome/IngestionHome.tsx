@@ -122,10 +122,6 @@ const styles = (theme): StyleRules => {
       },
       paddingRight: '5px',
     },
-    homeHeaders: {
-      display: 'flex',
-      gap: '500px',
-    },
     paginationWrapper: {
       display: 'flex',
       justifyContent: 'flex-end',

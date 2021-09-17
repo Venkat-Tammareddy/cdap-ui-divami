@@ -66,12 +66,6 @@ const styles = (): StyleRules => {
       borderRadius: '4px',
       position: 'relative',
     },
-    mappingTypes: {
-      display: 'flex',
-      flexDirection: 'row',
-      gap: '50px',
-      marginTop: '10px',
-    },
     mappingInfo: {
       display: 'flex',
       flexDirection: 'column',

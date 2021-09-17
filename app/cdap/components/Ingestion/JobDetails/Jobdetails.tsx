@@ -514,7 +514,6 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                     <p className={classes.smallInfo}>(Database)</p>
                   </div>
                 </div>
-
                 <div
                   style={{ display: 'flex', justifyContent: 'center', marginLeft: '50px' }}
                   onClick={() =>
@@ -599,7 +598,6 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                               listStyle: 'none',
                               display: 'flex',
                               alignItems: 'center',
-                              border: '2px solid red',
                             }}
                             key={item}
                           >

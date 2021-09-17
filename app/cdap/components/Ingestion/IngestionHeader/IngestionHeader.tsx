@@ -72,7 +72,6 @@ const styles = (theme): StyleRules => {
     },
     toggleButton: {
       display: 'flex',
-      gap: '10px',
       alignItems: 'center',
     },
     listIcons: {
@@ -94,6 +93,7 @@ const styles = (theme): StyleRules => {
       fontSize: '16px',
       fontFamily: 'Lato',
       color: '#202124',
+      marginRight: '20px',
     },
     viewTxt: {
       marginLeft: '30px',
@@ -101,21 +101,25 @@ const styles = (theme): StyleRules => {
       fontSize: '16px',
       fontFamily: 'Lato',
       color: '#666666',
+      marginRight: '10px',
     },
     hideThese: {
-      gap: '10px',
+      // gap: '10px',
       display: 'none',
+      marginRight: '10px',
     },
     showThese: {
       display: 'flex',
-      gap: '20px',
+      // gap: '20px',
       justifyContent: 'center',
       alignItems: 'center',
+      marginRight: '10px',
     },
     red: {
       height: '12px',
       width: '12px',
       backgroundColor: '#F8888A ',
+      marginRight: '10px',
       borderRadius: '50%',
     },
     green: {
@@ -123,12 +127,14 @@ const styles = (theme): StyleRules => {
       width: '12px',
       backgroundColor: '#74D091',
       borderRadius: '50%',
+      marginRight: '10px',
     },
     smallContainer: {
       display: 'flex',
-      gap: '10px',
+      // gap: '10px',
       justifyContent: 'center',
       alignItems: 'center',
+      marginRight: '10px',
     },
     selected: {},
     active: {
@@ -166,12 +172,14 @@ const styles = (theme): StyleRules => {
       width: '12px',
       backgroundColor: '#ffc107',
       borderRadius: '50%',
+      marginRight: '10px',
     },
     blue: {
       height: '12px',
       width: '12px',
       backgroundColor: '#007bff',
       borderRadius: '50%',
+      marginRight: '10px',
     },
   };
 };

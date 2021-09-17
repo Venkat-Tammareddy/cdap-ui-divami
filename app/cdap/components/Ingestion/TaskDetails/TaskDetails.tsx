@@ -603,7 +603,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const getSuccessRate = () => {
     const successRuns = taskDetails.runs.filter((run) => run.status === 'COMPLETED').length;
     const totalRuns = taskDetails.runs.length;
-    return ((successRuns / totalRuns) * 100).toFixed(2);
+    return ((successRuns / totalRuns) * 100).toFixed(0);
   };
 
   const successfulRuns = taskDetails.runs.filter((run) => run.status === 'COMPLETED').length;

@@ -28,7 +28,7 @@ import { gql } from 'apollo-boost';
 import LoadingSVGCentered from 'components/LoadingSVGCentered';
 import { useQuery } from '@apollo/react-hooks';
 import { MyPipelineApi } from 'api/pipeline';
-import { humanReadableDate } from 'services/helpers';
+import { categorizeGraphQlErrors, humanReadableDate } from 'services/helpers';
 import { ingestionContext } from 'components/Ingestion/ingestionContext';
 import Pagination from '@material-ui/lab/Pagination';
 import { CheckboxNormal, CheckedIcon } from '../CustomTableSelection/CustomTableSelection';
@@ -182,7 +182,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   }
 `;
 
-  const { loading, data, refetch, networkStatus } = useQuery(QUERY, {
+  const { loading, data, refetch, networkStatus, error } = useQuery(QUERY, {
     errorPolicy: 'all',
     fetchPolicy: 'no-cache',
     notifyOnNetworkStatusChange: true,
@@ -219,30 +219,31 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
   //     };
   //   });
   // };
-  // const bannerMessage = '';
-  // if (error) {
-  //   const errorMap = categorizeGraphQlErrors(error);
-  //   // Errors thrown here will be caught by error boundary
-  //   // and will show error to the user within pipeline list view
+  let bannerMessage = '';
+  if (error) {
+    setLoader(false);
+    const errorMap = categorizeGraphQlErrors(error);
+    // Errors thrown here will be caught by error boundary
+    // and will show error to the user within pipeline list view
 
-  //   // Each error type could have multiple error messages, we're using the first one available
-  //   if (errorMap.hasOwnProperty('pipelines')) {
-  //     throw new Error(errorMap.pipelines[0]);
-  //   } else if (errorMap.hasOwnProperty('network')) {
-  //     throw new Error(errorMap.network[0]);
-  //   } else if (errorMap.hasOwnProperty('generic')) {
-  //     throw new Error(errorMap.generic[0]);
-  //   } else {
-  //     if (Object.keys(errorMap).length > 1) {
-  //       // If multiple services are down
-  //       const message = T.translate(`${I18N_PREFIX}.graphQLMultipleServicesDown`).toString();
-  //       throw new Error(message);
-  //     } else {
-  //       // Pick one of the leftover errors to show in the banner;
-  //       bannerMessage = Object.values(errorMap)[0][0];
-  //     }
-  //   }
-  // }
+    // Each error type could have multiple error messages, we're using the first one available
+    if (errorMap.hasOwnProperty('pipelines')) {
+      throw new Error(errorMap.pipelines[0]);
+    } else if (errorMap.hasOwnProperty('network')) {
+      throw new Error(errorMap.network[0]);
+    } else if (errorMap.hasOwnProperty('generic')) {
+      throw new Error(errorMap.generic[0]);
+    } else {
+      if (Object.keys(errorMap).length > 1) {
+        // If multiple services are down
+        const message = T.translate(`${I18N_PREFIX}.graphQLMultipleServicesDown`).toString();
+        throw new Error(message);
+      } else {
+        // Pick one of the leftover errors to show in the banner;
+        bannerMessage = Object.values(errorMap)[0][0];
+      }
+    }
+  }
 
   const searchIcon = '/cdap_assets/img/search.svg';
 

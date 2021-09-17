@@ -44,7 +44,6 @@ const styles = (theme): StyleRules => {
     },
     tabsWrapper: {
       display: 'flex',
-      gap: '10px',
     },
     tabItemActive: {
       borderBottom: '4px solid #4285F4',
@@ -89,7 +88,6 @@ const styles = (theme): StyleRules => {
     },
     jobItem: {
       display: 'flex',
-      gap: '10px',
       marginRight: '60px',
     },
     infoIcons: {
@@ -222,8 +220,9 @@ const styles = (theme): StyleRules => {
 interface IJobDetailsProps extends WithStyles<typeof styles> {}
 const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
   const [displaySummary, setDisplaySummary] = React.useState(true);
+  const browseIcon = '/cdap_assets/img/browse-data.svg';
   const greenTickIcon = '/cdap_assets/img/side-stepper-tick.svg';
-  const progressIcon = '/cdap_assets/img/Inprogress.svg';
+  const progressIcon = '/cdap_assets/img/inprogress.svg';
   const failedIcon = '/cdap_assets/img/error.svg';
   const arrowIcon = '/cdap_assets/img/arrow.svg';
   const killedIcon = '/cdap_assets/img/killed.svg';
@@ -259,6 +258,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
     },
     sourceList: [],
     targetList: [],
+    project: '',
   });
   React.useEffect(() => {
     MyPipelineApi.getRunDetails({
@@ -288,6 +288,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
           );
           prev.jobConfig.targetConnection = draftObj.stages[1].name;
           prev.jobConfig.targetDb = draftObj.stages[1].plugin.properties.dataset;
+          prev.project = draftObj.stages[1].plugin.properties.project;
         })
       );
       setJobDetails(
@@ -393,7 +394,6 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
         taskName={taskName}
         jobName={jobId}
         browseBtn
-        onBrowse={() => console.log('browse data')}
         navToHome={() => history.push(`/ns/${currentNamespace}/ingestion`)}
         backArrow
       />
@@ -402,6 +402,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
           <div
             className={displaySummary ? classes.tabItemActive : classes.tabItemInActive}
             onClick={() => setDisplaySummary(true)}
+            style={{ marginRight: '10px' }}
           >
             SUMMARY
           </div>
@@ -428,6 +429,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                   (jobDetails.status === 'KILLED' && killedIcon) ||
                   progressIcon
                 }
+                style={{ marginRight: '10px' }}
                 alt="job-details"
               />
               <div className={classes.jobDetails}>
@@ -436,7 +438,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
               </div>
             </div>
             <div className={classes.jobItem}>
-              <img src={recordsInserted} alt="records inserted" />
+              <img src={recordsInserted} alt="records inserted" style={{ marginRight: '10px' }} />
               <div className={classes.recordDetails}>
                 <div className={classes.jobDetailsTop}>
                   {jobDetails.records.in ? jobDetails.records.in : 0}
@@ -445,7 +447,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
               </div>
             </div>
             <div className={classes.jobItem}>
-              <img src={recordsError} alt="records inserted" />
+              <img src={recordsError} alt="records inserted" style={{ marginRight: '10px' }} />
               <div className={classes.jobDetails}>
                 <div className={classes.jobDetailsTop}>
                   {jobDetails.records.error ? jobDetails.records.error : 0}
@@ -454,7 +456,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
               </div>
             </div>
             <div className={classes.jobItem}>
-              <img src={timeIcon} alt="time icon" />
+              <img src={timeIcon} alt="time icon" style={{ marginRight: '10px' }} />
               <div className={classes.recordDetails}>
                 <div className={classes.jobDetailsTop}>{jobDetails.duration}</div>
                 <div className={classes.jobDetailsBottom}>Execution time</div>
@@ -511,6 +513,31 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                     {jobDetails.jobConfig.targetDb}
                     <p className={classes.smallInfo}>(Database)</p>
                   </div>
+                </div>
+
+                <div
+                  style={{ display: 'flex', justifyContent: 'center', marginLeft: '50px' }}
+                  onClick={() =>
+                    window.open(
+                      `https://console.cloud.google.com/bigquery?project=${jobDetails.project}&d=${jobDetails.jobConfig.targetDb}`
+                    )
+                  }
+                >
+                  <img
+                    src={browseIcon}
+                    alt="browse-data"
+                    style={{ marginRight: '10px', cursor: 'pointer' }}
+                  />
+                  <span
+                    style={{
+                      fontSize: '16px',
+                      color: '#202124',
+                      cursor: 'pointer',
+                      fontFamily: 'Lato',
+                    }}
+                  >
+                    Browse Data
+                  </span>
                 </div>
                 {/* <img
               src={sourceIcon}
@@ -572,7 +599,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                               listStyle: 'none',
                               display: 'flex',
                               alignItems: 'center',
-                              gap: '8px',
+                              border: '2px solid red',
                             }}
                             key={item}
                           >
@@ -582,6 +609,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                                 width: '6px',
                                 backgroundColor: '#D8D8D8',
                                 borderRadius: '50%',
+                                marginRight: '8px',
                               }}
                             />
                             <span className={classes.selectedTableNames}>{item}</span>

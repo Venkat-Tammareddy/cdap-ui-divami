@@ -96,7 +96,6 @@ const styles = (theme): StyleRules => {
       marginTop: 'auto',
       display: 'flex',
       flexDirection: 'row-reverse',
-      gap: '30px',
       paddingTop: '50px',
     },
     cancelButton: {
@@ -107,7 +106,7 @@ const styles = (theme): StyleRules => {
       letterSpacing: '1.25px',
       lineHeight: '24px',
       fontFamily: 'Lato',
-      paddingRight: '0px',
+      marginRight: '30px',
     },
     submitButton: {
       backgroundColor: '#4285F4',
@@ -134,10 +133,6 @@ const styles = (theme): StyleRules => {
       flexDirection: 'row',
       height: '50px',
       marginLeft: '8px',
-    },
-    flexHeader: {
-      display: 'flex',
-      gap: '10px',
     },
     sortIcon: {
       marginLeft: '13.5px',
@@ -388,17 +383,15 @@ const SelectConnectionsView: React.FC<ISelectConnectionsProps> = ({
                 )}
               </TableCell>
               <TableCell onClick={() => setHeader('lastUsed')}>
-                <div className="flexHeader">
-                  {T.translate(`${I18N_PREFIX}.Names.lastUsedOn`)}
-                  {header === 'lastUsed' && (
-                    <img
-                      src={sortType === 'Down' ? sortDownIcon : sortUpIcon}
-                      alt="some down icon sort"
-                      className={classes.sortIcon}
-                      onClick={handleSortToggle}
-                    />
-                  )}
-                </div>
+                {T.translate(`${I18N_PREFIX}.Names.lastUsedOn`)}
+                {header === 'lastUsed' && (
+                  <img
+                    src={sortType === 'Down' ? sortDownIcon : sortUpIcon}
+                    alt="some down icon sort"
+                    className={classes.sortIcon}
+                    onClick={handleSortToggle}
+                  />
+                )}
               </TableCell>
               <TableCell></TableCell>
             </TableRow>

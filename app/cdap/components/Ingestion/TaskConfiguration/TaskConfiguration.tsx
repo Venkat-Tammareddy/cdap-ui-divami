@@ -54,12 +54,7 @@ const styles = (): StyleRules => {
       marginTop: '38px',
     },
     buttonContainer: {
-      // marginTop: '5%',
-      // marginLeft: '30%',
-      // display: 'flex',
-      // gap: '50px',
       display: 'flex',
-      gap: '30px',
       alignItems: 'end',
       justifyContent: 'flex-end',
     },
@@ -101,6 +96,7 @@ const styles = (): StyleRules => {
       letterSpacing: '1.25px',
       lineHeight: '24px',
       fontFamily: 'Lato',
+      marginRight: '30px',
     },
     overlayActive: {
       display: 'none',
@@ -118,7 +114,6 @@ const styles = (): StyleRules => {
       transform: 'scale(1.3)',
     },
     radioChoice: {
-      gap: '24px',
       // justifyContent: 'center',
       alignItems: 'center',
     },
@@ -155,6 +150,7 @@ const TaskConfigurationView: React.FC<IIngestionProps> = ({ classes, deploy, han
               value="Yes"
               label={<Typography className={classes.choices}>Yes</Typography>}
               className={classes.choices}
+              style={{ marginRight: '24px' }}
             />
             <FormControlLabel
               control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}

@@ -88,28 +88,6 @@ const styles = (): StyleRules => {
       color: '#202124',
       letterSpacing: '0',
     },
-    buttonContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      gap: '30px',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-    },
-    cancelButton: {
-      color: '#4285F4;',
-      outline: 'none',
-      fontSize: '14px',
-      letterSpacing: '1.25px',
-      lineHeight: '24px',
-      fontFamily: 'Lato',
-    },
-    submitButton: {
-      backgroundColor: '#4285F4',
-      letterSpacing: '1.25px',
-      lineHeight: '24px',
-      fontSize: '14px',
-      fontFamily: 'Lato',
-    },
     mappingDescription: {
       fontFamily: 'Lato',
       fontSize: '14px',

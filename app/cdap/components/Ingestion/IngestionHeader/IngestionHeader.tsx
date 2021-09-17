@@ -22,6 +22,7 @@ import history from 'services/history';
 import NamespaceStore from 'services/NamespaceStore';
 import If from 'components/If';
 import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom';
 
 const styles = (theme): StyleRules => {
   return {
@@ -298,12 +299,12 @@ const IngestionHeaderView: React.FC<IngestionHeaderProps> = ({
             <span style={{ textAlign: 'center' }}>Task Actions</span>
           </div>
         )}
-        {browseBtn && (
+        {/* {browseBtn && (
           <div className={classes.create} onClick={onBrowse}>
             <img className={classes.createIcon} src={browseIcon} alt="browse-data" />
-            <span>Browse</span>
+            <span>Analyse</span>
           </div>
-        )}
+        )} */}
         {addConnection && (
           <div
             style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}

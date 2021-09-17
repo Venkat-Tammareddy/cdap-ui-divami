@@ -56,12 +56,12 @@ const styles = (): StyleRules => {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
+      marginRight: '10px',
     },
     up: {
       display: 'flex',
       borderBottom: '2px solid grey',
       // marginTop: '-10px',
-      gap: '10px',
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -78,7 +78,6 @@ const styles = (): StyleRules => {
       display: 'flex',
       flexDirection: 'column',
       marginTop: '15.5px',
-      gap: '15px',
       color: '#202124',
       fontSize: '14px',
     },
@@ -368,7 +367,7 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
                       return <p className={classes.jobInfo}>{object.time}</p>;
                     }
                   })}
-                  <p className={classes.jobInfo}>
+                  <p className={classes.jobInfo} style={{ marginTop: '15px' }}>
                     {runIdArray.map(function(object, i) {
                       if (object.x === jobIdMap.get(value.x)) {
                         return <p className={classes.jobInfo}>{object.y} &nbsp; Records Loaded</p>;
@@ -377,7 +376,11 @@ const GraphsView: React.FC<GraphsProps> = ({ classes, items, metrix }) => {
                   </p>
                   {runIdArray2.map(function(object, i) {
                     if (object.x === jobIdMap.get(value.x)) {
-                      return <p className={classes.jobInfo}>{object.y} &nbsp; Error Records</p>;
+                      return (
+                        <p className={classes.jobInfo} style={{ marginTop: '15px' }}>
+                          {object.y} &nbsp; Error Records
+                        </p>
+                      );
                     }
                   })}
                 </div>

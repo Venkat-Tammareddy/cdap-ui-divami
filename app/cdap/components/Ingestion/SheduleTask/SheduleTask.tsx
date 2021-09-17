@@ -74,7 +74,6 @@ const styles = (theme): StyleRules => {
     btnFooter: {
       display: 'flex',
       marginTop: '38px',
-      gap: '30px',
       alignItems: 'center',
     },
     picker: {
@@ -153,7 +152,6 @@ const styles = (theme): StyleRules => {
     container: {
       display: 'flex',
       marginTop: '30px',
-      gap: '10px',
       flexDirection: 'column',
     },
     foorm: {
@@ -430,7 +428,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
               type={'hours'}
             />
             <div className={classes.container}>
-              <Box mb={1} className={classes.optionsLabel2}>
+              <Box mb={1} className={classes.optionsLabel2} style={{ marginBottom: '10px' }}>
                 When do you want to start this event?{' '}
               </Box>
               <IncrementInput
@@ -729,6 +727,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
               color="primary"
               onClick={closeSchedule}
               className={classes.cancelButton}
+              style={{ marginRight: '30px' }}
             >
               CANCEL
             </Button>
@@ -743,6 +742,7 @@ const SheduleTask: React.FC<SheduleTaskProps> = ({
                 closeSchedule();
                 saveAndShedule(false);
               }}
+              style={{ marginRight: '30px' }}
             >
               SAVE
             </Button>

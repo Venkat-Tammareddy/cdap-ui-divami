@@ -173,12 +173,6 @@ const styles = (): StyleRules => {
     resize: {
       height: '113px',
     },
-    buttonContainer: {
-      display: 'flex',
-      gap: '50px',
-      alignItems: 'end',
-      justifyContent: 'flex-end',
-    },
     cancelButton: {
       textDecoration: 'none',
       color: '#4285F4;',
@@ -274,7 +268,6 @@ const styles = (): StyleRules => {
     },
     radioGroup: {
       display: 'flex',
-      gap: '50px',
     },
     radiooo: {
       display: 'flex',
@@ -652,6 +645,7 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
                       value="Yes"
                       label={<Typography className={classes.choices}>Yes</Typography>}
                       className={classes.choices}
+                      style={{ marginRight: '50px' }}
                     />
                     <FormControlLabel
                       control={
@@ -686,6 +680,7 @@ const DuplicateTaskView: React.FC<DuplicateTaskProps> = ({
                       value="Yes"
                       label={<Typography className={classes.choices}>Yes</Typography>}
                       className={classes.choices}
+                      style={{ marginRight: '50px' }}
                     />
                     <FormControlLabel
                       control={

@@ -30,6 +30,10 @@ const styles = (theme): StyleRules => {
       boxShadow: 'none',
       backgroundColor: 'rgb(255 255 255 / 0%)',
       textOverflow: 'ellipsis',
+      border: '1px solid #689DF6',
+      borderRadius: '16px',
+      display: 'inline',
+      padding: '0px 6px',
     },
     paperCount: {
       boxShadow: 'none',
@@ -53,6 +57,9 @@ const styles = (theme): StyleRules => {
       textOverflow: 'ellipsis',
       overflowX: 'hidden',
       marginBottom: '6px',
+    },
+    hide: {
+      display: 'none',
     },
   };
 };
@@ -87,7 +94,7 @@ const TaskTagsView: React.FC<ITaskTagsProps> = ({ classes, taskName }) => {
           <p style={{ color: '#202124', fontSize: '14px', fontFamily: 'Lato' }}>- -</p>
         )}
         <>
-          <Paper className={classes.paper}>{tags[0]}</Paper>
+          <Paper className={tags.length === 0 ? classes.hide : classes.paper}>{tags[0]}</Paper>
           {tags.length > 1 && (
             <>
               <Paper

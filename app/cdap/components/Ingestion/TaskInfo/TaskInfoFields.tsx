@@ -108,7 +108,6 @@ const styles = (theme): StyleRules => {
     taskTags: {
       marginTop: '28px',
       width: '600px',
-      height: '56px',
       '& label.Mui-focused': {
         color: '#4285F4',
         fontSize: '12px',

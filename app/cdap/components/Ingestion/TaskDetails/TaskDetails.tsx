@@ -48,7 +48,6 @@ const styles = (theme): StyleRules => {
       padding: '0px 28px 0px 28px',
       borderTop: '1px solid #A5A5A5',
       display: 'flex',
-      gap: '350px',
     },
     flexContainer: {
       display: 'flex',
@@ -60,7 +59,7 @@ const styles = (theme): StyleRules => {
       position: 'absolute',
       top: '-18px',
       backgroundColor: '#FFFFFF',
-      fontSize: '18px',
+      fontSize: '20px',
       color: '#202124',
       '&:after': {
         content: '',
@@ -169,10 +168,6 @@ const styles = (theme): StyleRules => {
       paddingBottom: '20px',
       width: '100%',
     },
-    runDetailsItem: {
-      display: 'flex',
-      gap: '20px',
-    },
     successPercentage: {
       fontFamily: 'Lato',
       fontSize: '16px',
@@ -191,27 +186,10 @@ const styles = (theme): StyleRules => {
       color: '#202124',
       opacity: '0.8',
     },
-    detailHeader: {
-      cursor: 'pointer',
-      fontFamily: 'Lato',
-      fontSize: '14px',
-      color: '#4285F4 ',
-      display: 'flex',
-      gap: '10px',
-      alignItems: 'center',
-    },
-    detailContainer: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-    },
     arrowIcons: {
       fill: '#4285F4 ',
       alignItems: 'center',
       cursor: 'pointer',
-    },
-    detailHeaderText: {
-      marginBottom: '0px',
     },
     wrapper: {
       marginTop: '0px',
@@ -225,12 +203,10 @@ const styles = (theme): StyleRules => {
     scheduleContainer: {
       display: 'flex',
       alignItems: 'center',
-      gap: '20px',
     },
     successContainer: {
       display: 'flex',
       marginTop: '16.9px',
-      gap: '20px',
     },
     taskData: {
       fontFamily: 'Lato',
@@ -285,8 +261,6 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
   const arrowIcon = '/cdap_assets/img/arrow.svg';
   const runTaskIcon = '/cdap_assets/img/run-task-big.svg';
   const scheduleTaskIcon = '/cdap_assets/img/schedule-task-big.svg';
-  const successRatePie = '/cdap_assets/img/Success Rate.svg';
-  const clock = '/cdap_assets/img/Time.svg';
   const infographicIcon = '/cdap_assets/img/info-infographic.svg';
   const currentNamespace = NamespaceStore.getState().selectedNamespace;
   const [schedule, setSchedule] = React.useState(false);
@@ -632,6 +606,9 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
     return ((successRuns / totalRuns) * 100).toFixed(2);
   };
 
+  const successfulRuns = taskDetails.runs.filter((run) => run.status === 'COMPLETED').length;
+  const totalRun = taskDetails.runs.length;
+
   const [alert, setAlert] = React.useState(false);
   const deletePipeline = () => {
     MyPipelineApi.delete({ namespace: currentNamespace, appId: taskName }).subscribe((msg) => {
@@ -754,7 +731,7 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
                   </div>
                   <div className={classes.connInfo}>
                     {taskDetails.connections.targetDb}
-                    <p className={classes.smallInfo}>(Database)</p>
+                    <p className={classes.smallInfo}>(DataSet)</p>
                   </div>
                 </div>
               </div>
@@ -765,101 +742,33 @@ const TaskDetailsView: React.FC<ITaskDetailsProps> = ({ classes }) => {
               <div className={classes.runDetails}>
                 <img src={infographicIcon} alt="success-rate-pie" height="35.1px" width="40px" />
                 <div className={classes.successContainer}>
-                  <div className={classes.successPercentage}>Success Rate</div>
+                  <div className={classes.successPercentage} style={{ marginRight: '20px' }}>
+                    Success Rate
+                  </div>
                   <div className={classes.successPercentage}>{getSuccessRate()}%</div>
+                  <div
+                    style={{
+                      paddingLeft: '5px',
+                      fontFamily: 'Lato',
+                      fontSize: '16px',
+                      color: '#202124',
+                    }}
+                  >
+                    ({successfulRuns} out of {totalRun})
+                  </div>
                 </div>
                 <div className={classes.scheduleContainer}>
-                  <div className={classes.runDetailsTop}>Schedule Run</div>
+                  <div className={classes.runDetailsTop} style={{ marginRight: '20px' }}>
+                    Schedule Run
+                  </div>
                   <div className={classes.runDetailsBottom}>
                     {setSelectedItem()?.item ? setSelectedItem()?.item : '--'}
                   </div>
                 </div>
-                {/* <div className={classes.runDetailsItem}>
-                  <div className={classes.runDetailsTop}>Next Run</div>
-                  <div className={classes.runDetailsBottom}>12 Jun 21, 09:30 pm</div>
-                </div> */}
               </div>
             )}
           </div>
         </div>
-        {/* <div className={taskDetails.runs.length === 0 ? classes.leftFullWidth : classes.left}>
-          <div className={classes.flexContainer}>
-            <div className={classes.taskName}>{taskName}</div>
-            <div className={classes.taskDate}>Deployed on 04 May 21, 07:30 pm</div>
-          </div>
-          <div>
-            <div className={classes.description}>{taskDetails.description}</div>
-            <div className={classes.connectionContainer}>
-              <img
-                src={sourceIcon}
-                alt="Icon"
-                style={{
-                  backgroundColor: 'orange',
-                  fill: 'red',
-                  height: '40px',
-                  width: '40px',
-                  borderRadius: '50%',
-                  padding: '5px',
-                }}
-              />
-              <div className={classes.taskData}>
-                {taskDetails.connections.sourceName}
-                {' | '}
-                {taskDetails.connections.sourceDb}
-              </div>
-              <img className={classes.arrow} src={arrowIcon} alt="arrow" />
-              <img
-                src={targetIcon}
-                alt="Icon"
-                style={{
-                  backgroundColor: 'orange',
-                  fill: 'red',
-                  height: '40px',
-                  width: '40px',
-                  borderRadius: '50%',
-                  padding: '5px',
-                }}
-              />
-              <div className={classes.taskData}>
-                {taskDetails.connections.targetName}
-                {' | '}
-                {taskDetails.connections.targetDb}
-              </div>
-            </div>
-            <div
-              className={
-                taskDetails.runs.length === 0 ? classes.chipContainer : classes.chipFullWidth
-              }
-            >
-              {taskDetails.tags.map((tag) => {
-                return (
-                  <div className={classes.chip} key={tag}>
-                    {tag}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-        <div className={classes.right}>
-          {taskDetails.runs.length > 1 && (
-            <div className={classes.runDetails}>
-              <img src={calenderIcon} alt="success-rate-pie" height="35.1px" width="40px" />
-              <div className={classes.successContainer}>
-                <div className={classes.successPercentage}>Sucess Rate</div>
-                <div className={classes.successPercentage}>{getSuccessRate()}%</div>
-              </div>
-              <div className={classes.scheduleContainer}>
-                <div className={classes.runDetailsTop}>Schedule Run</div>
-                <div className={classes.runDetailsBottom}>Every Month</div>
-              </div>
-              <div className={classes.runDetailsItem}>
-                <div className={classes.runDetailsTop}>Next Run</div>
-                <div className={classes.runDetailsBottom}>12 Jun 21, 09:30 pm</div>
-              </div>
-            </div>
-          )}
-        </div> */}
       </div>
       {taskDetails.runs.length === 0 ? (
         <div className={classes.wrapper}>

@@ -126,6 +126,9 @@ const TaskTagsView: React.FC<ITaskTagsProps> = ({ classes, taskName }) => {
                   e.nativeEvent.stopImmediatePropagation();
                   setAnchorEl(null);
                 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
                 PaperProps={{
                   style: {
                     maxHeight: '200px',
@@ -139,14 +142,7 @@ const TaskTagsView: React.FC<ITaskTagsProps> = ({ classes, taskName }) => {
                 data-cy="options-popover"
               >
                 {tags.map((option) => (
-                  <div
-                    className={classes.chip}
-                    key={option}
-                    title={option}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
+                  <div className={classes.chip} key={option} title={option}>
                     {option}
                   </div>
                 ))}

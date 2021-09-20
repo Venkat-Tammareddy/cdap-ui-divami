@@ -511,7 +511,7 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
                   </div>
                   <div className={classes.connInfo}>
                     {jobDetails.jobConfig.targetDb}
-                    <p className={classes.smallInfo}>(Database)</p>
+                    <p className={classes.smallInfo}>(Dataset)</p>
                   </div>
                 </div>
                 <div

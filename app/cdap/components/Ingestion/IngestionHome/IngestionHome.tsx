@@ -338,6 +338,7 @@ const IngestionHomeView: React.FC<IIngestionHomeProps> = ({ classes }) => {
               applyFilters={(list) => {
                 setFilterOptions(list);
                 refetch();
+                setPageNo(1);
               }}
             />
           </Paper>

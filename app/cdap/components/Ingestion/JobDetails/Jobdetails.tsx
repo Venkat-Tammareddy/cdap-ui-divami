@@ -214,6 +214,13 @@ const styles = (theme): StyleRules => {
       fontFamily: 'Lato',
       color: '#202124',
     },
+    errorTitle: {
+      fontFamily: 'Lato',
+      fontSize: '18px',
+      color: '#202124',
+      textAlign: 'center',
+      marginTop: '20px',
+    },
   };
 };
 
@@ -633,30 +640,38 @@ const JobDetailsView: React.FC<IJobDetailsProps> = ({ classes }) => {
               </TableRow>
             </TableHeader>
             <TableBody data-cy="table-body">
-              {logs.map((item, index) => {
-                return (
-                  <TableRow key={index} className={classes.tableRow} data-cy={`table-row-${index}`}>
-                    <TableCell>
-                      <img
-                        className={classes.statusIcon}
-                        src={
-                          (item.log.logLevel === 'INFO' && infoIcon) ||
-                          (item.log.logLevel === 'ERROR' && errorIcon) ||
-                          (item.log.logLevel === 'WARN' && warningIcon)
-                        }
-                        alt="img"
-                        height="30px"
-                        width="30px"
-                      />
-                      {item.log.logLevel}
-                    </TableCell>
-                    <TableCell className={classes.rowText}>
-                      {humanReadableDate(item.log.timestamp, true)}
-                    </TableCell>
-                    <TableCell className={classes.rowText}>{item.log.message}</TableCell>
-                  </TableRow>
-                );
-              })}
+              {logs.length ? (
+                logs.map((item, index) => {
+                  return (
+                    <TableRow
+                      key={index}
+                      className={classes.tableRow}
+                      data-cy={`table-row-${index}`}
+                    >
+                      <TableCell>
+                        <img
+                          className={classes.statusIcon}
+                          src={
+                            (item.log.logLevel === 'INFO' && infoIcon) ||
+                            (item.log.logLevel === 'ERROR' && errorIcon) ||
+                            (item.log.logLevel === 'WARN' && warningIcon)
+                          }
+                          alt="img"
+                          height="30px"
+                          width="30px"
+                        />
+                        {item.log.logLevel}
+                      </TableCell>
+                      <TableCell className={classes.rowText}>
+                        {humanReadableDate(item.log.timestamp, true)}
+                      </TableCell>
+                      <TableCell className={classes.rowText}>{item.log.message}</TableCell>
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <div className={classes.errorTitle}>Logs not available.</div>
+              )}
             </TableBody>
           </Table>
         </div>
